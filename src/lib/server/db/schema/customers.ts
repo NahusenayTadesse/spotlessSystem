@@ -4,6 +4,8 @@ import { mysqlTable, varchar, int, date, decimal, year } from 'drizzle-orm/mysql
 import { secureFields } from './secureFields';
 
 import { transactions } from './finance';
+import { address } from './locations';
+import { services } from './services';
 
 export const customers = mysqlTable('customers', {
 	id: int('id').primaryKey().autoincrement(),
@@ -13,7 +15,7 @@ export const customers = mysqlTable('customers', {
 	tinNo: varchar('tin_no', { length: 50 }).notNull(),
 	region: int('region').notNull(),
 	city: int('city').notNull(),
-	address: varchar('address', { length: 200 }).notNull(),
+	address: int('address').references(() => address.id, { onDelete: 'set null' }),
 	...secureFields
 });
 
@@ -38,13 +40,10 @@ export const customerServices = mysqlTable('customer_services', {
 	customerId: int('customer_id')
 		.notNull()
 		.references(() => customers.id, { onDelete: 'cascade' }),
-	serviceType: varchar('service_type', { length: 50 }).notNull(),
-	serviceAmount: decimal('service_amount', { precision: 10, scale: 2 }).notNull(),
-	serviceMonth: int('service_month').notNull(),
-	serviceDate: date('service_date').notNull(),
-	transactionId: int('transaction_id')
-		.notNull()
-		.references(() => transactions.id, { onDelete: 'cascade' }),
+	serviceId: int('service_id').references(() => services.id),
+	startDate: date('service_start_date').notNull(),
+	endDate: date('service_end_date'),
+	endReason: varchar('service_end_reason', { length: 50 }),
 	...secureFields
 });
 
