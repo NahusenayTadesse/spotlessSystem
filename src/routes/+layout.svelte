@@ -37,6 +37,7 @@
 		if (!$flash) return;
 		if (page.data.flash?.type === 'success') toast.success($flash.message);
 		if (page.data.flash?.type === 'error') toast.error($flash?.message);
+
 		if (Notification.permission === 'granted') {
 			notifyBrowser(
 				page.data.flash?.type === 'success'

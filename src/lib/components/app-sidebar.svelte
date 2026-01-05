@@ -19,10 +19,9 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
-	import { bgGradient, selectItem } from '$lib/global.svelte';
-	import { fade } from 'svelte/transition';
+	import { bgGradient } from '$lib/global.svelte';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
-	import { ScrollArea } from './ui/scroll-area/index';
+
 	import NavMain from './NavMain.svelte';
 
 	const navigation = [
@@ -78,7 +77,7 @@
 
 <Sidebar.Root collapsible="icon" {...restProps}>
 	<Sidebar.Content
-		class="{bgGradient} h-full
+		class="z-[9999]! h-full
   overflow-y-scroll [scrollbar-color:#a3a3a3_transparent]
   [scrollbar-width:thin]
   [&::-webkit-scrollbar]:w-2
@@ -88,7 +87,7 @@
 "
 	>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel class="sticky top-0 z-10 bg-white py-4 dark:bg-gray-700">
+			<Sidebar.GroupLabel>
 				<div class="flex flex-row items-center justify-center gap-4 py-8">
 					<img src="/logo.webp" class="block h-8 w-8 dark:hidden" alt="Logo" />
 					<img src="/logoWhite.webp" class="hidden h-8 w-8 dark:block" alt="Logo" />
