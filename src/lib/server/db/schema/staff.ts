@@ -113,12 +113,20 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 		.notNull(),
 	...secureFields
 });
+export const taxType = mysqlTable('tax_type', {
+	id: int('id').autoincrement().primaryKey(),
+	name: varchar('name', { length: 255 }).notNull(),
+	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
+	...lesserFields
+});
 
 export const pensionType = mysqlTable('pension_type', {
 	id: int('id').autoincrement().primaryKey(),
 	name: varchar('name', { length: 255 }).notNull(),
 	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
-	taxtype: varchar('taxtype', { length: 255 }).notNull()
+	taxtype: int('tax_type')
+		.references(() => taxType.id)
+		.notNull()
 });
 
 export const pension = mysqlTable('pension', {
@@ -301,3 +309,24 @@ export const employeeTermination = mysqlTable('empoloyee_termination', {
 	terminationDate: date('termination_date').notNull(),
 	...secureFields
 });
+
+export const qualification = mysqlTable('qualification', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => employee.id),
+	field: varchar('field', { length: 255 }),
+	educationLevel: int('education_level')
+		.references(() => educationalLevel.id)
+		.notNull(),
+	schoolName: varchar('school_name', { length: 255 }),
+	graduationDate: date('qualification_date').notNull(),
+	...secureFields
+});
+
+export const staffQualificationRelations = relations(qualification, ({ one }) => ({
+	staff: one(employee, {
+		fields: [qualification.staffId],
+		references: [employee.id]
+	})
+}));

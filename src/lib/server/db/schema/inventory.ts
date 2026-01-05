@@ -4,7 +4,7 @@ import { mysqlTable, varchar, int, decimal } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 
 import { transactionSupplies } from './finance';
-import { staff } from './staff';
+import { employee } from './staff';
 import { address } from './locations';
 
 export const supplies = mysqlTable('supplies', {
@@ -24,7 +24,7 @@ export const damagedSupplies = mysqlTable('damaged_supplies', {
 		.notNull()
 		.references(() => supplies.id),
 	quantity: int('quantity').notNull(),
-	damagedBy: int('damaged_by').references(() => staff.id),
+	damagedBy: int('damaged_by').references(() => employee.id),
 	reason: varchar('reason', { length: 255 }).notNull(),
 	...secureFields
 });

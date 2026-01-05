@@ -1,1 +1,0 @@
-ALTER TABLE `product_adjustments` MODIFY COLUMN `transaction_id` int;

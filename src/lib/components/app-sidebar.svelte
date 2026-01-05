@@ -78,8 +78,9 @@
 		<Sidebar.Group>
 			<Sidebar.GroupLabel class="sticky top-0 z-10 bg-white py-4 dark:bg-gray-700">
 				<div class="flex flex-row items-center justify-center gap-4 py-8">
-					<img src="/logo.png" class="h-8 w-8" alt="Logo" />
-					<h4 class="!text-[22px] text-gray-900 dark:text-white">Suna Marketing</h4>
+					<img src="/logo.webp" class="block h-8 w-8 dark:hidden" alt="Logo" />
+					<img src="/logoWhite.webp" class="hidden h-8 w-8 dark:block" alt="Logo" />
+					<h4 class="!text-[22px] text-gray-900 dark:text-white">Spotless</h4>
 				</div></Sidebar.GroupLabel
 			>
 			<Sidebar.GroupContent class="mt-8">

@@ -1,34 +1,27 @@
-import { db } from "$lib/server/db";
-import { staff, staffTypes } from "$lib/server/db/schema";
-import { eq, sql } from "drizzle-orm";
-import type { PageServerLoad } from "../$types";
+import { db } from '$lib/server/db';
+import { employee, staffTypes } from '$lib/server/db/schema';
+import { eq, sql } from 'drizzle-orm';
+import type { PageServerLoad } from '../$types';
 
+export const load: PageServerLoad = async ({ locals }) => {
+	let staffList = await db
+		.select({
+			id: employee.id,
+			name: sql<string>`TRIM(CONCAT(${employee.firstName}, ' ', COALESCE(${employee.lastName}, '')))`,
 
+			category: staffTypes.name,
+			phone: employee.phone,
+			email: employee.email,
+			status: employee.employmentStatus,
+			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`
+		})
+		.from(employee)
+		.leftJoin(staffTypes, eq(staffTypes.id, employee.type))
+		.where(eq(employee.branchId, locals?.user?.branch));
 
+	staffList = staffList.map((r) => ({ ...r, years: Number(r.years) }));
 
-export const load: PageServerLoad = async({locals})=>{
-     
-    
-
-    let staffList = await db.select(
-        {
-            id: staff.id,
-            name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
-
-            category: staffTypes.name,
-            phone: staff.phone,
-            email: staff.email,
-            status: staff.employmentStatus,
-years: sql<number>`TIMESTAMPDIFF(YEAR, ${staff.hireDate}, CURDATE())`
-        }
-    ).from(staff)
-    .leftJoin(staffTypes, eq(staffTypes.id, staff.type))
-    .where(eq(staff.branchId, locals?.user?.branch))
-
-
-    staffList = staffList.map(r=> ({ ...r, years: Number(r.years)}))
-  
-    return{
-         staffList
-    }
-}
+	return {
+		staffList
+	};
+};

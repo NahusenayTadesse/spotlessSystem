@@ -4,7 +4,7 @@ import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 import { db } from '$lib/server/db';
 import {
-	staff,
+	employee,
 	deductions,
 	commissionService,
 	commissionProduct,
@@ -174,9 +174,9 @@ export const actions: Actions = {
 
 		try {
 			const files = await db
-				.select({ govtId: staff.govtId, contract: staff.contract })
-				.from(staff)
-				.where(eq(staff.id, staffId))
+				.select({ govtId: employee.govtId, contract: employee.contract })
+				.from(employee)
+				.where(eq(employee.id, staffId))
 				.then((rows) => rows[0]);
 			let newGovId: string | null;
 			let newContract: string | null;
@@ -197,7 +197,7 @@ export const actions: Actions = {
 			}
 
 			await db
-				.update(staff)
+				.update(employee)
 				.set({
 					firstName,
 					lastName,
@@ -209,7 +209,7 @@ export const actions: Actions = {
 					contract: newContract,
 					updatedBy: locals?.user?.id
 				})
-				.where(eq(staff.id, staffId));
+				.where(eq(employee.id, staffId));
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Service Updated Successuflly' }, cookies);
@@ -233,7 +233,7 @@ export const actions: Actions = {
 				return fail(400);
 			}
 
-			await db.delete(staff).where(eq(staff.id, id));
+			await db.delete(employee).where(eq(employee.id, id));
 
 			setFlash({ type: 'success', message: 'Staff Member Deleted Successfully!' }, cookies);
 		} catch (err) {

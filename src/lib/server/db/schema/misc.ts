@@ -1,8 +1,6 @@
 // misc.ts - Handles miscellaneous items like positions and audit logs
 import { mysqlTable, varchar, timestamp, int, json, date, decimal } from 'drizzle-orm/mysql-core';
 import { user } from './user';
-import { secureFields } from './secureFields';
-import { branches } from './branches';
 
 export const auditLog = mysqlTable('audit_log', {
 	id: int('id').autoincrement().primaryKey(),
@@ -29,6 +27,5 @@ export const reports = mysqlTable('reports', {
 	staffPaid: int('staff_paid'),
 	totalStaffPaid: decimal('total_staff_paid', { precision: 10, scale: 2 }),
 	staffHired: int('staff_hired'),
-	staffFired: int('staff_fired'),
-	branchId: int('branch_id').references(() => branches.id, { onDelete: 'set null' })
+	staffFired: int('staff_fired')
 });

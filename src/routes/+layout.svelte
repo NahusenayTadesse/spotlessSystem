@@ -52,7 +52,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href="/logo.png" />
+	<link rel="icon" href="/logo.webp" />
 </svelte:head>
 <ModeWatcher />
 <Toaster position="bottom-right" richColors closeButton />

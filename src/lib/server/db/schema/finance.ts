@@ -10,7 +10,7 @@ import {
 	year,
 	unique
 } from 'drizzle-orm/mysql-core';
-import { staff } from './staff';
+import { employee } from './staff';
 import { secureFields } from './secureFields';
 import { services } from './services';
 import { supplies } from '../schema';
@@ -53,7 +53,7 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 export const transactionServices = mysqlTable('transaction_services', {
 	id: int('id').primaryKey().autoincrement(),
 	staffId: int('staff_id')
-		.references(() => staff.id)
+		.references(() => employee.id)
 		.notNull(),
 	transactionId: int('transaction_id')
 		.notNull()
@@ -134,7 +134,7 @@ export const payrollEntries = mysqlTable(
 	{
 		id: int('id').autoincrement().primaryKey(),
 		payrollId: int('payroll_id').references(() => payrollRuns.id),
-		staffId: int('staff_id').references(() => staff.id),
+		staffId: int('staff_id').references(() => employee.id),
 		month: mysqlEnum('month', [
 			'January',
 			'February',

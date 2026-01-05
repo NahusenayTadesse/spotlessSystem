@@ -7,7 +7,7 @@ import {
 	products as prds,
 	reports,
 	services as srvs,
-	staff,
+	employee,
 	tipsProduct,
 	tipsService,
 	transactionProducts,
@@ -43,11 +43,11 @@ export async function load({ locals }) {
 
 	const fetchedStaff = await db
 		.select({
-			value: staff.id,
-			name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`
+			value: employee.id,
+			name: sql<string>`TRIM(CONCAT(${employee.firstName}, ' ', COALESCE(${employee.lastName}, '')))`
 		})
-		.from(staff)
-		.where(eq(staff.branchId, locals.user?.branch));
+		.from(employee)
+		.where(eq(employee.branchId, locals.user?.branch));
 
 	const fetchedCustomer = await db
 		.select({

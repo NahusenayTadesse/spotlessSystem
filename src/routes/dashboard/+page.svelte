@@ -40,18 +40,12 @@
 		<Reports report={data.todayReport} />
 
 		<!-- Stats Grid -->
-		<div class="mb-8 grid gap-6">
+		<!-- <div class="mb-8 grid gap-6">
 			<AppointmentCard count={data.nofAppointments} />
-		</div>
+		</div> -->
 
 		<!-- Reorder Items Grid -->
 		<div class="mb-8 grid gap-6 md:grid-cols-2">
-			<ReorderList
-				title="Products to Reorder"
-				description="Items below reorder level"
-				items={data.reorderProducts}
-				icon={PackageIcon}
-			/>
 			<ReorderList
 				title="Supplies to Reorder"
 				description="Items below reorder level"

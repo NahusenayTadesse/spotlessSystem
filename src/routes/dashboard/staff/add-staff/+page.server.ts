@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { staffSchema } from '$lib/zodschemas/appointmentSchema';
 import { db } from '$lib/server/db';
-import { staffTypes as positions, salaries, staff } from '$lib/server/db/schema/';
+import { staffTypes as positions, salaries, employee } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 
@@ -21,9 +21,9 @@ export const load: PageServerLoad = async () => {
 
 	const allStaff = await db
 		.select({
-			name: staff.firstName
+			name: employee.firstName
 		})
-		.from(staff);
+		.from(employee);
 
 	return {
 		form,
@@ -68,7 +68,7 @@ export const actions: Actions = {
 			const contractName = await saveUploadedFile(contract);
 
 			const [staffMember] = await db
-				.insert(staff)
+				.insert(employee)
 				.values({
 					firstName,
 					lastName,
