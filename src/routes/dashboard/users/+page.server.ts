@@ -3,7 +3,7 @@ import { eq, sql } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 import { user, roles, rolePermissions } from '$lib/server/db/schema';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async () => {
 	const userList = await db
 		.select({
 			id: user.id,
@@ -17,7 +17,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(user)
 		.leftJoin(roles, eq(roles.id, user.roleId))
 		.leftJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-		.where(eq(user.branchId, locals?.user?.branch))
 		.groupBy(user.id, user.name, user.email, roles.name, user.isActive, user.createdAt);
 
 	return {

@@ -13,13 +13,19 @@
 		type VisibilityState,
 		type GlobalFilterColumn
 	} from '@tanstack/table-core';
+	import Pdf from './pdf.svelte';
 
 	import { Input } from '$lib/components/ui/input/index.js';
 
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 
-	let { data, columns, search = true }: DataTableProps<TData, TValue> = $props();
+	let {
+		data,
+		columns,
+		search = true,
+		fileName = 'Spotless File'
+	}: DataTableProps<TData, TValue> = $props();
 	// let filterSchema = $derived(
 	//   discoverFilterSchema(data).filter(meta => !filterBlacklist.includes(meta.key))
 	// );  import { Input } from "$lib/components/ui/input/index.js";
@@ -27,7 +33,7 @@
 	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { ChevronDownIcon, Frown } from '@lucide/svelte';
+	import { ChevronDownIcon, Download, Frown, Grid3x3 } from '@lucide/svelte';
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 30 });
 	let columnFilters = $state<ColumnFiltersState>([]);
@@ -36,7 +42,8 @@
 		columns: ColumnDef<TData, TValue>[];
 		data: TData[];
 		search?: boolean;
-		filterBlacklist?: string[]; // <-- new
+		filterBlacklist?: string[];
+		fileName?: string;
 	};
 
 	let sorting = $state<SortingState>([]);
@@ -142,10 +149,12 @@
 						{/each}
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
+
+				<Pdf {fileName} tableId="#table" {data} />
 			</div>
 		{/if}
 		<div class="max-h-96 rounded-md border">
-			<Table.Root class="relative max-h-96">
+			<Table.Root id="table" class="relative max-h-96">
 				<Table.Header>
 					{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 						<Table.Row>

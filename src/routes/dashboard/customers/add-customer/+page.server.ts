@@ -1,34 +1,33 @@
-import type { Actions, PageServerLoad } from './$types';
-import { db } from '$lib/server/db';
-import { customers, user } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
-import { setFlash } from 'sveltekit-flash-message/server';
-import { fail, setError, superValidate } from 'sveltekit-superforms';
-import { addCustomer } from '$lib/ZodSchema';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const customersList = await db
-		.select({
-			id: customers.id,
-			customerName: customers.name,
-			phone: customers.phone,
-			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
-			createdBy: user.name,
-			createdById: user.id,
-			createdAt: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`
-		})
-		.from(customers)
-		.leftJoin(user, eq(customers.createdBy, user.id));
+import { customerSchema as schema } from './schema';
+import { db } from '$lib/server/db';
+import { customers } from '$lib/server/db/schema/';
+import { cities, regions, subcities } from '$lib/server/fastData';
+import type { Actions } from './$types';
+import type { PageServerLoad } from './$types.js';
+import { setFlash } from 'sveltekit-flash-message/server';
+
+export const load: PageServerLoad = async () => {
+	const form = await superValidate(zod4(schema));
+
+	const cityList = await cities();
+	const regionList = await regions();
+	const subcityList = await subcities();
 
 	return {
-		customersList
+		form,
+		cityList,
+		regionList,
+		subcityList
 	};
 };
 
 export const actions: Actions = {
 	addCustomer: async ({ request, locals, cookies }) => {
-		const form = await superValidate(request, zod4(addCustomer));
+		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
@@ -39,11 +38,11 @@ export const actions: Actions = {
 
 		try {
 			await db.insert(customers).values({
-				name: `${firstName} ${lastName}`,
+				firstName,
+				lastName,
 				gender: gender === 'male' || gender === 'female' ? gender : undefined,
 				phone,
-				createdBy: locals?.user?.id,
-				branchId: locals?.user?.branch
+				createdBy: locals?.user?.id
 			});
 
 			// Stay on the same page and set a flash message

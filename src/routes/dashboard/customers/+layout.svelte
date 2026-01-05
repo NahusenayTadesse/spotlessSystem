@@ -9,6 +9,8 @@
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button href="/dashboard/customers"><Sheet /> All Customers</Button>
+	<Button href="/dashboard/customers/add-customer"><Sheet /> Add Customers</Button>
+
 	<DialogComp title="Add New Customer" {content} />
 </div>
 

@@ -1,16 +1,15 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  const id = $props.id();
+	import * as Card from '$lib/components/ui/card/index.js';
+
+	let { title, children, description = '' } = $props();
 </script>
-<Card.Root class="mx-auto w-full max-w-sm">
-  <Card.Header>
-    <Card.Title class="text-2xl">Login</Card.Title>
-    <Card.Description>Enter your email below to login to your account</Card.Description>
-  </Card.Header>
-  <Card.Content>
-    
-  </Card.Content>
+
+<Card.Root class="flex w-full flex-col gap-4 lg:w-2xl">
+	<Card.Header>
+		<Card.Title class="text-2xl">{title}</Card.Title>
+		<Card.Description>{description}</Card.Description>
+	</Card.Header>
+	<Card.Content>
+		{@render children?.()}
+	</Card.Content>
 </Card.Root>

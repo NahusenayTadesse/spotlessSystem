@@ -64,9 +64,12 @@
 	},
 	"dependencies": {
 		"@node-rs/argon2": "^2.0.2",
+		"ethiopian-calendar-new": "^1.0.8",
+		"jspdf-autotable": "^5.0.7",
 		"mode-watcher": "^1.1.0",
 		"mysql2": "^3.12.0",
 		"node-telegram-bot-api": "^0.66.0",
-		"nodemailer": "^7.0.12"
+		"nodemailer": "^7.0.12",
+		"papaparse": "^5.5.3"
 	}
 }

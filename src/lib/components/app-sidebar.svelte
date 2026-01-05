@@ -108,7 +108,7 @@
 	</Sidebar.Content>
 	<Sidebar.Footer class="flex flex-row bg-white dark:bg-black">
 		<Sidebar.GroupLabel>
-			Powered By <a href="https://sunamarketing.com" target="_blank" class="ml-1">Suna Marketing</a>
+			Powered By <a href="https://pulsedata.com" target="_blank" class="ml-1">PulseData</a>
 		</Sidebar.GroupLabel>
 	</Sidebar.Footer>
 </Sidebar.Root>
