@@ -12,7 +12,9 @@
 		Container,
 		Banknote,
 		BanknoteArrowUp,
-		ScanLine
+		ScanLine,
+		List,
+		Plus
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -21,9 +23,19 @@
 	import { fade } from 'svelte/transition';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 	import { ScrollArea } from './ui/scroll-area/index';
+	import NavMain from './NavMain.svelte';
+
 	const navigation = [
 		{ title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-		{ title: 'Customers', url: '/dashboard/customers', icon: Users },
+		{
+			title: 'Customers',
+			url: '/dashboard/customers',
+			icon: Users,
+			items: [
+				{ title: 'All Customers', url: '/dashboard/customers/', icon: List },
+				{ title: 'Add Customer', url: '/dashboard/customers/add-customer', icon: Plus }
+			]
+		},
 		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
 		{ title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
 		{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
@@ -84,7 +96,8 @@
 				</div></Sidebar.GroupLabel
 			>
 			<Sidebar.GroupContent class="mt-8">
-				<Sidebar.Menu class="w-full gap-3">
+				<NavMain items={navigation} label="Customers" />
+				<!-- <Sidebar.Menu class="w-full gap-3">
 					{#each navigation as item (item.title)}
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton
@@ -102,7 +115,7 @@
 							</Sidebar.MenuButton>
 						</Sidebar.MenuItem>
 					{/each}
-				</Sidebar.Menu>
+				</Sidebar.Menu> -->
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
 	</Sidebar.Content>
