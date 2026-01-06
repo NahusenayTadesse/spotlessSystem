@@ -6,6 +6,7 @@
 	import DatePicker2 from './DatePicker2.svelte';
 	import SelectComp from './SelectComp.svelte';
 	import ComboboxComp from './ComboboxComp.svelte';
+	import CheckboxComp from './CheckboxComp.svelte';
 
 	let {
 		label,
@@ -36,11 +37,21 @@
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'combo'}
 		<ComboboxComp {name} bind:value={$form[name]} {items} />
+	{:else if type === 'checkbox'}
+		<CheckboxComp {items} bind:checkedValues={$form[name]} />
+		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else}
 		<Input {type} {name} bind:value={$form[name]} {max} {min} {placeholder} {required} />
 	{/if}
 
 	{#if $errors[name]}
-		<p class="text-red-500">{$errors[name]}</p>
+		{#if typeof $errors[name] === 'string'}
+			<p class="text-red-500">{$errors[name]}</p>
+		{/if}
+		{#if typeof $errors[name] === 'object'}
+			{#each $errors[name]._errors as error}
+				<p class="text-red-500">{error}</p>
+			{/each}
+		{/if}
 	{/if}
 </div>

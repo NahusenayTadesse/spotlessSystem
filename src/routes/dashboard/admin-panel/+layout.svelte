@@ -15,12 +15,13 @@
 		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },
 		{ name: 'Regions', href: '/dashboard/admin-panel/regions' },
 		{ name: 'Cities', href: '/dashboard/admin-panel/cities' },
-		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' }
+		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' },
+		{ name: 'Departments', href: '/dashboard/admin-panel/department' }
 	];
 
 	let users = [
 		{ name: 'Users', href: '/dashboard/admin-panel/add-users' },
-		{ name: 'Roles', href: '/dashboard/admin-panel/add-roles' }
+		{ name: 'Roles', href: '/dashboard/admin-panel/roles' }
 	];
 </script>
 

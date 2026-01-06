@@ -25,23 +25,34 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: data.allData[row.index].id,
-					name: data.allData[row.index].name,
+					id: row.original.id,
+					name: row.original.name,
+					phone: row.original.phone,
+					location: row.original.location,
+					description: row.original.description,
 					action: '?/edit',
-					data: data.editForm,
+					data: data?.editForm,
 					icon: false,
-					items: data.cityList,
-					cityId: data.allData[row.index].cityId,
-					status: data.allData[row.index].status
+					status: row.original.status
 				});
 			}
 		},
 
 		{
-			accessorKey: 'city',
+			accessorKey: 'phone',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
-					name: 'City',
+					name: 'Phone',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true
+		},
+
+		{
+			accessorKey: 'location',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Location',
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true
@@ -65,14 +76,15 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: data.allData[row.index].id,
-					name: data.allData[row.index].name,
+					id: row.original.id,
+					name: row.original.name,
+					phone: row.original.phone,
+					location: row.original.location,
+					description: row.original.description,
 					action: '?/edit',
-					data: data.editForm,
+					data: data?.editForm,
 					icon: true,
-					items: data?.cityList,
-					cityId: data.allData[row.index].cityId,
-					status: data.allData[row.index].status
+					status: row.original.status
 				});
 			}
 		}
@@ -98,20 +110,39 @@
 </script>
 
 <svelte:head>
-	<title>Subcities</title>
+	<title>Departments</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Subcity" variant="default">
+<DialogComp title="+ Add New Department" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
 		<InputComp
 			{form}
 			{errors}
-			label="City"
-			type="combo"
-			name="cityId"
+			label="Location"
+			type="text"
+			name="location"
+			placeholder="Enter Department Location"
 			required={true}
-			items={data?.cityList}
+		/>
+		<InputComp
+			{form}
+			{errors}
+			label="Phone"
+			type="tel"
+			name="phone"
+			placeholder="Enter Department Phone"
+			required={true}
+		/>
+		<InputComp
+			{form}
+			{errors}
+			label="Description"
+			type="textarea"
+			name="description"
+			placeholder="Enter Department Description"
+			required={true}
+			rows={10}
 		/>
 		<InputComp
 			label="Status"
@@ -127,9 +158,9 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Subcity" />
+				<LoadingBtn name="Adding Department" />
 			{:else}
-				<Plus /> Add Subcity
+				<Plus /> Add Department
 			{/if}
 		</Button>
 	</form>
