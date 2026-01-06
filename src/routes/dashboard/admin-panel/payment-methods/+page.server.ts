@@ -1,6 +1,5 @@
-import { setError, superValidate, message } from 'sveltekit-superforms';
+import { setError, superValidate, message, fail } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
 import { paymentMethod as schema, editPaymentMethod as editSchema } from './schema';
@@ -30,19 +29,12 @@ export const load: PageServerLoad = async () => {
 	};
 };
 
-import { setFlash } from 'sveltekit-flash-message/server';
-
 export const actions: Actions = {
-	add: async ({ request, cookies, locals }) => {
-		console.log('connected');
+	add: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {
-			setFlash({ type: 'error', message: 'Please check the form for Errors' }, cookies);
-
-			return fail(400, {
-				form
-			});
+			return message(form, { type: 'error', text: 'Please check the form for Errors' });
 		}
 
 		const { name } = form.data;
@@ -53,9 +45,9 @@ export const actions: Actions = {
 				createdBy: locals.user?.id
 			});
 
-			// setFlash({ type: 'success', message: 'Payment Method Successfully Created' }, cookies);
 			return message(form, { type: 'success', text: 'Payment Method Successfully Created' });
 		} catch (err: any) {
+			if (err.code === 'ER_DUP_ENTRY') setError(form, 'name', 'Payment Method already exists.');
 			return message(form, {
 				type: 'error',
 				text:
@@ -63,34 +55,33 @@ export const actions: Actions = {
 						? 'Payment Method is already taken. Please choose another one.'
 						: err.message
 			});
+		}
+	},
+	edit: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editSchema));
+
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		const { id, name } = form.data;
+
+		try {
+			await db
+				.update(paymentMethods)
+				.set({ name, updatedBy: locals?.user?.id })
+				.where(eq(paymentMethods.id, id));
+			return message(form, { type: 'success', text: 'Payment Method Successfully Updated' });
+		} catch (err: any) {
 			if (err.code === 'ER_DUP_ENTRY')
 				return setError(form, 'name', 'Payment Method already exists.');
-
-			return fail(400, {
-				form
+			return message(form, {
+				type: 'error',
+				text:
+					err.code === 'ER_DUP_ENTRY'
+						? 'Payment Method is already taken. Please choose another one.'
+						: err.message
 			});
 		}
 	}
 };
-
-// function generateUserId() {
-//     // ID with 120 bits of entropy, or about the same as UUID v4.
-//     const bytes = crypto.getRandomValues(new Uint8Array(15));
-//     const id = encodeBase32LowerCase(bytes);
-//     return id;
-// }
-
-// function extractUsername(email: string) {
-//   if (typeof email !== "string") {
-//     throw new Error("Input must be a string");
-//   }
-
-//   // Find the part before the '@'
-//   const atIndex = email.indexOf("@");
-
-//   if (atIndex === -1) {
-//     throw new Error("Invalid email address: missing '@'");
-//   }
-
-//   return email.substring(0, atIndex);
-// }

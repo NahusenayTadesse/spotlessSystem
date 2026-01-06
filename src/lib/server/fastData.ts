@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { error } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
 import { city, region, subcity, paymentMethods as paymentMethod } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -8,7 +8,8 @@ export async function cities() {
 			value: city.id,
 			name: city.name
 		})
-		.from(city);
+		.from(city)
+		.where(eq(city.status, true));
 
 	return cities;
 }
@@ -19,7 +20,8 @@ export async function regions() {
 			value: region.id,
 			name: region.name
 		})
-		.from(region);
+		.from(region)
+		.where(eq(region.status, true));
 
 	return regions;
 }
@@ -30,7 +32,8 @@ export async function subcities() {
 			value: subcity.id,
 			name: subcity.name
 		})
-		.from(subcity);
+		.from(subcity)
+		.where(eq(subcity.status, true));
 
 	return subcities;
 }
@@ -41,7 +44,8 @@ export async function paymentMethods() {
 			value: paymentMethod.id,
 			name: paymentMethod.name
 		})
-		.from(paymentMethod);
+		.from(paymentMethod)
+		.where(eq(paymentMethod.isActive, true));
 
 	return paymentMethods;
 }

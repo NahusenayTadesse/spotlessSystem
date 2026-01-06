@@ -12,7 +12,10 @@
 		{ name: 'Services', href: '/dashboard/admin-panel/add-services' },
 		{ name: 'Product Categories', href: '/dashboard/admin-panel/add-product-category' },
 		{ name: 'Staff Positions', href: '/dashboard/admin-panel/add-positions' },
-		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' }
+		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },
+		{ name: 'Regions', href: '/dashboard/admin-panel/regions' },
+		{ name: 'Cities', href: '/dashboard/admin-panel/cities' },
+		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' }
 	];
 
 	let users = [

@@ -1,10 +1,9 @@
 <script>
 	import { renderComponent } from '$lib/components/ui/data-table/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+	import Stasuses from '$lib/components/Table/statuses.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import Empty from '$lib/components/Empty.svelte';
 	import { Button } from '$lib/components/ui/button/index';
 	import Edit from './edit.svelte';
 	export const columns = [
@@ -25,29 +24,22 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
+					id: data.allData[row.index].id,
+					name: data.allData[row.index].name,
 					action: '?/edit',
 					data: data.editForm,
-					icon: false
+					icon: false,
+					status: row.original.status
 				});
 			}
 		},
-
 		{
-			accessorKey: 'createdBy',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Created By',
-					onclick: column.getToggleSortingHandler()
-				}),
+			accessorKey: 'status',
+			header: 'Status',
 			sortable: true,
 			cell: ({ row }) => {
-				// You can pass whatever you need from `row.original` to the component
-				return renderComponent(DataTableLinks, {
-					id: row.original.createdById,
-					name: row.original.createdBy,
-					link: '/dashboard/users'
+				return renderComponent(Statuses, {
+					status: row.original.status ? 'Active' : 'Inactive'
 				});
 			}
 		},
@@ -59,11 +51,12 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
+					id: data.allData[row.index].id,
+					name: data.allData[row.index].name,
 					action: '?/edit',
 					data: data.editForm,
-					icon: true
+					icon: true,
+					status: row.original.status
 				});
 			}
 		}
@@ -77,6 +70,7 @@
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
 
 	import { toast } from 'svelte-sonner';
+	import Statuses from '$lib/components/Table/statuses.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -89,22 +83,34 @@
 </script>
 
 <svelte:head>
-	<title>Payment Methods</title>
+	<title>Regions</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Payment Method" variant="default">
+<DialogComp title="+ Add New Region" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
+		<InputComp
+			{form}
+			{errors}
+			label="Status"
+			type="select"
+			name="status"
+			required={true}
+			items={[
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'InActive' }
+			]}
+		/>
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Payment Method" />
+				<LoadingBtn name="Adding Region" />
 			{:else}
-				<Plus /> Add Payment Method
+				<Plus /> Add Region
 			{/if}
 		</Button>
 	</form>
 </DialogComp>
-{#key data?.allPaymentMethods}
-	<DataTable {columns} data={data?.allPaymentMethods} search={true} fileName="Payment Methods" />
+{#key data.allData}
+	<DataTable {columns} data={data?.allData} search={true} fileName="Cities" />
 {/key}

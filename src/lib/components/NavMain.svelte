@@ -5,8 +5,7 @@
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { sidebarMenuButtonVariants } from './ui/sidebar/sidebar-menu-button.svelte';
 	let {
-		items,
-		label
+		items
 	}: {
 		items: {
 			title: string;
@@ -21,7 +20,6 @@
 				icon?: any;
 			}[];
 		}[];
-		label: string;
 	} = $props();
 	import { page } from '$app/state';
 	import { slide, fly } from 'svelte/transition';
@@ -40,7 +38,6 @@
 </script>
 
 <Sidebar.Group>
-	<Sidebar.GroupLabel>{label}</Sidebar.GroupLabel>
 	<Sidebar.Menu>
 		{#each items as item (item.title)}
 			{#if item.items}
@@ -51,11 +48,8 @@
 								{#snippet child({ props })}
 									<Sidebar.MenuButton
 										{...props}
-										class={cn(
-											sidebarMenuButtonVariants({
-												variant: variantChecker(item.url) ? 'default' : 'outline'
-											})
-										)}
+										variant={variantChecker(item.url) ? 'outline' : 'default'}
+										size="lg"
 										title="Goto {item.title}"
 										tooltipContent={item.title}
 									>
@@ -96,9 +90,12 @@
 					{/snippet}
 				</Collapsible.Root>
 			{:else}
-				<Sidebar.Menu class="w-full gap-3">
+				<Sidebar.Menu class="w-full gap-3" title="Goto {item.title}">
 					<Sidebar.MenuItem>
-						<Sidebar.MenuButton>
+						<Sidebar.MenuButton
+							size="lg"
+							variant={variantChecker(item.url) ? 'outline' : 'default'}
+						>
 							{#snippet child({ props })}
 								<a href={item.url} {...props}>
 									<item.icon class="!h-5 !w-5" />

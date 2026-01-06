@@ -2,7 +2,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import type { EditPaymentMethod as schema } from './schema';
+	import type { Edit } from './schema';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 
@@ -11,18 +11,29 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
+	type Item = {
+		value: number;
+		name: string;
+	};
+
 	let {
 		data,
-		action = '/dashboard/customers?/addCustomer',
+		action = '?/edit',
 		id,
 		name,
-		icon = false
+		icon = false,
+		regionId,
+		items = [{ value: 0, name: '' }],
+		status = true
 	}: {
-		data: SuperValidated<Infer<schema>>;
+		data: SuperValidated<Infer<Edit>>;
 		action: string;
 		id: number;
 		name: string;
 		icon: boolean;
+		regionId: number;
+		items: Item[];
+		status: boolean;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -33,6 +44,8 @@
 
 	$form.id = id;
 	$form.name = name;
+	$form.regionId = regionId;
+	$form.status = status;
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -76,10 +89,30 @@
 							{errors}
 							placeholder="Enter Name of Payment Method"
 						/>
+						<InputComp
+							label="Region"
+							name="regionId"
+							type="combo"
+							{form}
+							{errors}
+							placeholder="Enter Region"
+							{items}
+						/>
+						<InputComp
+							label="Status"
+							name="status"
+							type="select"
+							{form}
+							{errors}
+							items={[
+								{ value: true, name: 'Active' },
+								{ value: false, name: 'Inactive' }
+							]}
+						/>
 
 						<Button type="submit" class="mt-4" form="edit">
 							{#if $delayed}
-								<LoadingBtn name="Adding Menu Item" />
+								<LoadingBtn name="Saving Changes" />
 							{:else}
 								<Plus class="h-4 w-4" />
 

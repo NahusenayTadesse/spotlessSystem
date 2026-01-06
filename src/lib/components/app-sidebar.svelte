@@ -78,24 +78,24 @@
 <Sidebar.Root collapsible="icon" {...restProps}>
 	<Sidebar.Content
 		class="z-[9999]! h-full
-  overflow-y-scroll [scrollbar-color:#a3a3a3_transparent]
+  overflow-y-scroll pt-4
+  [scrollbar-color:#a3a3a3_transparent]
   [scrollbar-width:thin]
   [&::-webkit-scrollbar]:w-2
   [&::-webkit-scrollbar-thumb]:bg-gray-400
-  [&::-webkit-scrollbar-thumb:hover]:bg-gray-500
-  [&::-webkit-scrollbar-track]:bg-transparent
+  [&::-webkit-scrollbar-thumb:hover]:bg-gray-500 [&::-webkit-scrollbar-track]:bg-transparent
 "
 	>
 		<Sidebar.Group>
 			<Sidebar.GroupLabel>
-				<div class="flex flex-row items-center justify-center gap-4 py-8">
-					<img src="/logo.webp" class="block h-8 w-8 dark:hidden" alt="Logo" />
-					<img src="/logoWhite.webp" class="hidden h-8 w-8 dark:block" alt="Logo" />
+				<div class="flex flex-row items-center justify-center gap-4">
+					<img src="/logo.webp" class="block h-16 w-16 dark:hidden" alt="Logo" />
+					<img src="/logoWhite.webp" class="hidden h-16 w-16 dark:block" alt="Logo" />
 					<h4 class="!text-[22px] text-gray-900 dark:text-white">Spotless</h4>
 				</div></Sidebar.GroupLabel
 			>
-			<Sidebar.GroupContent class="mt-8">
-				<NavMain items={navigation} label="Customers" />
+			<Sidebar.GroupContent class="my-4">
+				<NavMain items={navigation} />
 				<!-- <Sidebar.Menu class="w-full gap-3">
 					{#each navigation as item (item.title)}
 						<Sidebar.MenuItem>

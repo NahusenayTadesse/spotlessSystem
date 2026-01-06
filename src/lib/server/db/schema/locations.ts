@@ -4,7 +4,7 @@ import { mysqlTable, int, varchar, boolean } from 'drizzle-orm/mysql-core';
 import { lesserFields } from './secureFields';
 export const region = mysqlTable('region', {
 	id: int('id').primaryKey().autoincrement(),
-	name: varchar('name', { length: 50 }).notNull(),
+	name: varchar('name', { length: 50 }).notNull().unique(),
 	...lesserFields
 });
 
@@ -13,7 +13,7 @@ export const city = mysqlTable('city', {
 	regionId: int('region_id')
 		.notNull()
 		.references(() => region.id), // Relationship link
-	name: varchar('name', { length: 50 }).notNull(),
+	name: varchar('name', { length: 50 }).notNull().unique(),
 	...lesserFields
 });
 
@@ -22,7 +22,7 @@ export const subcity = mysqlTable('subcity', {
 	cityId: int('city_id')
 		.notNull()
 		.references(() => city.id), // Relationship link
-	name: varchar('name', { length: 50 }).notNull(),
+	name: varchar('name', { length: 50 }).notNull().unique(),
 	...lesserFields
 });
 
