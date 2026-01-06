@@ -26,6 +26,10 @@
 			name: 'Description',
 			value: data.singleUser?.description
 		},
+		{
+			name: 'User Count',
+			value: data?.singleUser?.userCount || 0
+		},
 		{ name: 'Permission Count', value: data?.permissionList?.length || 0 }
 	]);
 

@@ -20,11 +20,13 @@ export const load: PageServerLoad = async ({ params }) => {
 			id: roles.id,
 			name: roles.name,
 			description: roles.description,
+			userCount: sql<number>`COUNT(DISTINCT ${user.id})`,
 			permissionsCount: sql<number>`COUNT(DISTINCT ${rolePermissions.id})`
 		})
 		.from(roles)
+		.leftJoin(user, eq(user.roleId, roles.id))
 		.leftJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-		.groupBy(roles.id, roles.name, roles.isActive)
+		.groupBy(roles.id, roles.name, roles.isActive, user.id)
 		.where(eq(roles.id, id))
 		.then((rows) => rows[0]);
 
@@ -40,6 +42,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(permissions)
 		.innerJoin(rolePermissions, eq(permissions.id, rolePermissions.permissionId))
+
 		.where(eq(rolePermissions.roleId, id));
 
 	return {
