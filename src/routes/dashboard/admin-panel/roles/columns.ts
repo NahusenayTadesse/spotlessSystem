@@ -56,11 +56,7 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'actions',
-		header: 'Actions',
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(DataTableActions, { id: row.original.id, name: row.original.name });
-		}
+		accessorKey: 'userCount',
+		header: 'Users'
 	}
 ];

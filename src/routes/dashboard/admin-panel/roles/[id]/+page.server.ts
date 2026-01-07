@@ -4,7 +4,7 @@ import { editRoleSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import { roles, user, permissions, rolePermissions, session } from '$lib/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq, countDistinct, and } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -20,13 +20,19 @@ export const load: PageServerLoad = async ({ params }) => {
 			id: roles.id,
 			name: roles.name,
 			description: roles.description,
-			userCount: sql<number>`COUNT(DISTINCT ${user.id})`,
-			permissionsCount: sql<number>`COUNT(DISTINCT ${rolePermissions.id})`
+			userCount: countDistinct(user.id),
+			permissionsCount: countDistinct(rolePermissions.id)
 		})
 		.from(roles)
-		.leftJoin(user, eq(user.roleId, roles.id))
+		.leftJoin(
+			user,
+			and(
+				eq(user.roleId, roles.id),
+				eq(user.isActive, true) // Filter happens DURING the join
+			)
+		)
 		.leftJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-		.groupBy(roles.id, roles.name, roles.isActive, user.id)
+		.groupBy(roles.id)
 		.where(eq(roles.id, id))
 		.then((rows) => rows[0]);
 
@@ -45,10 +51,21 @@ export const load: PageServerLoad = async ({ params }) => {
 
 		.where(eq(rolePermissions.roleId, id));
 
+	const userList = await db
+		.select({
+			id: user.id,
+			email: user.email,
+			name: user.name,
+			isActive: user.isActive
+		})
+		.from(user)
+		.where(eq(user.roleId, id));
+
 	return {
 		singleUser,
 		id,
 		form,
+		userList,
 
 		permissionList
 	};

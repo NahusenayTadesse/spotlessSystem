@@ -15,7 +15,7 @@
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import { columns } from './columns.js';
+	import { columns, userColumns } from './columns.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -138,4 +138,20 @@
 
 <br />
 
-<DataTable data={data?.permissionList} {columns} />
+{#if data?.userList?.length}
+	<h3>Users on this Role</h3>
+	<DataTable
+		data={data?.userList}
+		columns={userColumns}
+		fileName="{data?.singleUser.name} Users List"
+	/>
+{/if}
+{#if data?.permissionList?.length}
+	<h3>Permissions on this Role</h3>
+
+	<DataTable
+		data={data?.permissionList}
+		{columns}
+		fileName="{data?.singleUser.name} Permissions List"
+	/>
+{/if}

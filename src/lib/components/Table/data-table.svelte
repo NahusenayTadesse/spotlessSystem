@@ -33,7 +33,7 @@
 	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { ChevronDownIcon, Download, Frown, Grid3x3 } from '@lucide/svelte';
+	import { ChevronDownIcon, Frown } from '@lucide/svelte';
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 30 });
 	let columnFilters = $state<ColumnFiltersState>([]);
@@ -108,10 +108,30 @@
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel()
 	});
+
+	const uniqueTableId = `table-${Math.random().toString(36).substring(2, 15)}`;
+
+	function getTableBreakpoints<T>(data: T[]): number[] {
+		const totalItems = data.length;
+		const step = 10;
+		const breakpoints: number[] = [];
+
+		for (let i = step; i < totalItems; i += step) {
+			breakpoints.push(i);
+		}
+
+		if (totalItems > 0) {
+			breakpoints.push(totalItems);
+		}
+
+		return breakpoints;
+	}
 </script>
 
 <!-- min-h-0 is required for flex-child overflow -->
-<ScrollArea class="w-full rounded-lg bg-white p-2 lg:w-auto lg:max-w-5xl dark:bg-gray-950">
+<ScrollArea
+	class="lg:max-w-8xl w-full rounded-lg bg-white p-2 lg:w-fit lg:min-w-2xl  dark:bg-gray-950"
+>
 	<div class="flex min-w-full flex-col gap-2 rounded-md border-0 px-1">
 		{#if search}
 			<div class="py-4">
@@ -150,11 +170,32 @@
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 
-				<Pdf {fileName} tableId="#table" {data} />
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button {...props} variant="outline" class="ml-auto"
+								>Pages <ChevronDownIcon class="size-5" />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						{#each getTableBreakpoints(data) as column (column)}
+							<DropdownMenu.Item
+								class="capitalize"
+								onclick={() => {
+									table.setPageSize(column);
+								}}
+							>
+								{column}
+							</DropdownMenu.Item>
+						{/each}
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+				<Pdf {fileName} tableId="#{uniqueTableId}" {data} />
 			</div>
 		{/if}
 		<div class="max-h-96 rounded-md border">
-			<Table.Root id="table" class="relative max-h-96">
+			<Table.Root id={uniqueTableId} class="relative max-h-96">
 				<Table.Header>
 					{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 						<Table.Row>

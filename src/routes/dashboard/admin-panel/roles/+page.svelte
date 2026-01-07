@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<title>Users List</title>
+	<title>Roles List</title>
 </svelte:head>
 
 {#await data}
