@@ -1,10 +1,10 @@
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, superValidate, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { editRoleSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import { roles, user, permissions, rolePermissions, session } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -94,6 +94,18 @@ export const actions: Actions = {
 						? 'Role Name is already taken. Please choose another one.'
 						: err.message
 			});
+		}
+	},
+	delete: async ({ params, cookies }) => {
+		const { id } = params;
+
+		try {
+			await db.delete(roles).where(eq(roles.id, Number(id)));
+
+			setFlash({ type: 'success', message: 'Role Deleted Successfully!' }, cookies);
+		} catch (err: any) {
+			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+			return fail(400);
 		}
 	}
 } satisfies Actions;

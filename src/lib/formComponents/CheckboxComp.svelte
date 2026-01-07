@@ -2,7 +2,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
-	import { SquareMousePointer } from '@lucide/svelte';
+	import { SquareMousePointer, Badge, BadgeCheck } from '@lucide/svelte';
 
 	interface CheckboxItem {
 		value: string | number;
@@ -25,6 +25,8 @@
 		}
 	};
 
+	let Icon = $derived(checkedValues.length === items.length ? BadgeCheck : Badge);
+
 	function toggleSelectAll() {
 		if (checkedValues.length === items.length) {
 			checkedValues = [];
@@ -34,12 +36,13 @@
 	}
 </script>
 
-<Button onclick={toggleSelectAll} size="icon" class="w-full lg:w-1/6">
-	<SquareMousePointer /> {checkedValues.length === items.length ? 'Unselect' : 'Select'} All</Button
->
+<Button onclick={toggleSelectAll} size="icon" class="w-full lg:w-1/5">
+	<Icon />
+	{checkedValues.length === items.length ? 'Unselect' : 'Select'} All
+</Button>
 <div
 	class="grid {items.length > 20
-		? 'grid-cols-1 lg:grid-cols-3'
+		? 'grid-cols-1 lg:grid-cols-5'
 		: items.length > 10
 			? 'grid-cols-1 lg:grid-cols-2'
 			: 'grid-cols-1'} gap-3"

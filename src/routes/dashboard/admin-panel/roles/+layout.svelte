@@ -9,8 +9,8 @@
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button
-		href="/dashboard/admin-panel/roles/add-users"
-		variant={page.url.pathname === '/dashboard/admin-panel/roles/add-users' ? 'default' : 'outline'}
+		href="/dashboard/admin-panel/roles/add-roles"
+		variant={page.url.pathname === '/dashboard/admin-panel/roles/add-roles' ? 'default' : 'outline'}
 		><Plus /> Add Roles</Button
 	>
 	<!-- <DialogComp title="Add New Customer" {content} /> -->

@@ -160,8 +160,7 @@
 		@apply border-border outline-ring/50;
 	}
 	body {
-		@apply bg-background font-body text-foreground;
-		/* Removed dark:bg-white — now uses --background */
+		@apply bg-gradient-to-b from-sky-50 to-white text-foreground dark:bg-gradient-to-br dark:from-gray-800 dark:to-black;
 	}
 }
 
@@ -169,7 +168,7 @@
 h1 {
 	font-family: var(--font-head);
 	font-weight: 700;
-	font-size: clamp(2.5rem, 8vw, 6rem);
+	font-size: 80px;
 	line-height: 1.1;
 	letter-spacing: -0.02em;
 	text-align: center;
@@ -179,7 +178,7 @@ h1 {
 h2 {
 	font-family: var(--font-head);
 	font-weight: 600;
-	font-size: clamp(2rem, 5vw, 4rem);
+	font-size: clamp(1rem, 5vw, 4rem);
 	line-height: 1.2;
 }
 

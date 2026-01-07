@@ -15,7 +15,7 @@
 		<div
 			class="absolute top-2 left-2 z-50 flex w-[95%] flex-row
 			justify-between rounded-lg p-2 pr-4 align-middle
-		 shadow-lg backdrop-blur-md lg:sticky lg:w-full lg:pr-0"
+		 shadow-lg backdrop-blur-md lg:sticky lg:w-full lg:pr-2"
 		>
 			<Sidebar.Trigger class="rounded-lg bg-white p-4 dark:bg-black" />
 			<div class="flex flex-row items-center gap-4">

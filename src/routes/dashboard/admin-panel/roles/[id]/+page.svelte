@@ -9,7 +9,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Save } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Save, Trash } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import Delete from '$lib/forms/Delete.svelte';
@@ -43,6 +43,7 @@
 	);
 
 	import { toast } from 'svelte-sonner';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
 	$effect(() => {
 		if ($message) {
@@ -60,8 +61,6 @@
 
 	$form.name = data.singleUser?.name;
 	$form.description = data.singleUser?.description || '';
-	// $form.permissions = ['1', '2', '3'];
-	// $form.permissions = data?.permissionList.map((item) => String(item.id)) || [];
 	$form.permissions = data.permissionList.map((item) => String(item.id)) || [];
 </script>
 
@@ -80,7 +79,15 @@
 				Back
 			{/if}
 		</Button>
-		<Delete redirect="/dashboard/products" />
+		{#if data.singleUser?.userCount > 0}
+			<Button
+				variant="destructive"
+				onclick={() => toast.error('Cannot delete role with users')}
+				title="Cannot delete role with users"><Trash /> Delete</Button
+			>
+		{:else}
+			<Delete redirect="/dashboard/admin-panel/roles" />
+		{/if}
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

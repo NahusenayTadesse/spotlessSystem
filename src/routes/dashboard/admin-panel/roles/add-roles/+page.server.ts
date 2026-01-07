@@ -16,7 +16,6 @@ export const load: PageServerLoad = async () => {
 
 export const actions: Actions = {
 	add: async ({ request }) => {
-		console.log('connected');
 		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {

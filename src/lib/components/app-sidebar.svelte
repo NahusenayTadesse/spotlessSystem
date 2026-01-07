@@ -84,6 +84,7 @@
   [&::-webkit-scrollbar]:w-2
   [&::-webkit-scrollbar-thumb]:bg-gray-400
   [&::-webkit-scrollbar-thumb:hover]:bg-gray-500 [&::-webkit-scrollbar-track]:bg-transparent
+  {bgGradient}
 "
 	>
 		<Sidebar.Group>
