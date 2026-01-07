@@ -5,22 +5,23 @@
 	import { selectItem } from '$lib/global.svelte';
 	import { ChevronDown } from '@lucide/svelte';
 	import { fly, slide } from 'svelte/transition';
+	import { or } from 'drizzle-orm';
 
 	let { children } = $props();
 
-	let menus = [
-		{ name: 'Services', href: '/dashboard/admin-panel/add-services' },
-		{ name: 'Product Categories', href: '/dashboard/admin-panel/add-product-category' },
-		{ name: 'Staff Positions', href: '/dashboard/admin-panel/add-positions' },
-		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },
+	let locations = [
 		{ name: 'Regions', href: '/dashboard/admin-panel/regions' },
 		{ name: 'Cities', href: '/dashboard/admin-panel/cities' },
-		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' },
-		{ name: 'Departments', href: '/dashboard/admin-panel/department' }
+		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' }
 	];
 
-	let users = [
-		{ name: 'Users', href: '/dashboard/admin-panel/add-users' },
+	let organization = [
+		{ name: 'Departments', href: '/dashboard/admin-panel/department' },
+		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' }
+	];
+
+	let userManagement = [
+		{ name: 'Users', href: '/dashboard/admin-panel/users' },
 		{ name: 'Roles', href: '/dashboard/admin-panel/roles' }
 	];
 </script>
@@ -44,8 +45,9 @@
 {/snippet}
 
 <Menubar.Root class="sticky mb-8 bg-transparent">
-	{@render menu('System', menus)}
-	{@render menu('Users', users)}
+	{@render menu('Organization', organization)}
+	{@render menu('Locations', locations)}
+	{@render menu('User Management', userManagement)}
 </Menubar.Root>
 
 {@render children?.()}

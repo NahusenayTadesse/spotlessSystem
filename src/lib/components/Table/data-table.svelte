@@ -140,7 +140,7 @@
 	<Resizable.Pane
 		defaultSize={isMobile()
 			? 100
-			: table.getAllColumns().filter((col) => col.getIsVisible()).length * 15}
+			: table.getAllColumns().filter((col) => col.getIsVisible()).length * 20}
 		class="bg-white p-2 dark:bg-gray-950"
 	>
 		<ScrollArea orientation="vertical" class="w-full rounded-lg p-2">
@@ -153,7 +153,10 @@
       onChange={f => (columnFilters = f)}
     /> -->
 					</div>
-					<div class="sticky top-0 z-20 flex flex-row flex-wrap items-center gap-4 bg-background">
+					<div
+						class="sticky top-0 z-20 flex flex-row items-center gap-4 bg-background
+					 {isMobile() ? 'flex-wrap' : ''}"
+					>
 						<Input
 							type="search"
 							placeholder="Search Table..."
@@ -233,7 +236,7 @@
 								<Table.Row data-state={row.getIsSelected() && 'selected'}>
 									{#each row.getVisibleCells() as cell, index}
 										<Table.Cell
-											class="max-w-[200px] break-words capitalize {index === 1
+											class="word-break capitalize {index === 1
 												? 'sticky left-0 z-10 bg-background'
 												: ''}"
 										>
