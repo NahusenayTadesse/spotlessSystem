@@ -135,7 +135,7 @@
 
 <Resizable.PaneGroup
 	direction="horizontal"
-	class="lg:max-w-8xl flex w-full min-w-full gap-0 lg:w-fit lg:min-w-2xl "
+	class="lg:max-w-8xl mt-4 flex w-full min-w-full gap-0 rounded-lg lg:w-fit lg:min-w-2xl "
 >
 	<Resizable.Pane
 		defaultSize={isMobile()
@@ -146,7 +146,7 @@
 		<ScrollArea orientation="vertical" class="w-full rounded-lg p-2">
 			<div class="flex min-w-full flex-col gap-2 rounded-md border-0 px-1">
 				{#if search}
-					<div class="py-4">
+					<div>
 						<!-- <Filters
       schema={filterSchema}
       filters={columnFilters}

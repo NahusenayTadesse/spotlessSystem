@@ -5,14 +5,14 @@
 		Container,
 		LayoutDashboard,
 		ShoppingBasket,
-		SquareChartGantt
+		SquareChartGantt,
+		UsersRound
 	} from '@lucide/svelte';
 
 	const mobNav = [
 		{ title: 'Dashboard', url: '/dashboard/', icon: LayoutDashboard },
-		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
-		{ title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
-		{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
+		{ title: 'Customers', url: '/dashboard/appointments', icon: UsersRound },
+		{ title: 'Service', url: '/dashboard/services', icon: SquareChartGantt },
 		{ title: 'Supplies', url: '/dashboard/supplies', icon: Container }
 	];
 

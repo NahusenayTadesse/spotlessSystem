@@ -35,6 +35,14 @@
 		// For other items, check if current path starts with their URL but is not just /dashboard
 		return currentPath.startsWith(url) && currentPath !== '/dashboard';
 	}
+	function variantChecker2(url: string) {
+		const currentPath = page.url.pathname;
+
+		// Special case for root dashboard
+
+		// For other items, check if current path starts with their URL but is not just /dashboard
+		return currentPath === url;
+	}
 </script>
 
 <Sidebar.Group>
@@ -69,19 +77,22 @@
 								<Sidebar.MenuSub>
 									{#each item.items ?? [] as subItem (subItem.title)}
 										<Sidebar.MenuSubItem>
-											<Sidebar.MenuSubButton
-												class="flex! flex-row! items-center! justify-start! gap-2!"
+											<Sidebar.MenuButton
+												{...props}
+												variant={variantChecker2(subItem.url) ? 'outline' : 'default'}
+												size="sm"
+												title="Goto {subItem.title}"
+												tooltipContent={subItem.title}
 											>
 												{#snippet child({ props })}
 													<a href={subItem.url} {...props} transition:slide|global>
 														{#if subItem.icon}
 															<subItem.icon class="h-4 w-4" />
 														{/if}
-
 														<span>{subItem.title}</span>
 													</a>
 												{/snippet}
-											</Sidebar.MenuSubButton>
+											</Sidebar.MenuButton>
 										</Sidebar.MenuSubItem>
 									{/each}
 								</Sidebar.MenuSub>

@@ -14,7 +14,10 @@
 		BanknoteArrowUp,
 		ScanLine,
 		List,
-		Plus
+		Plus,
+		MapPin,
+		Building2,
+		Sheet
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -31,21 +34,51 @@
 			url: '/dashboard/customers',
 			icon: Users,
 			items: [
-				{ title: 'All Customers', url: '/dashboard/customers/', icon: List },
+				{ title: 'All Customers', url: '/dashboard/customers', icon: List },
 				{ title: 'Add Customer', url: '/dashboard/customers/add-customer', icon: Plus }
 			]
 		},
 		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
 		{ title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
 		{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
-		{ title: 'Supplies', url: '/dashboard/supplies', icon: Container },
+		{
+			title: 'Supplies',
+			url: '/dashboard/supplies',
+			icon: Container,
+			items: [
+				{ title: 'All Supplies', url: '/dashboard/supplies', icon: Sheet },
+				{ title: 'Add Supply', url: '/dashboard/supplies/add-supplies', icon: Plus },
+				{ title: 'Suppliers', url: '/dashboard/supplies/suppliers', icon: Sheet },
+				{ title: 'Add Supplier', url: '/dashboard/supplies/add-supplier', icon: Plus },
+				{ title: 'Damaged Supplies', url: '/dashboard/supplies/damaged', icon: Sheet },
+				{ title: 'Add Damaged Supply', url: '/dashboard/supplies/add-damaged', icon: Plus },
+				{ title: 'Categories', url: '/dashboard/supplies/categories', icon: Sheet },
+				{ title: 'Add Category', url: '/dashboard/supplies/add-category', icon: Plus }
+			]
+		},
 		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
-		{ title: 'Staff', url: '/dashboard/staff', icon: IdCardLanyard },
+		{ title: 'Employees', url: '/dashboard/employees', icon: IdCardLanyard },
 		{ title: 'Salary', url: '/dashboard/salary', icon: Banknote },
 		{ title: 'Sales', url: '/dashboard/sales', icon: BanknoteArrowUp },
 		{ title: 'Transactions', url: '/dashboard/transactions', icon: ScanLine },
-		{ title: 'Users', url: '/dashboard/users', icon: User },
-		{ title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog }
+		{
+			title: 'Admin Panel',
+			url: '/dashboard/admin-panel',
+			icon: UserRoundCog,
+			items: [
+				{ title: 'Regions', url: '/dashboard/admin-panel/regions', icon: MapPin },
+				{ title: 'Cities', url: '/dashboard/admin-panel/cities', icon: MapPin },
+				{ title: 'Subcities', url: '/dashboard/admin-panel/subcities', icon: MapPin },
+				{ title: 'Departments', url: '/dashboard/admin-panel/department', icon: Building2 },
+				{
+					title: 'Payment Methods',
+					url: '/dashboard/admin-panel/payment-methods',
+					icon: Building2
+				},
+				{ title: 'Users', url: '/dashboard/admin-panel/users', icon: Users },
+				{ title: 'Roles', url: '/dashboard/admin-panel/roles', icon: Users }
+			]
+		}
 	];
 
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();

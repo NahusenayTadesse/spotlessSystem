@@ -4,7 +4,6 @@
 	import DarkMode from '$lib/components/DarkMode.svelte';
 	import Search from '$lib/components/Search.svelte';
 	import AvatarSettings from '$lib/components/AvatarSettings.svelte';
-	import BottomMenu from '$lib/components/bottomMenu.svelte';
 
 	let { children, data } = $props();
 </script>
@@ -26,7 +25,6 @@
 		</div>
 		<div class="p-2 pt-24 pb-24 lg:pt-4 lg:pb-4">
 			{@render children?.()}
-			<BottomMenu />
 		</div>
 	</main>
 </Sidebar.Provider>

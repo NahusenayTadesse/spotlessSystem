@@ -2,7 +2,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 
-import { supplyItemSchema as schema } from '$lib/ZodSchema';
+import { supplyItemSchema as schema } from './schema';
 import { db } from '$lib/server/db';
 import { supplies as inventory } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
@@ -30,7 +30,7 @@ export const actions: Actions = {
 		const {
 			supplyName,
 			description,
-			unitOfMeasure,
+			unitOfMeasurement,
 			quantity,
 			supplier,
 			reorderLevel,
@@ -41,12 +41,11 @@ export const actions: Actions = {
 			await db.insert(inventory).values({
 				name: supplyName,
 				description,
-				unitOfMeasure,
+				unitOfMeasure: unitOfMeasurement,
 				quantity,
 				costPerUnit,
 				supplier,
 				reorderLevel,
-				branchId: locals?.user?.branch,
 				createdBy: locals?.user?.id
 			});
 

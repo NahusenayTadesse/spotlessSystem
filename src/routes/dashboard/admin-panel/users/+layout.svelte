@@ -3,14 +3,19 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	// import DialogComp from "$lib/formComponents/DialogComp.svelte";
 	// import AddCustomer from "$lib/forms/AddCustomer.svelte";
-	import { Plus } from '@lucide/svelte';
+	import { Plus, Sheet } from '@lucide/svelte';
 	let { children } = $props();
 </script>
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button
-		href="/dashboard/users/add-users"
-		variant={page.url.pathname === '/dashboard/users/add-users' ? 'default' : 'outline'}
+		href="/dashboard/admin-panel/users"
+		variant={page.url.pathname === '/dashboard/admin-panel/users' ? 'default' : 'outline'}
+		><Sheet /> Users</Button
+	>
+	<Button
+		href="/dashboard/admin-panel/users/add-users"
+		variant={page.url.pathname === '/dashboard/admin-panel/users/add-users' ? 'default' : 'outline'}
 		><Plus /> Add Users</Button
 	>
 	<!-- <DialogComp title="Add New Customer" {content} /> -->
