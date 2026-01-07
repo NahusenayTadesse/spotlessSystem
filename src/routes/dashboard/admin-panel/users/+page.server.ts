@@ -10,6 +10,7 @@ export const load: PageServerLoad = async () => {
 			name: user.name,
 			email: user.email,
 			role: roles.name,
+			roleId: user.roleId,
 			status: user.isActive,
 			createdAt: user.createdAt,
 			permissionsCount: sql<number>`COUNT(DISTINCT ${rolePermissions.id})`

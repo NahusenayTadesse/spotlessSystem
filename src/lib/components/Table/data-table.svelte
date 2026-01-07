@@ -38,7 +38,7 @@
 	import ResizableHandle from '../ui/resizable/resizable-handle.svelte';
 	import { isMobile } from '$lib/global.svelte';
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 30 });
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: data.length });
 	let columnFilters = $state<ColumnFiltersState>([]);
 
 	type DataTableProps<TData, TValue> = {
@@ -200,7 +200,15 @@
 											table.setPageSize(column);
 										}}
 									>
-										{column}
+										{#snippet child({ props })}
+											<Button
+												{...props}
+												variant={pagination.pageSize === column ? 'default' : 'ghost'}
+												size="icon"
+												class="w-full"
+												>{column}
+											</Button>
+										{/snippet}
 									</DropdownMenu.Item>
 								{/each}
 							</DropdownMenu.Content>

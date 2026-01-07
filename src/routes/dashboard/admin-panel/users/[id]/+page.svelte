@@ -26,7 +26,7 @@
 		{ name: 'Email', value: data.singleUser?.email },
 		{ name: 'Phone', value: data.singleUser?.phone },
 		{ name: 'Role', value: data.singleUser?.role },
-		{ name: 'Status', value: data.singleUser?.status },
+		{ name: 'Status', value: data.singleUser?.status ? 'Active' : 'Inactive' },
 		{ name: 'Created At', value: data.singleUser?.createdAt.toLocaleString() },
 		{ name: 'Updated At', value: data.singleUser?.updatedAt.toLocaleString() }
 	]);
@@ -114,7 +114,11 @@
 
 <br />
 
-<DataTable data={data?.permissionList} {columns} />
+<DataTable
+	data={data?.permissionList}
+	{columns}
+	fileName="{data?.singleUser?.name}Permission List"
+/>
 
 {#snippet fe(
 	label = '',

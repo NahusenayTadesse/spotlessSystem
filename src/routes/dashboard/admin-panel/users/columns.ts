@@ -48,7 +48,15 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true
+		sortable: true,
+		cell: ({ row }) => {
+			// You can pass whatever you need from `row.original` to the component
+			return renderComponent(DataTableLinks, {
+				id: row.original.roleId,
+				name: row.original.role,
+				link: '/dashboard/admin-panel/roles'
+			});
+		}
 	},
 	{
 		accessorKey: 'status',
