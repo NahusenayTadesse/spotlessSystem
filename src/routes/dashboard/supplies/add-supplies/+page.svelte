@@ -43,10 +43,10 @@
 </svelte:head>
 
 <FormCard title="Add Supplies">
-	<form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST">
+	<form use:enhance action="?/add" id="main" class="flex flex-col gap-4" method="POST">
 		<InputComp
-			label="Supply Name"
-			name="supplyName"
+			label="Item Name"
+			name="name"
 			type="text"
 			required
 			placeholder="Enter Supply Name"
@@ -76,8 +76,9 @@
 		<InputComp
 			label="Supplier"
 			name="supplier"
-			type="text"
+			type="combo"
 			placeholder="Enter Supplier"
+			items={data?.suppliersList}
 			{errors}
 			{form}
 		/>
@@ -117,15 +118,6 @@
 			name="reorderLevel"
 			type="number"
 			placeholder="Enter when you want to be notified"
-			{errors}
-			{form}
-		/>
-
-		<InputComp
-			label="Cost per unit"
-			name="costPerUnit"
-			type="number"
-			placeholder="Cost Per Unit"
 			{errors}
 			{form}
 		/>

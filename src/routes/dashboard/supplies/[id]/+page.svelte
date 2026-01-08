@@ -83,7 +83,7 @@
 			{/if}
 		</Button>
 		<Delete redirect="/dashboard/supplies" />
-		<Adjustment data={data.adjustForm} name={data.supply?.name} />
+		<Adjustment data={data.adjustForm} name={data.supply?.name} employees={data.employeesList} />
 		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
 			<History /> See Change History
 		</Button>

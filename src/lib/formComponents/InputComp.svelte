@@ -36,7 +36,7 @@
 		<DatePicker2 bind:data={$form[name]} {oldDays} />
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'combo'}
-		<ComboboxComp {name} bind:value={$form[name]} {items} />
+		<ComboboxComp {name} bind:value={$form[name]} {items} {required} />
 	{:else if type === 'checkbox'}
 		<CheckboxComp {items} bind:checkedValues={$form[name]} />
 		<input type="hidden" {name} bind:value={$form[name]} />

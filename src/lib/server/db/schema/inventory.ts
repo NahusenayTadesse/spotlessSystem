@@ -1,7 +1,7 @@
 // inventory.ts - Handles products, supplies, categories, and inventory adjustments
 
 import { mysqlTable, varchar, int, decimal } from 'drizzle-orm/mysql-core';
-import { secureFields } from './secureFields';
+import { secureFields, lesserFields } from './secureFields';
 
 import { transactionSupplies } from './finance';
 import { employee } from './staff';
@@ -42,7 +42,10 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 		.references(() => supplies.id),
 	adjustment: int('adjustment').notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
 	supplierId: int('supplier_id').references(() => supplySuppliers.id),
+	employeeResponsible: int('employee_responsible').references(() => employee.id),
 	reason: varchar('reason', { length: 255 }),
+	costPerItem: decimal('cost_per_item', { precision: 10, scale: 2 }),
+	total: decimal('total', { precision: 10, scale: 2 }),
 	transactionId: int('transaction_id').references(() => transactionSupplies.id, {
 		onDelete: 'set null'
 	}), //if the adjustment is caused by new stuff coming in
@@ -55,8 +58,11 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 export const supplySuppliers = mysqlTable('supply_suppliers', {
 	id: int('id').primaryKey().autoincrement(),
 	name: varchar('name', { length: 50 }).notNull(),
+	phone: varchar('phone', { length: 20 }).notNull(),
+	email: varchar('email', { length: 100 }),
 	description: varchar('description', { length: 255 }),
 	address: int('address').references(() => address.id, {
 		onDelete: 'set null'
-	})
+	}),
+	...lesserFields
 });

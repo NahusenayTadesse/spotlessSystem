@@ -1,6 +1,15 @@
 import { db } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
-import { city, region, subcity, paymentMethods as paymentMethod } from '$lib/server/db/schema/';
+import { eq, and, isNull } from 'drizzle-orm';
+import {
+	city,
+	region,
+	subcity,
+	employee,
+	employmentStatuses,
+	paymentMethods as paymentMethod,
+	supplySuppliers,
+	employeeTermination
+} from '$lib/server/db/schema/';
 
 export async function cities() {
 	const cities = await db
@@ -48,4 +57,35 @@ export async function paymentMethods() {
 		.where(eq(paymentMethod.isActive, true));
 
 	return paymentMethods;
+}
+
+export async function suppliers() {
+	const suppliers = await db
+		.select({
+			value: supplySuppliers.id,
+			name: supplySuppliers.name
+		})
+		.from(supplySuppliers)
+		.where(eq(supplySuppliers.status, true));
+
+	return suppliers;
+}
+export async function employees() {
+	const employees = await db
+		.select({
+			value: employee.id,
+			name: employee.name
+		})
+		.from(employee)
+		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
+		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
+		.where(
+			and(
+				eq(employee.isActive, true),
+				eq(employmentStatuses.removeFromLists, false),
+				isNull(employeeTermination.staffId)
+			)
+		);
+
+	return employees;
 }

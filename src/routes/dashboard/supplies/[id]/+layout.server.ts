@@ -10,6 +10,7 @@ import { db } from '$lib/server/db';
 import { supplies, transactionSupplies, transactions, user } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
+import { employees } from '$lib/server/fastData';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { id } = params;
@@ -48,6 +49,8 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		)
 		.then((rows) => rows[0]);
 
+	const employeesList = await employees();
+
 	if (!supply) {
 		throw error(404, 'Supply not found, it has been deleted or never have existed.');
 	}
@@ -55,6 +58,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	return {
 		supply,
 		form,
-		adjustForm
+		adjustForm,
+		employeesList
 	};
 };

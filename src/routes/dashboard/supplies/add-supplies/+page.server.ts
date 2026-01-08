@@ -8,17 +8,19 @@ import { supplies as inventory } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { suppliers } from '$lib/server/fastData';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
-
+	const suppliersList = await suppliers();
 	return {
-		form
+		form,
+		suppliersList
 	};
 };
 
 export const actions: Actions = {
-	addProduct: async ({ request, cookies, locals }) => {
+	add: async ({ request, cookies, locals }) => {
 		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {
@@ -27,33 +29,22 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const {
-			supplyName,
-			description,
-			unitOfMeasurement,
-			quantity,
-			supplier,
-			reorderLevel,
-			costPerUnit
-		} = form.data;
+		const { name, description, unitOfMeasurement, quantity, supplier, reorderLevel } = form.data;
 
 		try {
 			await db.insert(inventory).values({
-				name: supplyName,
+				name,
 				description,
 				unitOfMeasure: unitOfMeasurement,
 				quantity,
-				costPerUnit,
 				supplier,
 				reorderLevel,
 				createdBy: locals?.user?.id
 			});
 
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'New Supply Successfully Added' }, cookies);
 			return message(form, { type: 'success', text: 'New Supply Successfully Added' });
 		} catch (err) {
-			setFlash({ type: 'error', message: 'Error when adding new supply ' + err?.message }, cookies);
 			return message(form, { type: 'error', text: 'New Supply Failed to Add ' + err?.message });
 		}
 	}

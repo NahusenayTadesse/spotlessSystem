@@ -32,6 +32,7 @@ export const department = mysqlTable('department', {
 export const employmentStatuses = mysqlTable('employment_statuses', {
 	id: int('id').autoincrement().primaryKey(),
 	name: varchar('name', { length: 32 }).notNull().unique(),
+	removeFromLists: boolean('remove_from_lists').notNull().default(false),
 	description: varchar('description', { length: 255 }),
 	...lesserFields
 });

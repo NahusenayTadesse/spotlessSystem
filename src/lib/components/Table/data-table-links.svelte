@@ -17,13 +17,13 @@
 					href="{link}/{id}"
 					{target}
 					{...props}
-					class="flex w-24 flex-row !justify-start capitalize transition-all duration-600 ease-in-out hover:scale-110"
+					class="flex flex-row items-start! justify-start! break-words capitalize transition-all duration-600 ease-in-out hover:scale-110"
 				>
 					{name}
 				</a>
 			{/snippet}
 		</Tooltip.Trigger>
-		<Tooltip.Content class="!left-0 !justify-self-start">
+		<Tooltip.Content class="left-0 justify-self-start">
 			<p class="text-[13px]!">See {name}'s page</p>
 		</Tooltip.Content>
 	</Tooltip.Root>

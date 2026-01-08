@@ -25,6 +25,11 @@ export const searchableFields = [
 	'time'
 ];
 
+export type Item = {
+	value: string | number;
+	name: string;
+};
+
 export const dropdownClass = `flex capitalize flex-row gap-2 ${selectItem}`;
 
 export const gender = [

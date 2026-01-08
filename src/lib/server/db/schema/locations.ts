@@ -32,7 +32,7 @@ export const address = mysqlTable('address', {
 		.notNull()
 		.references(() => subcity.id), // Relationship link
 	street: varchar('street', { length: 100 }),
-	kebele: varchar('kebele', { length: 100 }).notNull(),
+	kebele: varchar('kebele', { length: 100 }),
 	buildingNumber: varchar('building_number', { length: 10 }),
 	floor: int('floor').notNull().default(0),
 	houseNumber: int('house_number').notNull().default(0),

@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import { Pen } from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -10,16 +7,22 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import type { InventoryAdjustmentForm } from '$lib/ZodSchema';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
-	import FileUpload from '$lib/formComponents/FileUpload.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+
 	let isOpen = $state(false);
 
 	let {
 		data,
-		name = 'product'
-	}: { data: SuperValidated<Infer<InventoryAdjustmentForm>>; name: string } = $props();
+		name = 'product',
+		employees
+	}: {
+		data: SuperValidated<Infer<InventoryAdjustmentForm>>;
+		name: string;
+		employees?: Item[];
+	} = $props();
 	const { form, errors, enhance, delayed, message } = superForm(data, {});
 	import { toast } from 'svelte-sonner';
+	import type { Item } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -30,53 +33,6 @@
 		}
 	});
 </script>
-
-{#snippet fe(
-	label = '',
-	name = '',
-	type = '',
-	placeholder = '',
-	required = false,
-	min = '',
-	max = '',
-	textArea = false
-)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name}>{label}</Label>
-		{#if textArea}
-			<Textarea
-				{name}
-				{placeholder}
-				{required}
-				bind:value={$form[name]}
-				aria-invalid={$errors[name] ? 'true' : undefined}
-			/>
-		{:else}
-			<Input
-				{type}
-				{name}
-				{placeholder}
-				{required}
-				{min}
-				{max}
-				bind:value={$form[name]}
-				aria-invalid={$errors[name] ? 'true' : undefined}
-			/>
-		{/if}
-		{#if $errors[name]}
-			<span class="text-red-500">{$errors[name]}</span>
-		{/if}
-	</div>
-{/snippet}
-
-{#snippet select(name, items)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
-
-		<SelectComp {name} bind:value={$form[name]} {items} />
-		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-	</div>
-{/snippet}
 
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Trigger
@@ -103,19 +59,57 @@
 						{ value: 'add', name: '+ Add' },
 						{ value: 'remove', name: '- Remove' }
 					])}
-					{@render fe('Quantity of change', 'quantity', 'number', 'Enter Quantity', true, '0')}
-					{@render fe(
-						'Reason for the adjustment',
-						'reason',
-						'',
-						'Enter reason',
-						false,
-						'',
-						'',
-						true
-					)}
+					<InputComp
+						label="Add or Remove"
+						name="intent"
+						type="select"
+						required={true}
+						{form}
+						{errors}
+						items={[
+							{ value: 'add', name: '+ Add' },
+							{ value: 'remove', name: '- Remove' }
+						]}
+					/>
+
+					<InputComp
+						label="Quantity of Change"
+						name="quantity"
+						type="number"
+						{form}
+						{errors}
+						placeholder="Enter Quantity"
+						required={true}
+					/>
+					<InputComp
+						label="Reason"
+						name="reason"
+						type="textarea"
+						{form}
+						{errors}
+						placeholder="Enter Quantity"
+						required={true}
+					/>
+					<InputComp
+						label="Employee Responsible"
+						name="employeeResponsible"
+						type="textarea"
+						{form}
+						{errors}
+						placeholder="Enter Quantity"
+						required={true}
+						items={employees}
+					/>
+
 					{#if $form.intent === 'add'}
-						<FileUpload {form} {errors} name="reciept" />
+						<InputComp
+							label="Quantity of Change"
+							name="reciept"
+							type="file"
+							{form}
+							{errors}
+							required={false}
+						/>
 					{/if}
 
 					<Button type="submit" variant="default" size="lg">

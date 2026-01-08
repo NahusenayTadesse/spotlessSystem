@@ -40,7 +40,6 @@ export const actions: Actions = {
 		try {
 			await db.insert(customers).values({
 				name: `${firstName} ${lastName}`,
-				gender: gender === 'male' || gender === 'female' ? gender : undefined,
 				phone,
 				createdBy: locals?.user?.id,
 				branchId: locals?.user?.branch

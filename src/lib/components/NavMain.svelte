@@ -22,6 +22,7 @@
 		}[];
 	} = $props();
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { slide, fly } from 'svelte/transition';
 
 	function variantChecker(url: string) {
@@ -52,7 +53,7 @@
 				<Collapsible.Root open={item.isActive} class="group/collapsible">
 					{#snippet child({ props })}
 						<Sidebar.MenuItem {...props}>
-							<Collapsible.Trigger>
+							<Collapsible.Trigger onclick={() => goto(item.url)}>
 								{#snippet child({ props })}
 									<Sidebar.MenuButton
 										{...props}
@@ -109,7 +110,7 @@
 						>
 							{#snippet child({ props })}
 								<a href={item.url} {...props}>
-									<item.icon class="!h-5 !w-5" />
+									<item.icon class="h-5! w-5!" />
 									<span>{item.title}</span>
 								</a>
 							{/snippet}

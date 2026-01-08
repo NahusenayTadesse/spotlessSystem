@@ -398,7 +398,10 @@ CREATE TABLE `supplies_adjustments` (
 	`supplies_id` int NOT NULL,
 	`adjustment` int NOT NULL,
 	`supplier_id` int,
+	`employee_responsible` int,
 	`reason` varchar(255),
+	`cost_per_item` decimal(10,2),
+	`total` decimal(10,2),
 	`transaction_id` int,
 	`damaged_supplies_id` int,
 	`is_active` boolean NOT NULL DEFAULT true,
@@ -414,8 +417,11 @@ CREATE TABLE `supplies_adjustments` (
 CREATE TABLE `supply_suppliers` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(50) NOT NULL,
+	`phone` varchar(20) NOT NULL,
+	`email` varchar(100),
 	`description` varchar(255),
 	`address` int,
+	`status` boolean NOT NULL DEFAULT true,
 	CONSTRAINT `supply_suppliers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -632,6 +638,7 @@ CREATE TABLE `empoloyee_termination` (
 CREATE TABLE `employment_statuses` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(32) NOT NULL,
+	`remove_from_lists` boolean NOT NULL DEFAULT false,
 	`description` varchar(255),
 	`status` boolean NOT NULL DEFAULT true,
 	CONSTRAINT `employment_statuses_id` PRIMARY KEY(`id`),
@@ -826,7 +833,7 @@ CREATE TABLE `address` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`subcity_id` int NOT NULL,
 	`street` varchar(100),
-	`kebele` varchar(100) NOT NULL,
+	`kebele` varchar(100),
 	`building_number` varchar(10),
 	`floor` int NOT NULL DEFAULT 0,
 	`house_number` int NOT NULL DEFAULT 0,
@@ -839,14 +846,16 @@ CREATE TABLE `city` (
 	`region_id` int NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`status` boolean NOT NULL DEFAULT true,
-	CONSTRAINT `city_id` PRIMARY KEY(`id`)
+	CONSTRAINT `city_id` PRIMARY KEY(`id`),
+	CONSTRAINT `city_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
 CREATE TABLE `region` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`status` boolean NOT NULL DEFAULT true,
-	CONSTRAINT `region_id` PRIMARY KEY(`id`)
+	CONSTRAINT `region_id` PRIMARY KEY(`id`),
+	CONSTRAINT `region_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
 CREATE TABLE `subcity` (
@@ -854,7 +863,8 @@ CREATE TABLE `subcity` (
 	`city_id` int NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`status` boolean NOT NULL DEFAULT true,
-	CONSTRAINT `subcity_sc_id` PRIMARY KEY(`sc_id`)
+	CONSTRAINT `subcity_sc_id` PRIMARY KEY(`sc_id`),
+	CONSTRAINT `subcity_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
 CREATE TABLE `site` (
@@ -985,6 +995,7 @@ ALTER TABLE `supplies` ADD CONSTRAINT `supplies_updated_by_user_id_fk` FOREIGN K
 ALTER TABLE `supplies` ADD CONSTRAINT `supplies_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_supplies_id_supplies_id_fk` FOREIGN KEY (`supplies_id`) REFERENCES `supplies`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_supplier_id_supply_suppliers_id_fk` FOREIGN KEY (`supplier_id`) REFERENCES `supply_suppliers`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_employee_responsible_employee_id_fk` FOREIGN KEY (`employee_responsible`) REFERENCES `employee`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_transaction_id_transaction_supplies_id_fk` FOREIGN KEY (`transaction_id`) REFERENCES `transaction_supplies`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_damaged_supplies_id_damaged_supplies_id_fk` FOREIGN KEY (`damaged_supplies_id`) REFERENCES `damaged_supplies`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint

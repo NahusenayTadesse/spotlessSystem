@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
 export const supplyItemSchema = z.object({
-	supplyName: z.string().min(1, { message: 'Product Name is required.' }),
+	name: z.string().min(1, { message: 'Product Name is required.' }),
 
 	description: z
 		.string()
@@ -18,9 +18,6 @@ export const supplyItemSchema = z.object({
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
 		.positive({ message: 'Reorder Level must be a positive number.' }),
 
-	costPerUnit: z.coerce
-		.number({ message: 'Cost is required' })
-		.positive({ message: 'Cost must be a positive number.' }),
 	supplier: z.string().min(1, { message: 'Supplier is required.' })
 });
 
