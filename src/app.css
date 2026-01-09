@@ -160,7 +160,7 @@
 		@apply border-border outline-ring/50;
 	}
 	body {
-		@apply bg-gradient-to-b from-sky-50 to-white text-foreground dark:bg-gradient-to-br dark:from-gray-800 dark:to-black;
+		@apply bg-linear-to-b from-sky-50 to-white text-foreground dark:bg-linear-to-br dark:from-gray-800 dark:to-black;
 	}
 }
 
@@ -168,7 +168,7 @@
 h1 {
 	font-family: var(--font-head);
 	font-weight: 700;
-	font-size: 80px;
+	font-size: 70px;
 	line-height: 1.1;
 	letter-spacing: -0.02em;
 	text-align: center;

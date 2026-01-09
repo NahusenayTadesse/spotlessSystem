@@ -27,44 +27,47 @@
 				return renderComponent(Edit, {
 					id: row.original.id,
 					name: row.original.name,
-					phone: row.original.phone,
-					location: row.original.location,
 					description: row.original.description,
 					action: '?/edit',
+					removeFromLists: row.original.removeFromLists,
 					data: data?.editForm,
 					icon: false,
 					status: row.original.status
 				});
 			}
 		},
-
 		{
-			accessorKey: 'phone',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Phone',
-					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
-		},
-
-		{
-			accessorKey: 'location',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Location',
-					onclick: column.getToggleSortingHandler()
-				}),
+			accessorKey: 'description',
+			header: 'Description',
 			sortable: true
 		},
 
 		{
 			accessorKey: 'status',
-			header: 'Status',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Status',
+					onclick: column.getToggleSortingHandler()
+				}),
 			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'Inactive'
+				});
+			}
+		},
+
+		{
+			accessorKey: 'removeFromLists',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Remove From Lists',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(Statuses, {
+					status: row.original.removeFromLists ? 'Yes' : 'No'
 				});
 			}
 		},
@@ -78,10 +81,9 @@
 				return renderComponent(Edit, {
 					id: row.original.id,
 					name: row.original.name,
-					phone: row.original.phone,
-					location: row.original.location,
 					description: row.original.description,
 					action: '?/edit',
+					removeFromLists: row.original.removeFromLists,
 					data: data?.editForm,
 					icon: true,
 					status: row.original.status
@@ -110,40 +112,34 @@
 </script>
 
 <svelte:head>
-	<title>Departments</title>
+	<title>Employment Statuses</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Department" variant="default">
+<DialogComp title="+ Add New Employment Status" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
-		<InputComp
-			{form}
-			{errors}
-			label="Location"
-			type="text"
-			name="location"
-			placeholder="Enter Department Location"
-			required={true}
-		/>
-		<InputComp
-			{form}
-			{errors}
-			label="Phone"
-			type="tel"
-			name="phone"
-			placeholder="Enter Department Phone"
-			required={true}
-		/>
+
 		<InputComp
 			{form}
 			{errors}
 			label="Description"
 			type="textarea"
 			name="description"
-			placeholder="Enter Department Description"
+			placeholder="Enter Employment Status Description"
 			required={true}
 			rows={10}
 		/>
+
+		<InputComp
+			{form}
+			{errors}
+			label="Remove From Employee Lists"
+			type="checkboxSingle"
+			name="removeFromLists"
+			placeholder="Remove From Employee Lists"
+			required={true}
+		/>
+
 		<InputComp
 			label="Status"
 			name="status"
@@ -158,13 +154,13 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Department" />
+				<LoadingBtn name="Adding Employement Status" />
 			{:else}
-				<Plus /> Add Department
+				<Plus /> Add Employment Status
 			{/if}
 		</Button>
 	</form>
 </DialogComp>
 {#key data.allData}
-	<DataTable {columns} data={data?.allData} search={true} fileName="Departments" />
+	<DataTable {columns} data={data?.allData} search={true} fileName="Employment Statuses" />
 {/key}

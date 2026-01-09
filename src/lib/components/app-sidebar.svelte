@@ -50,8 +50,6 @@
 				{ title: 'Add Supply', url: '/dashboard/supplies/add-supplies', icon: Plus },
 				{ title: 'Suppliers', url: '/dashboard/supplies/suppliers', icon: Sheet },
 				{ title: 'Add Supplier', url: '/dashboard/supplies/add-supplier', icon: Plus },
-				{ title: 'Damaged Supplies', url: '/dashboard/supplies/damaged', icon: Sheet },
-				{ title: 'Add Damaged Supply', url: '/dashboard/supplies/add-damaged', icon: Plus },
 				{ title: 'Categories', url: '/dashboard/supplies/categories', icon: Sheet },
 				{ title: 'Add Category', url: '/dashboard/supplies/add-category', icon: Plus }
 			]

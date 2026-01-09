@@ -27,8 +27,6 @@
 				return renderComponent(Edit, {
 					id: row.original.id,
 					name: row.original.name,
-					phone: row.original.phone,
-					location: row.original.location,
 					description: row.original.description,
 					action: '?/edit',
 					data: data?.editForm,
@@ -37,30 +35,19 @@
 				});
 			}
 		},
-
 		{
-			accessorKey: 'phone',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Phone',
-					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
-		},
-
-		{
-			accessorKey: 'location',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Location',
-					onclick: column.getToggleSortingHandler()
-				}),
+			accessorKey: 'description',
+			header: 'Description',
 			sortable: true
 		},
 
 		{
 			accessorKey: 'status',
-			header: 'Status',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Status',
+					onclick: column.getToggleSortingHandler()
+				}),
 			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
@@ -78,8 +65,6 @@
 				return renderComponent(Edit, {
 					id: row.original.id,
 					name: row.original.name,
-					phone: row.original.phone,
-					location: row.original.location,
 					description: row.original.description,
 					action: '?/edit',
 					data: data?.editForm,
@@ -110,40 +95,24 @@
 </script>
 
 <svelte:head>
-	<title>Departments</title>
+	<title>Employment Statuses</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Department" variant="default">
+<DialogComp title="+ Add New Educational Level" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
-		<InputComp
-			{form}
-			{errors}
-			label="Location"
-			type="text"
-			name="location"
-			placeholder="Enter Department Location"
-			required={true}
-		/>
-		<InputComp
-			{form}
-			{errors}
-			label="Phone"
-			type="tel"
-			name="phone"
-			placeholder="Enter Department Phone"
-			required={true}
-		/>
+
 		<InputComp
 			{form}
 			{errors}
 			label="Description"
 			type="textarea"
 			name="description"
-			placeholder="Enter Department Description"
+			placeholder="Enter Educational Level Description"
 			required={true}
 			rows={10}
 		/>
+
 		<InputComp
 			label="Status"
 			name="status"
@@ -158,13 +127,13 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Department" />
+				<LoadingBtn name="Adding Educational Level" />
 			{:else}
-				<Plus /> Add Department
+				<Plus /> Add Educational Level
 			{/if}
 		</Button>
 	</form>
 </DialogComp>
 {#key data.allData}
-	<DataTable {columns} data={data?.allData} search={true} fileName="Departments" />
+	<DataTable {columns} data={data?.allData} search={true} fileName="Educational Levels" />
 {/key}

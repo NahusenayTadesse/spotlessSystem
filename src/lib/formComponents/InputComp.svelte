@@ -7,6 +7,7 @@
 	import SelectComp from './SelectComp.svelte';
 	import ComboboxComp from './ComboboxComp.svelte';
 	import CheckboxComp from './CheckboxComp.svelte';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 
 	let {
 		label,
@@ -29,7 +30,7 @@
 	{#if type === 'textarea'}
 		<Textarea {name} bind:value={$form[name]} {required} {rows} {placeholder} />
 	{:else if type === 'file'}
-		<FileUpload {name} {form} {errors} />
+		<FileUpload {name} {form} {errors} {label} />
 	{:else if type === 'select'}
 		<SelectComp {name} bind:value={$form[name]} {items} />
 	{:else if type === 'date'}
@@ -40,6 +41,12 @@
 	{:else if type === 'checkbox'}
 		<CheckboxComp {items} bind:checkedValues={$form[name]} />
 		<input type="hidden" {name} bind:value={$form[name]} />
+	{:else if type === 'checkboxSingle'}
+		<div class="flex items-center gap-2">
+			<Checkbox bind:checked={$form[name]} />
+			<Label for={name} class="capitalize">{placeholder}</Label>
+			<input type="hidden" {name} bind:value={$form[name]} />
+		</div>
 	{:else}
 		<Input {type} {name} bind:value={$form[name]} {max} {min} {placeholder} {required} />
 	{/if}

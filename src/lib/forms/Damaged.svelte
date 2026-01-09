@@ -1,22 +1,21 @@
 <script lang="ts">
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
-	import { Pen } from '@lucide/svelte';
+	import { PackageX as Minus } from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
-	import type { InventoryAdjustmentForm } from '$lib/ZodSchema';
+	import type { DamagedForm } from '$lib/ZodSchema';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-
 	let isOpen = $state(false);
 
 	let {
 		data,
-		name = 'product',
+		name = 'item',
 		employees
 	}: {
-		data: SuperValidated<Infer<InventoryAdjustmentForm>>;
+		data: SuperValidated<Infer<DamagedForm>>;
 		name: string;
 		employees?: Item[];
 	} = $props();
@@ -36,45 +35,25 @@
 
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Trigger
-		class={buttonVariants({ variant: 'default' })}
-		title="Change the quantity of {name}"
+		class={buttonVariants({ variant: 'destructive' })}
+		title="Add Damaged Item of {name}"
 	>
-		<Pen /> Change Quantity
+		<Minus /> Damaged Item
 	</Dialog.Trigger>
 	<Dialog.Content class="w-full">
 		<Dialog.Header>
-			<Dialog.Title>Change Quantity of {name}</Dialog.Title>
+			<Dialog.Title>{name} Damaged</Dialog.Title>
 		</Dialog.Header>
 		<ScrollArea class="h-auto max-h-[calc(100vh-200px)] rounded-md border p-2">
-			<h5 class="text-center">Change {name} Quantity</h5>
 			<div class="flex flex-col items-center justify-center gap-4 pt-4">
-				<form
-					method="post"
-					action="?/adjust"
-					use:enhance
-					class="flex w-full flex-col gap-3"
-					enctype="multipart/form-data"
-				>
+				<form method="post" action="?/damaged" use:enhance class="flex w-full flex-col gap-3">
 					<InputComp
-						label="Add or Remove"
-						name="intent"
-						type="select"
-						required={true}
-						{form}
-						{errors}
-						items={[
-							{ value: 'add', name: '+ Add' },
-							{ value: 'remove', name: '- Remove' }
-						]}
-					/>
-
-					<InputComp
-						label="Quantity of Change"
+						label="Damaged Quantity"
 						name="quantity"
 						type="number"
 						{form}
 						{errors}
-						placeholder="Enter Quantity"
+						placeholder="Enter number of items damaged"
 						required={true}
 					/>
 					<InputComp
@@ -83,12 +62,12 @@
 						type="textarea"
 						{form}
 						{errors}
-						placeholder="Enter Quantity"
+						placeholder="Enter explanation for the damage"
 						required={true}
 					/>
 					<InputComp
-						label="Employee Responsible"
-						name="employeeResponsible"
+						label="Employee Responsible for the damage"
+						name="damagedBy"
 						type="combo"
 						{form}
 						{errors}
@@ -97,22 +76,20 @@
 						items={employees}
 					/>
 
-					{#if $form.intent === 'add'}
-						<InputComp
-							label="Reciept of Change"
-							name="reciept"
-							type="file"
-							{form}
-							{errors}
-							required={false}
-						/>
-					{/if}
-
-					<Button type="submit" variant="default" size="lg">
+					<InputComp
+						label="Deductable"
+						name="deductable"
+						type="checkboxSingle"
+						placeholder="Yes, deduct the cost from Employee"
+						{form}
+						{errors}
+						required={false}
+					/>
+					<Button type="submit" variant="destructive" size="lg">
 						{#if $delayed}
-							<LoadingBtn name="Changing" />
+							<LoadingBtn name="Entering Damaged Item" />
 						{:else}
-							<Pen /> Change Quantity
+							<Minus /> Enter Damaged Item
 						{/if}
 					</Button>
 				</form>

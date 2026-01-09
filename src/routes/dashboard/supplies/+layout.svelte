@@ -18,12 +18,6 @@
 		variant={page.url.pathname === '/dashboard/supplies/add-supplies' ? 'default' : 'outline'}
 		><Plus /> Add Supplies</Button
 	>
-
-	<Button
-		href="/dashboard/supplies/damaged-supplies"
-		variant={page.url.pathname === '/dashboard/supplies/damaged-supplies' ? 'default' : 'outline'}
-		><Sheet />Damaged Supplies</Button
-	>
 	<Button
 		href="/dashboard/supplies/suppliers"
 		variant={page.url.pathname === '/dashboard/supplies/suppliers' ? 'default' : 'outline'}
@@ -34,12 +28,6 @@
 		variant={page.url.pathname === '/dashboard/supplies/suppliers/add-suppliers'
 			? 'default'
 			: 'outline'}><Sheet />Add Suppliers</Button
-	>
-	<Button
-		href="/dashboard/supplies/add-damaged-supplies"
-		variant={page.url.pathname === '/dashboard/supplies/add-damaged-supplies'
-			? 'default'
-			: 'outline'}><Plus />Add Damaged Supplies</Button
 	>
 
 	<!-- <DialogComp title="Add New Customer" {content} /> -->

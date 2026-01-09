@@ -2,7 +2,8 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import {
 	editSupply as schema,
-	inventoryAdjustmentFormSchema as adjustSchema
+	inventoryAdjustmentFormSchema as adjustSchema,
+	damagedFormSchema as damagedSchema
 } from '$lib/ZodSchema';
 import { error } from '@sveltejs/kit';
 
@@ -22,6 +23,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
 	const form = await superValidate(zod4(schema));
 	const adjustForm = await superValidate(zod4(adjustSchema));
+	const damagedForm = await superValidate(zod4(damagedSchema));
 
 	const supply = await db
 		.select({
@@ -64,6 +66,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		supply,
 		form,
 		adjustForm,
+		damagedForm,
 		employeesList,
 		suppliers
 	};

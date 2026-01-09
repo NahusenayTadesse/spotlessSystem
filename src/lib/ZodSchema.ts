@@ -313,6 +313,7 @@ export const inventoryAdjustmentFormSchema = z.object({
 		message: 'Please select an adjustment type'
 	}),
 
+	employeeResponsible: z.coerce.string('Employee is required'),
 	quantity: z.coerce.string('Quantity must be greater than 0'),
 
 	reason: z.string().max(255).optional(),
@@ -325,3 +326,15 @@ export const inventoryAdjustmentFormSchema = z.object({
 		.optional() // Now only the receipt can be undefined
 });
 export type InventoryAdjustmentForm = z.infer<typeof inventoryAdjustmentFormSchema>;
+
+export const damagedFormSchema = z.object({
+	damagedBy: z.coerce.string('Employee is required'),
+	quantity: z.coerce.string('Quantity must be greater than 0'),
+
+	reason: z.string().max(255).optional(),
+
+	// Move .optional() inside the field definition
+	deductable: z.boolean('Deductable is required').default(true)
+});
+
+export type DamagedForm = z.infer<typeof damagedFormSchema>;

@@ -58,6 +58,7 @@
 	import Adjustment from '$lib/forms/Adjustment.svelte';
 	import { getCurrentMonthRange } from '$lib/global.svelte.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
+	import Damaged from '$lib/forms/Damaged.svelte';
 
 	let edit = $state(false);
 </script>
@@ -80,6 +81,7 @@
 		</Button>
 		<Delete redirect="/dashboard/supplies" />
 		<Adjustment data={data.adjustForm} name={data.supply?.name} employees={data.employeesList} />
+		<Damaged data={data.damagedForm} name={data.supply?.name} employees={data.employeesList} />
 		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
 			<History /> See Change History
 		</Button>

@@ -26,22 +26,22 @@
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 				<Frown class="h-12 w-16  animate-bounce" />
 
-				Change History is Empty for this Date Range Choose Another Range
+				Damage History is Empty for this Date Range Choose Another Range
 			</p>
 			<DateMonth
 				start={data?.start}
 				end={data?.end}
-				link="/dashboard/supplies/{page.params.id}/ranges"
+				link="/dashboard/supplies/{page.params.id}/damaged"
 			/>
 		</div>
 	{:else}
 		<div class="flex flex-col gap-4">
-			<h2 class="my-4 text-2xl">No of Changes {data.allTransactions?.length}</h2>
+			<h2 class="my-4 text-2xl">No of Damages {data.allTransactions?.length}</h2>
 
 			<DateMonth
 				start={data?.start}
 				end={data?.end}
-				link="/dashboard/supplies/{page.params.id}/ranges"
+				link="/dashboard/supplies/{page.params.id}/damaged"
 			/>
 
 			<!-- <div class="lg:w-[1250px] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4 px-2">
@@ -52,7 +52,7 @@
 			<DataTable
 				data={data.allTransactions}
 				{columns}
-				fileName="{data?.supply.name} Quantity Change History"
+				fileName="{data?.supply.name} Supply History"
 			/>
 		</div>
 	{/if}

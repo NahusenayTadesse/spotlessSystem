@@ -2,17 +2,12 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
-	import { SquareMousePointer, Badge, BadgeCheck } from '@lucide/svelte';
+	import { Badge, BadgeCheck } from '@lucide/svelte';
 
-	interface CheckboxItem {
-		value: string | number;
-		name: string;
-	}
+	import { type Item } from '$lib/global.svelte';
 
-	let {
-		items = [],
-		checkedValues = $bindable([])
-	}: { items: CheckboxItem[]; checkedValues?: string[] } = $props();
+	let { items = [], checkedValues = $bindable([]) }: { items: Item[]; checkedValues?: string[] } =
+		$props();
 
 	/**
 	 * Handle checkbox change
