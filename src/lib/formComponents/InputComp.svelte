@@ -52,13 +52,12 @@
 	{/if}
 
 	{#if $errors[name]}
-		{#if typeof $errors[name] === 'string'}
-			<p class="text-red-500">{$errors[name]}</p>
-		{/if}
 		{#if typeof $errors[name] === 'object'}
 			{#each $errors[name]._errors as error}
 				<p class="text-red-500">{error}</p>
 			{/each}
+		{:else}
+			<p class="text-red-500">{$errors[name]}</p>
 		{/if}
 	{/if}
 </div>

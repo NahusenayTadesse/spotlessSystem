@@ -1,5 +1,5 @@
 export const bgGradient = `
-  bg-gradient-to-b from-sky-50 to-white text-foreground dark:bg-gradient-to-br dark:from-gray-800 dark:to-black`;
+  bg-gradient-to-b from-[#E0EAFC] to-white text-foreground dark:bg-gradient-to-br dark:from-gray-800 dark:to-black`;
 export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 duration-300 transition-all ease-in-out dark:hover:bg-gray-900`;
 export const toastmsg = `fixed right-4 bottom-20 lg:bottom-4 z-50
              flex items-center gap-3
@@ -141,3 +141,16 @@ export function generatePassword(
 
 	return password;
 }
+
+export const formatEthiopianDate = (date: Date | undefined): string => {
+	if (!date) return '';
+
+	const formatter = new Intl.DateTimeFormat('am-ET', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		calendar: 'ethiopic'
+	});
+
+	return formatter.format(date);
+};

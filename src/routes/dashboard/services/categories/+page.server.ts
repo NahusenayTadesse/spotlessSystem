@@ -4,10 +4,9 @@ import { eq } from 'drizzle-orm';
 
 import { add, edit } from './schema';
 import { db } from '$lib/server/db';
-import { services as department, serviceCategories } from '$lib/server/db/schema/';
+import { serviceCategories as department } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
-import { serviceCategory } from '$lib/server/fastData';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(add));
@@ -17,21 +16,15 @@ export const load: PageServerLoad = async () => {
 		.select({
 			id: department.id,
 			name: department.name,
-			category: serviceCategories.name,
-			categoryId: department.id,
 			description: department.description,
 			status: department.status
 		})
-		.from(department)
-		.leftJoin(serviceCategories, eq(serviceCategories.id, department.categoryId));
-
-	const categoryList = await serviceCategory();
+		.from(department);
 
 	return {
 		form,
 		editForm,
-		allData,
-		categoryList
+		allData
 	};
 };
 

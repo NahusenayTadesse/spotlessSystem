@@ -11,11 +11,11 @@
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { ArrowLeft, Pencil, Save, History } from '@lucide/svelte';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import SingleView from '$lib/components/SingleView.svelte';
 	import Delete from '$lib/forms/Delete.svelte';
+	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.supply?.name },
@@ -23,7 +23,7 @@
 		{ name: 'Unit of Measurement', value: data.supply?.unitOfMeasure },
 		{ name: 'Product Description', value: data.supply?.description },
 		{ name: 'Reorder Notification Quantity', value: data.supply?.reorderLevel },
-		{ name: 'Added On', value: data.supply?.createdAt },
+		{ name: 'Added On', value: formatEthiopianDate(new Date(data?.supply?.createdAt)) },
 		{ name: 'Added By', value: data.supply?.createdBy }
 	]);
 

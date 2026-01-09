@@ -19,19 +19,22 @@
 	import Empty from '$lib/components/Empty.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-
-	let count = $derived(
-		(data.customer?.appointmentCount ?? 0) > 1 ? 'Appointments Made' : 'Appointment Made'
-	);
+	import { formatEthiopianDate } from '$lib/global.svelte';
+	import { toGregorian, toEthiopian } from 'ethiopian-calendar-new';
 
 	let singleTable = $derived([
-		{ name: 'Name', value: data.customer?.firstName + ' ' + data.customer?.lastName },
+		{ name: 'Name', value: data.customer?.name },
 		{ name: 'Phone', value: data.customer?.phone },
-		{ name: 'Gender', value: data.customer?.gender },
-		{ name: 'Added By', value: data.customer?.addedBy },
-		{ name: 'Added On', value: data.customer?.joinedOn },
-		{ name: 'Number of Appointments', value: data.customer?.appointmentCount + ' ' + count },
-		{ name: 'Number of Days Since Joined', value: data.customer?.daysSinceJoined + ' Days' }
+		{ name: 'Email', value: data.customer?.email },
+
+		{ name: 'Subcity', value: data.customer?.subcity },
+		{ name: 'Street', value: data.customer?.street },
+		{ name: 'Kebele', value: data.customer?.kebele },
+		{ name: 'Building', value: data.customer?.buildingNumber },
+		{ name: 'Floor', value: data.customer?.floor },
+		{ name: 'House Number', value: data.customer?.houseNumber },
+		{ name: 'Added By', value: data.customer?.createdBy },
+		{ name: 'Added On', value: formatEthiopianDate(new Date(data?.customer?.createdAt)) }
 	]);
 
 	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(

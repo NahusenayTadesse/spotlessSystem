@@ -16,87 +16,85 @@ import { type Actions } from '@sveltejs/kit';
 import { fail, message } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
-	try {
-		const { id } = params;
+// export const load: PageServerLoad = async ({ params, locals }) => {
+// 	try {
+// 		const { id } = params;
 
-		const form = await superValidate(zod4(editCustomer));
+// 		const form = await superValidate(zod4(editCustomer));
 
-		const customer = await db
-			.select({
-				id: customers.id,
-				firstName: customers.firstName,
-				lastName: customers.lastName,
-				gender: customers.gender,
-				customerId: customers.id,
-				phone: customers.phone,
-				appointmentCount: sql<number>`COUNT(${appointments.id})`,
-				joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
-				daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
-				time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
-				addedBy: user.name,
-				addedById: user.id
-			})
-			.from(customers)
-			.leftJoin(appointments, eq(customers.id, appointments.customerId))
-			.leftJoin(user, eq(customers.createdBy, user.id))
-			.where(and(eq(customers.branchId, locals?.user?.branch), eq(customers.id, id)))
-			.groupBy(
-				customers.id,
-				user.name,
-				customers.createdAt,
-				customers.firstName,
-				customers.lastName,
-				customers.phone
-			)
-			.then((rows) => rows[0]);
+// 		const customer = await db
+// 			.select({
+// 				id: customers.id,
+// 				name:
+// 				customerId: customers.id,
+// 				phone: customers.phone,
+// 				appointmentCount: sql<number>`COUNT(${appointments.id})`,
+// 				joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
+// 				daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
+// 				time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
+// 				addedBy: user.name,
+// 				addedById: user.id
+// 			})
+// 			.from(customers)
+// 			.leftJoin(appointments, eq(customers.id, appointments.customerId))
+// 			.leftJoin(user, eq(customers.createdBy, user.id))
+// 			.where(and(eq(customers.branchId, locals?.user?.branch), eq(customers.id, id)))
+// 			.groupBy(
+// 				customers.id,
+// 				user.name,
+// 				customers.createdAt,
+// 				customers.firstName,
+// 				customers.lastName,
+// 				customers.phone
+// 			)
+// 			.then((rows) => rows[0]);
 
-		const reciepts = await db
-			.select({
-				id: customers.id,
-				customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
+// 		const reciepts = await db
+// 			.select({
+// 				id: customers.id,
+// 				customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
 
-				appointmentDate: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
-				amount: transactions.amount,
-				booker: user.id,
-				recievedBy: user.name,
-				paidAt: sql<string>`DATE_FORMAT(${transactions.createdAt}, '%Y-%m-%d')`,
-				recieptLink: transactions.recieptLink
-			})
-			.from(transactionBookingFee)
-			.innerJoin(appointments, eq(transactionBookingFee.appointmentId, appointments.id))
-			.leftJoin(customers, eq(appointments.customerId, customers.id))
-			.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
-			.leftJoin(user, eq(transactions.createdBy, user.id))
-			.where(and(eq(appointments.branchId, locals?.user?.branch), eq(appointments.id, id)))
-			.orderBy(transactions.createdAt);
+// 				appointmentDate: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
+// 				amount: transactions.amount,
+// 				booker: user.id,
+// 				recievedBy: user.name,
+// 				paidAt: sql<string>`DATE_FORMAT(${transactions.createdAt}, '%Y-%m-%d')`,
+// 				recieptLink: transactions.recieptLink
+// 			})
+// 			.from(transactionBookingFee)
+// 			.innerJoin(appointments, eq(transactionBookingFee.appointmentId, appointments.id))
+// 			.leftJoin(customers, eq(appointments.customerId, customers.id))
+// 			.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
+// 			.leftJoin(user, eq(transactions.createdBy, user.id))
+// 			.where(and(eq(appointments.branchId, locals?.user?.branch), eq(appointments.id, id)))
+// 			.orderBy(transactions.createdAt);
 
-		const allMethods = await db
-			.select({
-				value: paymentMethods.id,
-				name: paymentMethods.name,
-				description: paymentMethods.description
-			})
-			.from(paymentMethods)
-			.where(eq(paymentMethods.isActive, true));
+// 		const allMethods = await db
+// 			.select({
+// 				value: paymentMethods.id,
+// 				name: paymentMethods.name,
+// 				description: paymentMethods.description
+// 			})
+// 			.from(paymentMethods)
+// 			.where(eq(paymentMethods.isActive, true));
 
-		return {
-			customer,
-			form,
-			allMethods,
-			reciepts
-		};
-	} catch (error) {
-		console.error('Error loading customer dashboard:', error);
-		return {
-			customer: null,
-			form: null,
-			allMethods: [],
-			reciepts: [],
-			error: 'Failed to load customer dashboard.'
-		};
-	}
-};
+// 		return {
+// 			customer,
+// 			form,
+// 			allMethods,
+// 			reciepts
+// 		};
+// 	} catch (error) {
+// 		console.error('Error loading customer dashboard:', error);
+// 		return {
+// 			customer: null,
+// 			form: null,
+// 			allMethods: [],
+// 			reciepts: [],
+// 			error: 'Failed to load customer dashboard.'
+// 		};
+// 	}
+// };
 
 export const actions: Actions = {
 	editCustomer: async ({ request, locals, cookies }) => {

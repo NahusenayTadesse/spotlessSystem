@@ -1,26 +1,21 @@
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { fail } from '@sveltejs/kit';
-
+import { eq } from 'drizzle-orm';
 import { customerSchema as schema } from './schema';
 import { db } from '$lib/server/db';
-import { customers } from '$lib/server/db/schema/';
-import { cities, regions, subcities } from '$lib/server/fastData';
+import { customers, address } from '$lib/server/db/schema/';
+import { subcities } from '$lib/server/fastData';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
-import { setFlash } from 'sveltekit-flash-message/server';
+import { setFlash, redirect } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
 
-	const cityList = await cities();
-	const regionList = await regions();
 	const subcityList = await subcities();
 
 	return {
 		form,
-		cityList,
-		regionList,
 		subcityList
 	};
 };
@@ -31,44 +26,85 @@ export const actions: Actions = {
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form.' }, cookies);
-			return fail(400, { form });
+			return message(form, { type: 'error', text: 'Please check your form.' });
 		}
-		const { firstName, lastName, gender, phone } = form.data;
+		const {
+			name,
+			phone,
+			email,
+			tinNo,
+			subcity,
+			kebele,
+			buildingNumber,
+			floor,
+			street,
+			houseNumber
+		} = form.data;
 
-		try {
-			await db.insert(customers).values({
-				firstName,
-				lastName,
-				gender: gender === 'male' || gender === 'female' ? gender : undefined,
-				phone,
-				createdBy: locals?.user?.id
-			});
+		// try {
 
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'Customer Successfully Added' }, cookies);
-			return {
-				form
-			};
-		} catch (err) {
-			console.error('Error' + err);
-			setFlash(
-				{
-					type: 'error',
-					message:
-						err.code === 'ER_DUP_ENTRY'
-							? 'Phone number is already taken. Please choose another one.'
-							: err.message
-				},
-				cookies
-			);
+		const existingCustomer = await db
+			.select({ id: customers.id })
+			.from(customers)
+			.where(eq(customers.phone, phone));
 
-			if (err.code === 'ER_DUP_ENTRY')
-				return setError(form, 'phone', 'Phone Number already exists.');
-
-			return fail(400, {
-				form
-			});
+		if (existingCustomer.length) {
+			setError(form, 'phone', 'Customer with same phone number exists');
+			return message(form, { type: 'error', text: 'Error: customer with the same number exists' });
 		}
+
+		const newCustomerResult = await db.transaction(async (tx) => {
+			// 1. Insert Address
+			const [addressRes] = await tx
+				.insert(address)
+				.values({
+					subcityId: Number(subcity) || null, // Handle potential NaN
+					street,
+					kebele,
+					buildingNumber,
+					floor,
+					houseNumber
+				})
+				.$returningId();
+
+			if (!addressRes) return message(form, { type: 'error', text: 'Failed to insert address' });
+
+			// 2. Insert Customer using the new address ID
+			const [customerRes] = await tx
+				.insert(customers)
+				.values({
+					name,
+					phone,
+					email,
+					tinNo,
+					address: addressRes.id,
+					createdBy: locals?.user?.id
+				})
+				.$returningId();
+
+			return customerRes;
+		});
+
+		if (!newCustomerResult)
+			return message(form, { type: 'error', text: 'Unexpected Error,  please try again' });
+		// Stay on the same page and set a flash message
+		// setFlash({ type: 'success', message: 'Customer Successfully Added' }, cookies);
+		redirect(
+			`/dashboard/customers/${newCustomerResult.id}`,
+			{ type: 'success', message: 'Customer Successfully Added!' },
+			cookies
+		);
+		// } catch (err) {
+		// 	console.error('Error' + err?.message);
+		// 	if (err?.code === 'ER_DUP_ENTRY')
+		// 		return setError(form, 'phone', 'Phone Number already exists.');
+		// 	return message(form, {
+		// 		type: 'error',
+		// 		text:
+		// 			err.code === 'ER_DUP_ENTRY'
+		// 				? 'Phone number is already taken. Please choose another one.'
+		// 				: err?.message
+		// 	});
+		// }
 	}
 };

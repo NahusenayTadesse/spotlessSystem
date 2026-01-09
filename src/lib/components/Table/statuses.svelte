@@ -28,6 +28,9 @@
 		yes: { icon: BadgeCheck, colour: 'bg-green-400' },
 		no: { icon: OctagonMinus, colour: 'bg-red-500' },
 
+		unremovable: { icon: BadgeCheck, colour: 'bg-green-400' },
+		removable: { icon: OctagonMinus, colour: 'bg-red-500' },
+
 		/* fallback */
 		unknown: { icon: Loader, colour: 'bg-gray-500' }
 	} as const;

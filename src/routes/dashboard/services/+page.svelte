@@ -1,49 +1,160 @@
-  
-  <script lang='ts'>
-    import { columns } from "./columns";
-  
+<script>
+	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+	import Statuses from '$lib/components/Table/statuses.svelte';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import { Button } from '$lib/components/ui/button/index';
+	import Edit from './edit.svelte';
+	export const columns = [
+		{
+			accessorKey: 'index',
+			header: '#',
+			cell: (info) => info.row.index + 1,
+			sortable: false
+		},
+		{
+			accessorKey: 'name',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Name',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(Edit, {
+					id: row.original.id,
+					name: row.original.name,
+					categoryId: row.original.categoryId,
+					description: row.original.description,
+					action: '?/edit',
+					data: data?.editForm,
+					icon: false,
+					status: row.original.status,
+					items: data?.categoryList
+				});
+			}
+		},
+		{
+			accessorKey: 'category',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Category',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true
+		},
+		{
+			accessorKey: 'description',
+			header: 'Description',
+			sortable: true
+		},
 
-  let { data } = $props();
+		{
+			accessorKey: 'status',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Status',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(Statuses, {
+					status: row.original.status ? 'Active' : 'Inactive'
+				});
+			}
+		},
 
-  import DataTable from '$lib/components/Table/data-table.svelte';
+		{
+			accessorKey: '',
+			header: 'Edit',
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(Edit, {
+					id: row.original.id,
+					name: row.original.name,
+					categoryId: row.original.categoryId,
+					description: row.original.description,
+					action: '?/edit',
+					data: data?.editForm,
+					icon: true,
+					status: row.original.status,
+					items: data?.categoryList
+				});
+			}
+		}
+	];
+	let { data } = $props();
+	import { superForm } from 'sveltekit-superforms/client';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import { Plus } from '@lucide/svelte';
 
-	import Loading from "$lib/components/Loading.svelte";
-	import { Frown, Plus } from "@lucide/svelte";
-	import { Button } from "$lib/components/ui/button";
+	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
 
-  
-   
-   
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>
-        <title> Services List</title>
+	<title>Services</title>
 </svelte:head>
-  
 
- {#await data}
-  
-  <Loading  name="Customers"/>
- {:then customerList} 
+<DialogComp title="+ Add New Services" variant="default">
+	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
+		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
+		<InputComp
+			{form}
+			{errors}
+			label="category"
+			type="select"
+			name="name"
+			items={data?.categoryList}
+			required={true}
+		/>
 
-  {#if data.serviceList.length === 0}
-   <div class="w-5xl h-96 flex flex-col justify-center items-center">
-   <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
-     No services added yet </p>
-     <Button href="/dashboard/services/add-services"><Plus />Add New Services</Button>
+		<InputComp
+			{form}
+			{errors}
+			label="Description"
+			type="textarea"
+			name="description"
+			placeholder="Enter Service Description"
+			required={true}
+			rows={10}
+		/>
 
-     </div>
- {:else}
-     <h2 class="text-2xl my-4">No of Services {data.serviceList?.length} </h2>
+		<InputComp
+			label="Status"
+			name="status"
+			type="select"
+			{form}
+			{errors}
+			items={[
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'Inactive' }
+			]}
+		/>
 
- <div class="lg:w-[90%] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
-
-   <DataTable data={data.serviceList} {columns} filterBlacklist={['id','name', 'description']} />
- </div>
- {/if}
-  {:catch}
-
-    <div class="w-screen h-screen flex flex-col justify-center items-center"> 
-         <h1 class="text-red-500">Unexpected Error: Reload</h1>
-    </div>
-  {/await}
+		<Button type="submit" form="main">
+			{#if $delayed}
+				<LoadingBtn name="Adding Service" />
+			{:else}
+				<Plus /> Add Service
+			{/if}
+		</Button>
+	</form>
+</DialogComp>
+{#key data.allData}
+	<DataTable {columns} data={data?.allData} search={true} fileName="Service Categories" />
+{/key}

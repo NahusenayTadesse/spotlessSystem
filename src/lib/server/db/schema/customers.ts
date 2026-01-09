@@ -13,8 +13,6 @@ export const customers = mysqlTable('customers', {
 	phone: varchar('phone', { length: 20 }).notNull(),
 	email: varchar('email', { length: 100 }).notNull(),
 	tinNo: varchar('tin_no', { length: 50 }).notNull(),
-	region: int('region').notNull(),
-	city: int('city').notNull(),
 	address: int('address').references(() => address.id, { onDelete: 'set null' }),
 	...secureFields
 });

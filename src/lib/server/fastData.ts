@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { eq, and, isNull } from 'drizzle-orm';
+import { eq, and, sql, isNull } from 'drizzle-orm';
 import {
 	city,
 	region,
@@ -9,7 +9,9 @@ import {
 	paymentMethods as paymentMethod,
 	supplySuppliers,
 	employeeTermination,
-	supplyTypes
+	supplyTypes,
+	serviceCategories,
+	services
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -75,7 +77,7 @@ export async function employees() {
 	const employees = await db
 		.select({
 			value: employee.id,
-			name: employee.name
+			name: sql<string>`CONCAT(${employee.name}, ' ', ${employee.fatherName})`
 		})
 		.from(employee)
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
@@ -100,4 +102,26 @@ export async function supplyCategories() {
 		.from(supplyTypes);
 
 	return supplyCategories;
+}
+
+export async function serviceCategory() {
+	const categories = await db
+		.select({
+			value: serviceCategories.id,
+			name: serviceCategories.name
+		})
+		.from(serviceCategories);
+
+	return categories;
+}
+
+export async function service() {
+	const service = await db
+		.select({
+			value: services.id,
+			name: services.name
+		})
+		.from(services);
+
+	return service;
 }

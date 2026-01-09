@@ -4,8 +4,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
-	import * as Card from '$lib/components/ui/card/index.js';
-	import { House, Plus } from '@lucide/svelte';
+	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { customerSchema as schema } from './schema';
@@ -46,7 +45,7 @@
 </svelte:head>
 
 <FormCard title="Add New Customer" description="Add New Customer">
-	<form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST">
+	<form use:enhance action="?/addCustomer" id="main" class="flex flex-col gap-4" method="POST">
 		<Errors allErrors={$allErrors} />
 
 		<InputComp
@@ -64,7 +63,7 @@
 			type="email"
 			{form}
 			{errors}
-			required={true}
+			required={false}
 			placeholder="Enter Customer Email"
 		/>
 		<InputComp
@@ -78,45 +77,15 @@
 		/>
 
 		<InputComp
-			label="Address"
-			name="address"
-			type="text"
+			label="Tin Number"
+			name="tinNo"
+			type="number"
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Address"
+			placeholder="Enter Customer Tin Number"
 		/>
 
-		<InputComp
-			label="Date"
-			name="date"
-			type="date"
-			{form}
-			{errors}
-			required={true}
-			placeholder="Enter Customer Address"
-		/>
-
-		<InputComp
-			label="City"
-			name="city"
-			type="combo"
-			{form}
-			{errors}
-			required={true}
-			placeholder="Enter Customer City"
-			items={data?.cityList}
-		/>
-		<InputComp
-			label="Region"
-			name="region"
-			type="combo"
-			{form}
-			{errors}
-			required={true}
-			placeholder="Enter Customer Region"
-			items={data?.regionList}
-		/>
 		<InputComp
 			label="Subcity"
 			name="subcity"
@@ -124,7 +93,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Country"
+			placeholder="Enter Customer Subcity"
 			items={data?.subcityList}
 		/>
 
@@ -167,9 +136,9 @@
 		/>
 
 		<InputComp
-			label="House of Office Number"
+			label="House or Office Number"
 			name="houseNumber"
-			type="text"
+			type="number"
 			{form}
 			{errors}
 			required={false}
@@ -182,7 +151,7 @@
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Add Product
+				Add Customer
 			{/if}
 		</Button>
 	</form>

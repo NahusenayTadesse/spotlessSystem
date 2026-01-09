@@ -20,6 +20,10 @@
 	];
 </script>
 
+<svele:head>
+	<title>Admin Panel</title>
+</svele:head>
+
 <div class="min-h-dvh w-full text-foreground transition-colors duration-300">
 	<!-- Header -->
 

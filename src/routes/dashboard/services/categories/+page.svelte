@@ -94,10 +94,10 @@
 </script>
 
 <svelte:head>
-	<title>Employment Statuses</title>
+	<title>Service Category</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Educational Level" variant="default">
+<DialogComp title="+ Add New Service Category" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
 
@@ -107,7 +107,7 @@
 			label="Description"
 			type="textarea"
 			name="description"
-			placeholder="Enter Educational Level Description"
+			placeholder="Enter Service Category Description"
 			required={true}
 			rows={10}
 		/>
@@ -126,13 +126,13 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Educational Level" />
+				<LoadingBtn name="Adding Service Category" />
 			{:else}
-				<Plus /> Add Educational Level
+				<Plus /> Add Service Category
 			{/if}
 		</Button>
 	</form>
 </DialogComp>
 {#key data.allData}
-	<DataTable {columns} data={data?.allData} search={true} fileName="Educational Levels" />
+	<DataTable {columns} data={data?.allData} search={true} fileName="Service Categories" />
 {/key}
