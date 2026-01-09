@@ -99,6 +99,15 @@
 
 					{#if $form.intent === 'add'}
 						<InputComp
+							label="Cost per Unit"
+							name="costPerItem"
+							type="number"
+							{form}
+							{errors}
+							placeholder="Enter Cost per Unit"
+							required={true}
+						/>
+						<InputComp
 							label="Reciept of Change"
 							name="reciept"
 							type="file"

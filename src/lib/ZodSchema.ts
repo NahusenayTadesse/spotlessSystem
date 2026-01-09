@@ -313,6 +313,10 @@ export const inventoryAdjustmentFormSchema = z.object({
 		message: 'Please select an adjustment type'
 	}),
 
+	costPerItem: z.coerce
+		.number('Cost per unit must be a number')
+		.min(0, 'Cost per unit must be greater than 0'),
+
 	employeeResponsible: z.coerce.string('Employee is required'),
 	quantity: z.coerce.string('Quantity must be greater than 0'),
 

@@ -1,17 +1,22 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { inventoryAdjustmentFormSchema as adjustSchema } from '$lib/ZodSchema';
+import {
+	inventoryAdjustmentFormSchema as adjustSchema,
+	damagedFormSchema as damagedSchema
+} from '$lib/ZodSchema';
 
 import { edit as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import {
 	supplies,
+	deductions,
+	damagedSupplies,
 	transactionSupplies,
 	transactions,
 	suppliesAdjustments
 } from '$lib/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, and, isNotNull, desc } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -91,7 +96,7 @@ export const actions: Actions = {
 				.set({
 					name,
 					description,
-					supplyTypeId: supplyType,
+					supplyTypeId: Number(supplyType),
 					quantity: 0,
 					unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 					reorderLevel,
@@ -107,15 +112,14 @@ export const actions: Actions = {
 		}
 	},
 	adjust: async ({ request, cookies, params, locals }) => {
-		const { id } = params;
+		const { id } = Number(params);
 		const form = await superValidate(request, zod4(adjustSchema));
 
-		const { intent, quantity, reason, reciept } = form.data;
+		const { intent, quantity, costPerItem, reason, reciept } = form.data;
 
 		try {
 			if (!id) {
-				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-				return fail(400);
+				return message(form, { type: 'error', text: 'Unexpected Error: Supply ID not provided' });
 			}
 			const adjustment = intent === 'add' ? Number(quantity) : -Number(quantity);
 
@@ -125,7 +129,7 @@ export const actions: Actions = {
 				const [transactionId] = await db
 					.insert(transactions)
 					.values({
-						amount: adjustment,
+						amount: Number(adjustment) * Number(costPerItem),
 						recieptLink,
 						reason,
 						createdBy: locals.user?.id,
@@ -144,6 +148,8 @@ export const actions: Actions = {
 				await db.insert(suppliesAdjustments).values({
 					suppliesId: id,
 					adjustment,
+					costPerItem,
+					total: Number(adjustment) * Number(costPerItem),
 					reason,
 					transactionId: supTrans.id,
 					createdBy: locals.user?.id
@@ -154,11 +160,11 @@ export const actions: Actions = {
 						quantity: sql`quantity + ${adjustment}`,
 						updatedBy: locals.user?.id
 					})
-					.where(eq(supplies.id, id));
+					.where(eq(supplies.id, Number(id)));
 			} else {
 				await db.insert(suppliesAdjustments).values({
 					suppliesId: id,
-					adjustment,
+					adjustment: Number(adjustment),
 					reason,
 					createdBy: locals.user?.id
 				});
@@ -166,18 +172,74 @@ export const actions: Actions = {
 				await db
 					.update(supplies)
 					.set({
-						quantity: sql`quantity + ${adjustment}`,
+						quantity: sql`quantity + ${Number(adjustment)}`,
 						updatedBy: locals.user?.id
 					})
-					.where(eq(supplies.id, id));
+					.where(eq(supplies.id, Number(id)));
 			}
-			setFlash({ type: 'success', message: 'Supply Quantity Successuflly Updated' }, cookies);
+
 			return message(form, { type: 'success', text: 'Supply Quantity updated successfully' });
 		} catch (err) {
 			console.error('Error adjusting product:', err);
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 
 			return message(form, { type: 'error', text: 'Unexpected Error ' + err?.message });
+		}
+	},
+	damaged: async ({ params, locals, request }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(damagedSchema));
+
+		const { quantity, damagedBy, deductable, reason } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: 'Unexpected Error: Supply ID not provided' });
+			}
+
+			await db.update(damagedSupplies).set({
+				supplyId: Number(id),
+				quantity: Number(quantity),
+				createdBy: locals.user?.id,
+				damagedBy: Number(damagedBy),
+				deductable,
+				reason
+			});
+
+			await db
+				.update(supplies)
+				.set({
+					quantity: sql`quantity - ${Number(quantity)}`,
+					updatedBy: locals.user?.id
+				})
+				.where(eq(supplies.id, Number(id)));
+			if (deductable) {
+				const cost = await db
+					.select({
+						costPerItem: suppliesAdjustments.costPerItem
+					})
+					.from(suppliesAdjustments)
+					.where(
+						and(
+							eq(suppliesAdjustments.suppliesId, Number(id)),
+							isNotNull(suppliesAdjustments.costPerItem) // Ensures we get a record with a price
+						)
+					)
+					.orderBy(desc(suppliesAdjustments.createdAt))
+					.then((rows) => rows[0]);
+
+				await db.insert(deductions).values({
+					staffId: Number(damagedBy),
+					type: 'Damaged Supply Item',
+					createdBy: locals.user?.id,
+					amount: Number(quantity) * Number(cost?.costPerItem),
+					reason
+				});
+			}
+
+			return message(form, { type: 'success', text: 'Damaged supply added Successfully!' });
+		} catch (err) {
+			console.error('Error marking adding damaged supply:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},
 	delete: async ({ cookies, params }) => {

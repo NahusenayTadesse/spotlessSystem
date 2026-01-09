@@ -32,6 +32,22 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'costPerItem',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Cost Per Item',
+				onclick: column.getToggleSortingHandler()
+			}),
+
+		sortable: true,
+		cell: ({ row }) => {
+			return row.original.costPerItem === null
+				? 'Removed'
+				: `$${row.original.costPerItem.toFixed(2)}`;
+		}
+	},
+
+	{
 		accessorKey: 'changedBy',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {

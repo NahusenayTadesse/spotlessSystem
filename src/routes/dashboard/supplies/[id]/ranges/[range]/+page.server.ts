@@ -25,6 +25,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			date: sql<string>`DATE_FORMAT(${suppliesAdjustments.createdAt}, '%W %Y-%m-%d')`,
 			quantity: suppliesAdjustments.adjustment,
 			reason: suppliesAdjustments.reason,
+			costPerItem: suppliesAdjustments.costPerItem,
 			changedBy: user.name,
 			changedById: user.id,
 			reciept: transactions.recieptLink
