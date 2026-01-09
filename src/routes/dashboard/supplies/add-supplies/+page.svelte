@@ -55,30 +55,20 @@
 		/>
 
 		<InputComp
-			label="Supply Description"
+			label="Item Type"
+			name="supplyType"
+			type="select"
+			placeholder="Enter Item Type"
+			{errors}
+			{form}
+			items={data?.typeList}
+		/>
+
+		<InputComp
+			label="Item Description"
 			name="description"
 			type="textarea"
 			placeholder="Enter Supply Description"
-			{errors}
-			{form}
-		/>
-
-		<InputComp
-			label="Quantity"
-			name="quantity"
-			type="number"
-			required
-			placeholder="Enter Quantity"
-			{errors}
-			{form}
-		/>
-
-		<InputComp
-			label="Supplier"
-			name="supplier"
-			type="combo"
-			placeholder="Enter Supplier"
-			items={data?.suppliersList}
 			{errors}
 			{form}
 		/>

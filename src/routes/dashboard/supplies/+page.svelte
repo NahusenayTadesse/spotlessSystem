@@ -32,7 +32,7 @@
 
    <DataTable data={data.supplyList} {columns} />
  </div> -->
-		<DataTable data={data.supplyList} {columns} />
+		<DataTable data={data.supplyList} {columns} fileName="Supplies" />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

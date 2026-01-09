@@ -8,6 +8,20 @@
       "when": 1767895010596,
       "tag": "0000_massive_doctor_spectrum",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1767939337877,
+      "tag": "0001_broken_toxin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767939924911,
+      "tag": "0002_outgoing_swordsman",
+      "breakpoints": true
     }
   ]
 }

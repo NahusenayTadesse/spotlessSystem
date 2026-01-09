@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { editSupply } from '$lib/ZodSchema';
-
+	import { edit as schema } from './schema';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import { columns } from './columns';
 	let { data } = $props();
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
@@ -15,25 +14,21 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import SingleView from '$lib/components/SingleView.svelte';
 	import Delete from '$lib/forms/Delete.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.supply?.name },
-		{ name: 'Cost Per Unit', value: data.supply?.costPerUnit },
 		{ name: 'Available Quantity', value: data.supply?.quantity },
 		{ name: 'Unit of Measurement', value: data.supply?.unitOfMeasure },
 		{ name: 'Product Description', value: data.supply?.description },
 		{ name: 'Reorder Notification Quantity', value: data.supply?.reorderLevel },
-		{ name: 'Product Supplier', value: data.supply?.supplier },
 		{ name: 'Added On', value: data.supply?.createdAt },
-		{ name: 'Added By', value: data.supply?.createdBy },
-		{ name: 'Total costs until now', value: data.supply?.paidAmount + ' Birr costs in transaction' }
+		{ name: 'Added By', value: data.supply?.createdBy }
 	]);
 
 	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
-		validators: zod4Client(editSupply),
+		validators: zod4Client(schema),
 		resetForm: false
 	});
 
@@ -62,6 +57,7 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 	import Adjustment from '$lib/forms/Adjustment.svelte';
 	import { getCurrentMonthRange } from '$lib/global.svelte.js';
+	import DataTable from '$lib/components/Table/data-table.svelte';
 
 	let edit = $state(false);
 </script>
@@ -95,45 +91,74 @@
 		<div class="w-full p-4">
 			<form action="?/editSupply" use:enhance class="flex flex-col gap-4" id="edit" method="post">
 				{@render fe('Supply Name', 'supplyName', 'text', 'Enter Supply Name', true)}
+				<InputComp
+					label="Item Name"
+					name="name"
+					type="text"
+					required
+					placeholder="Enter Supply Name"
+					{errors}
+					{form}
+				/>
 
-				<div class="flex w-full flex-col justify-start gap-2">
-					<Label for="notes">Supply Description</Label>
+				<InputComp
+					label="Item Type"
+					name="supplyType"
+					type="select"
+					placeholder="Enter Item Type"
+					{errors}
+					{form}
+					items={data?.typeList}
+				/>
 
-					<Textarea
-						name="description"
-						placeholder="Enter product description"
-						bind:value={$form.description}
-						aria-invalid={$errors.description ? 'true' : undefined}
-					/>
+				<InputComp
+					label="Item Description"
+					name="description"
+					type="textarea"
+					placeholder="Enter Supply Description"
+					{errors}
+					{form}
+				/>
 
-					{#if $errors.description}<span class="text-red-500">{$errors.description}</span>{/if}
-				</div>
-				{@render fe(
-					'Quantity',
-					'quantity',
-					'number',
-					'Enter the number of items the product currently has',
-					true,
-					'0'
-				)}
-				{@render fe('Supplier', 'supplier', 'text', 'Enter the supplier of the product')}
-				{@render fe(
-					'Unit of Measurement',
-					'unitOfMeasure',
-					'text',
-					'Enter Unit of Measurement',
-					true
-				)}
+				<InputComp
+					label="Unit of Measurement"
+					name="unitOfMeasurement"
+					type="select"
+					placeholder="Enter Unit of Measurement"
+					{errors}
+					{form}
+					items={[
+						{ value: 'kg', name: 'Kilogram' },
+						{ value: 'g', name: 'Gram' },
+						{ value: 'ml', name: 'Milliliter' },
+						{ value: 'l', name: 'Liter' },
+						{ value: 'pcs', name: 'Piece' },
+						{ value: 'other', name: 'Other' }
+					]}
+				/>
 
-				{@render fe(
-					'Reorder Notify Level',
-					'reorderLevel',
-					'number',
-					'Enter when you want to be notified'
-				)}
-				{@render fe('Cost per unit', 'costPerUnit', 'number', 'Cost Per Unit')}
+				{#if $form.unitOfMeasurement === 'other'}
+					<div transition:fly={{ x: -20, duration: 300 }}>
+						<InputComp
+							label="Enter Other Unit of Measurement"
+							name="otherUnitOfMeasurement"
+							type="text"
+							placeholder="Enter Other Unit of Measurement"
+							{errors}
+							{form}
+						/>
+					</div>
+				{/if}
 
-				<input hidden name="supplyId" value={data.supply.id} />
+				<InputComp
+					label="Reorder Notify Level"
+					name="reorderLevel"
+					type="number"
+					placeholder="Enter when you want to be notified"
+					{errors}
+					{form}
+				/>
+
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}
 						<LoadingBtn name="Saving Changes" />
@@ -147,37 +172,4 @@
 	{/if}
 </SingleView>
 
-{#snippet fe(
-	label = '',
-	name = '',
-	type = '',
-	placeholder = '',
-	required = false,
-	min = '',
-	max = ''
-)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name}>{label}</Label>
-		<Input
-			{type}
-			{name}
-			{placeholder}
-			{required}
-			{min}
-			{max}
-			bind:value={$form[name]}
-			aria-invalid={$errors[name] ? 'true' : undefined}
-		/>
-		{#if $errors[name]}
-			<span class="text-red-500">{$errors[name]}</span>
-		{/if}
-	</div>
-{/snippet}
-{#snippet selects(name, items)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
-
-		<SelectComp {name} bind:value={$form[name]} {items} />
-		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-	</div>
-{/snippet}
+<DataTable data={data?.suppliers} {columns} fileName="{data?.supply?.name} Suppliers List" />

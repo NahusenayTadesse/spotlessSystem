@@ -48,7 +48,7 @@
 		<button
 			onmouseenter={() => (open = true)}
 			onmouseleave={() => (open = false)}
-			class="inline-flex cursor-help items-center gap-2 text-primary hover:underline"
+			class="inline-flex items-center gap-2 text-primary hover:underline"
 		>
 			{#if children}
 				{@render children()}
@@ -58,7 +58,7 @@
 			{/if}
 		</button>
 	</PopoverTrigger>
-	<PopoverContent class="w-72 p-4">
+	<PopoverContent class="w-72 p-4" onmouseenter={() => (open = true)}>
 		{#if hasAddress}
 			<div class="space-y-3">
 				<h4 class="text-sm font-semibold">Address Details</h4>

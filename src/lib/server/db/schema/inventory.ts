@@ -1,19 +1,26 @@
 // inventory.ts - Handles products, supplies, categories, and inventory adjustments
 
-import { mysqlTable, varchar, int, decimal } from 'drizzle-orm/mysql-core';
+import { mysqlTable, varchar, int, decimal, boolean } from 'drizzle-orm/mysql-core';
 import { secureFields, lesserFields } from './secureFields';
 
 import { transactionSupplies } from './finance';
 import { employee } from './staff';
 import { address } from './locations';
 
+export const supplyTypes = mysqlTable('supply_types', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 50 }).notNull(),
+	description: varchar('description', { length: 255 })
+});
 export const supplies = mysqlTable('supplies', {
 	id: int('id').primaryKey().autoincrement(),
+	supplyTypeId: int('supply_type_id')
+		.notNull()
+		.references(() => supplyTypes.id),
 	name: varchar('name', { length: 50 }).notNull(),
 	description: varchar('description', { length: 255 }),
 	quantity: int('quantity').notNull().default(0),
 	unitOfMeasure: varchar('unit_of_measure', { length: 20 }),
-	costPerUnit: decimal('cost_per_unit', { precision: 10, scale: 2 }).notNull(),
 	reorderLevel: int('reorder_level'),
 	...secureFields
 });
@@ -25,14 +32,9 @@ export const damagedSupplies = mysqlTable('damaged_supplies', {
 		.references(() => supplies.id),
 	quantity: int('quantity').notNull(),
 	damagedBy: int('damaged_by').references(() => employee.id),
+	deductable: boolean('deductable').notNull().default(false),
 	reason: varchar('reason', { length: 255 }).notNull(),
 	...secureFields
-});
-
-export const supplyTypes = mysqlTable('supply_types', {
-	id: int('id').primaryKey().autoincrement(),
-	name: varchar('name', { length: 50 }).notNull(),
-	description: varchar('description', { length: 255 })
 });
 
 export const suppliesAdjustments = mysqlTable('supplies_adjustments', {

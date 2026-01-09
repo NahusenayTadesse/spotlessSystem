@@ -4,18 +4,18 @@ import { fail } from '@sveltejs/kit';
 
 import { supplyItemSchema as schema } from './schema';
 import { db } from '$lib/server/db';
-import { supplies as inventory } from '$lib/server/db/schema/';
+import { supplies } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
-import { setFlash } from 'sveltekit-flash-message/server';
-import { suppliers } from '$lib/server/fastData';
+import { setFlash, redirect } from 'sveltekit-flash-message/server';
+import { supplyCategories } from '$lib/server/fastData';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
-	const suppliersList = await suppliers();
+	const typeList = await supplyCategories();
 	return {
 		form,
-		suppliersList
+		typeList
 	};
 };
 
@@ -25,19 +25,25 @@ export const actions: Actions = {
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return fail(400, { form });
+			return message(form, { type: 'error', text: 'Please check your form data.' });
 		}
 
-		const { name, description, unitOfMeasurement, quantity, supplier, reorderLevel } = form.data;
+		const {
+			name,
+			description,
+			supplyType,
+			unitOfMeasurement,
+			otherUnitOfMeasurement,
+			reorderLevel
+		} = form.data;
 
 		try {
-			await db.insert(inventory).values({
+			await db.insert(supplies).values({
 				name,
 				description,
-				unitOfMeasure: unitOfMeasurement,
-				quantity,
-				supplier,
+				supplyTypeId: Number(supplyType),
+				quantity: 0,
+				unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 				reorderLevel,
 				createdBy: locals?.user?.id
 			});

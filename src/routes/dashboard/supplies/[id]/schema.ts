@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 
-export const supplyItemSchema = z.object({
+export const edit = z.object({
 	name: z.string().min(1, { message: 'Product Name is required.' }),
 
 	description: z
@@ -15,5 +15,3 @@ export const supplyItemSchema = z.object({
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
 		.positive({ message: 'Reorder Level must be a positive number.' })
 });
-
-export type SupplyItemSchema = typeof supplyItemSchema;

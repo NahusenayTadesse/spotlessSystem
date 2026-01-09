@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { supplies } from '$lib/server/db/schema';
+import { supplies, supplyTypes } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 
@@ -8,18 +8,14 @@ export const load: PageServerLoad = async () => {
 		.select({
 			id: supplies.id,
 			name: supplies.name,
-			price: supplies.costPerUnit,
+			supplyType: supplyTypes.name,
 			description: supplies.description,
 			quantity: supplies.quantity,
 			unitOfMeasure: supplies.unitOfMeasure
 		})
-		.from(supplies);
+		.from(supplies)
+		.leftJoin(supplyTypes, eq(supplies.supplyTypeId, supplyTypes.id));
 
-	supplyList = supplyList.map((r) => ({
-		...r,
-		price: Number(r.price),
-		quantity: Number(r.quantity)
-	}));
 	return {
 		supplyList
 	};

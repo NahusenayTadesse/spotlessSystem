@@ -7,12 +7,18 @@ import {
 import { error } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
-import { supplies, transactionSupplies, transactions, user } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import {
+	supplies,
+	supplyTypes,
+	supplySuppliers,
+	suppliesAdjustments,
+	user
+} from '$lib/server/db/schema';
+import { eq, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { employees } from '$lib/server/fastData';
 
-export const load: LayoutServerLoad = async ({ params, locals }) => {
+export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
 	const form = await superValidate(zod4(schema));
 	const adjustForm = await superValidate(zod4(adjustSchema));
@@ -20,36 +26,35 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const supply = await db
 		.select({
 			id: supplies.id,
+
 			name: supplies.name,
-			costPerUnit: supplies.costPerUnit,
-			description: supplies.description,
+			supplyType: supplyTypes.name,
 			quantity: supplies.quantity,
-			reorderLevel: supplies.reorderLevel,
+			description: supplies.description,
 			unitOfMeasure: supplies.unitOfMeasure,
-			supplier: supplies.supplier,
+			reorderLevel: supplies.reorderLevel,
 			createdBy: user.name,
-			createdAt: sql<string>`DATE_FORMAT(${supplies.createdAt}, '%Y-%m-%d')`,
-			paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
+			createdAt: sql<string>`DATE_FORMAT(${supplies.createdAt}, '%Y-%m-%d')`
 		})
 		.from(supplies)
-		.leftJoin(transactionSupplies, eq(supplies.id, transactionSupplies.supplyId))
-		.leftJoin(transactions, eq(transactionSupplies.transactionId, transactions.id))
+		.leftJoin(supplyTypes, eq(supplies.supplyTypeId, supplyTypes.id))
 		.leftJoin(user, eq(supplies.createdBy, user.id))
-		.where(and(eq(supplies.branchId, locals?.user?.branch), eq(supplies.id, id)))
-		.groupBy(
-			supplies.id,
-			supplies.name,
-			supplies.costPerUnit,
-			supplies.description,
-			supplies.quantity,
-			supplies.reorderLevel,
-			supplies.supplier,
-			user.name,
-			supplies.createdAt
-		)
+		.where(eq(supplies.id, Number(id)))
 		.then((rows) => rows[0]);
 
 	const employeesList = await employees();
+
+	const suppliers = await db
+		.selectDistinct({
+			id: supplySuppliers.id,
+			name: supplySuppliers.name,
+			phone: supplySuppliers.phone,
+			email: supplySuppliers.email,
+			description: supplySuppliers.description
+		})
+		.from(supplySuppliers)
+		.innerJoin(suppliesAdjustments, eq(supplySuppliers.id, suppliesAdjustments.supplierId))
+		.where(eq(suppliesAdjustments.suppliesId, Number(id)));
 
 	if (!supply) {
 		throw error(404, 'Supply not found, it has been deleted or never have existed.');
@@ -59,6 +64,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		supply,
 		form,
 		adjustForm,
-		employeesList
+		employeesList,
+		suppliers
 	};
 };

@@ -8,7 +8,8 @@ import {
 	employmentStatuses,
 	paymentMethods as paymentMethod,
 	supplySuppliers,
-	employeeTermination
+	employeeTermination,
+	supplyTypes
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -88,4 +89,15 @@ export async function employees() {
 		);
 
 	return employees;
+}
+
+export async function supplyCategories() {
+	const supplyCategories = await db
+		.select({
+			value: supplyTypes.id,
+			name: supplyTypes.name
+		})
+		.from(supplyTypes);
+
+	return supplyCategories;
 }

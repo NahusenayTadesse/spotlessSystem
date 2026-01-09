@@ -1,9 +1,8 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import {
-	editSupply as schema,
-	inventoryAdjustmentFormSchema as adjustSchema
-} from '$lib/ZodSchema';
+import { inventoryAdjustmentFormSchema as adjustSchema } from '$lib/ZodSchema';
+
+import { edit as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import {
@@ -67,8 +66,9 @@ import { saveUploadedFile } from '$lib/server/upload';
 // };
 
 export const actions: Actions = {
-	editSupply: async ({ request, cookies, locals }) => {
+	editSupply: async ({ request, cookies, locals, params }) => {
 		const form = await superValidate(request, zod4(schema));
+		const { id } = params;
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
@@ -77,38 +77,32 @@ export const actions: Actions = {
 		}
 
 		const {
-			supplyId,
-			supplyName,
+			name,
 			description,
-			unitOfMeasure,
-			quantity,
-			supplier,
-			reorderLevel,
-			costPerUnit
+			supplyType,
+			unitOfMeasurement,
+			otherUnitOfMeasurement,
+			reorderLevel
 		} = form.data;
 
 		try {
 			await db
 				.update(supplies)
 				.set({
-					name: supplyName,
+					name,
 					description,
-					unitOfMeasure,
-					quantity,
-					costPerUnit,
-					supplier,
+					supplyTypeId: supplyType,
+					quantity: 0,
+					unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 					reorderLevel,
-					branchId: locals?.user?.branch,
-					updatedBy: locals?.user?.id
+					createdBy: locals?.user?.id
 				})
-				.where(eq(supplies.id, supplyId));
+				.where(eq(supplies.id, Number(id)));
 
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'New Supply Successuflly Added' }, cookies);
 			return message(form, { type: 'success', text: 'Supply updated successfully' });
 		} catch (err) {
 			console.error(err?.message);
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return message(form, { type: `error', text: 'Unexpected Error: ${err?.message}` });
 		}
 	},

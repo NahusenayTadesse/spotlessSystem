@@ -55,10 +55,6 @@
 					class="flex w-full flex-col gap-2"
 					enctype="multipart/form-data"
 				>
-					{@render select('intent', [
-						{ value: 'add', name: '+ Add' },
-						{ value: 'remove', name: '- Remove' }
-					])}
 					<InputComp
 						label="Add or Remove"
 						name="intent"
@@ -93,7 +89,7 @@
 					<InputComp
 						label="Employee Responsible"
 						name="employeeResponsible"
-						type="textarea"
+						type="combo"
 						{form}
 						{errors}
 						placeholder="Enter Quantity"
