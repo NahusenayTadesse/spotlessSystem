@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { employee, staffTypes } from '$lib/server/db/schema';
+import { employee, department, employmentStatuses, educationalLevel } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 
@@ -7,17 +7,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 	let staffList = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(${employee.firstName}, ' ', COALESCE(${employee.lastName}, '')))`,
-
-			category: staffTypes.name,
-			phone: employee.phone,
-			email: employee.email,
-			status: employee.employmentStatus,
-			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`
+			name: sql<string>`TRIM(CONCAT(${employee.name}, ' ', COALESCE(${employee.fatherName}, '')))`,
+			department: department.name,
+			education: educationalLevel.name,
+			status: employmentStatuses.name,
+			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`,
+			joined: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`
 		})
 		.from(employee)
-		.leftJoin(staffTypes, eq(staffTypes.id, employee.type))
-		.where(eq(employee.branchId, locals?.user?.branch));
+		.leftJoin(department, eq(department.id, employee.departmentId))
+		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
+		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel));
 
 	staffList = staffList.map((r) => ({ ...r, years: Number(r.years) }));
 

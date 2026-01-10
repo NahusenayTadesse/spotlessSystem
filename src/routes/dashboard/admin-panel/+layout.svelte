@@ -19,7 +19,8 @@
 		{ name: 'Departments', href: '/dashboard/admin-panel/department' },
 		{ name: 'Educational Levels', href: '/dashboard/admin-panel/educational-level' },
 		{ name: 'Employement Status ', href: '/dashboard/admin-panel/employment-status' },
-		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' }
+		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },
+		{ name: 'Services', href: '/dashboard/admin-panel/services' }
 	];
 
 	let userManagement = [

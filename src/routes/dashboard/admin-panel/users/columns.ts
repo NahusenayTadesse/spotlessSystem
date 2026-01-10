@@ -3,6 +3,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 
 export const columns = [
 	{
@@ -91,7 +92,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
-		cell: (info) => info.getValue().toLocaleDateString() // always “day”
+		cell: (info) => formatEthiopianDate(new Date(info.getValue())) // always “day”
 	},
 
 	{

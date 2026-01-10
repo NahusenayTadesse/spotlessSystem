@@ -1,23 +1,16 @@
-import { redirect } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
-import { getCurrentMonthRange } from "$lib/global.svelte";
-
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { getCurrentMonthRange } from '$lib/global.svelte';
 
 export const load: PageServerLoad = async ({ params }) => {
-   
+	const { id } = params;
 
-
-   const { id } = params;
-  
-   redirect (303, `/dashboard/staff/ranges/${getCurrentMonthRange()}-${id}`);
-}
-
+	redirect(303, `/dashboard/employees/ranges/${getCurrentMonthRange()}-${id}`);
+};
 
 // import { superValidate } from 'sveltekit-superforms';
 // import { zod4 } from 'sveltekit-superforms/adapters';
 // import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
-
-
 
 // import { db } from "$lib/server/db";
 // import {  staff, staffTypes, salaries, user, deductions, commissionService, commissionProduct, bonuses, overTime, products, services, transactionProducts, transactionServices  } from "$lib/server/db/schema";
@@ -26,21 +19,17 @@ export const load: PageServerLoad = async ({ params }) => {
 // import { fail } from 'sveltekit-superforms';
 // import { setFlash } from 'sveltekit-flash-message/server';
 
-
-
 // export const load: PageServerLoad = async ({ params, locals }) => {
-
 
 //      const {id} = params;
 //        const form = await superValidate(zod4(schema));
 
-
 //         const staffMember = await db.select(
-//           { 
+//           {
 //            id: staff.id,
 //            firstName: staff.firstName,
 //            lastName: staff.lastName,
-           
+
 //             category: staffTypes.name,
 //             categoryId: staffTypes.id,
 //             phone: staff.phone,
@@ -50,7 +39,7 @@ export const load: PageServerLoad = async ({ params }) => {
 //             hireDate: sql<string>`DATE_FORMAT(${staff.hireDate}, '%Y-%m-%d')`,
 //             govId: staff.govtId,
 //              contract: staff.contract,
-            
+
 //             addedBy: user.name,
 //             years: sql<number>`TIMESTAMPDIFF(YEAR, ${staff.hireDate}, CURDATE())`,
 
@@ -61,15 +50,12 @@ export const load: PageServerLoad = async ({ params }) => {
 //         .leftJoin(salaries, eq(staff.id, salaries.staffId))
 //         .leftJoin(user, eq(staff.createdBy, user.id))
 //           .where(
-//             and  
+//             and
 //             (
 //               eq(staff.branchId, locals?.user?.branch),
 //               eq(staff.id, id)
 //             ))
 //         .then(rows => rows[0]);
-
-
-      
 
 //          const categories = await db
 //                 .select({
@@ -83,9 +69,9 @@ export const load: PageServerLoad = async ({ params }) => {
 //     const currentMonth = new Date().getMonth() + 1; // getMonth() is 0-indexed
 
 //     // Helper function for date filtering logic (same for all compensation tables)
-//     const currentMonthFilter = (dateField: any) => 
-//         sql`${sql.raw('YEAR(')}${dateField}${sql.raw(')')} = ${currentYear} 
-          
+//     const currentMonthFilter = (dateField: any) =>
+//         sql`${sql.raw('YEAR(')}${dateField}${sql.raw(')')} = ${currentYear}
+
 //     AND ${sql.raw('MONTH(')}${dateField}${sql.raw(')')} = ${currentMonth}`;
 
 //     // --- Select Commissions (Service) ---
@@ -101,7 +87,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 //     .where(and(
 //       currentMonthFilter(commissionService.commissionDate),
-      
+
 //         eq(commissionService.staffId, id),
 //     )
 //     );
@@ -128,7 +114,7 @@ export const load: PageServerLoad = async ({ params }) => {
 //     // --- Select Bonuses ---
 //     const staffBonuses =  await db.select({
 //         staffId: bonuses.staffId,
-   
+
 //         description: bonuses.description,
 //         amount: bonuses.amount,
 //         date: bonuses.bonusDate,
@@ -161,7 +147,7 @@ export const load: PageServerLoad = async ({ params }) => {
 //         staffId: deductions.staffId,
 //         description: deductions.type, // Using the 'type' column for description
 //         // Amount is stored as a positive number in the table, but we mark it as a deduction
-//         amount: deductions.amount, 
+//         amount: deductions.amount,
 //         date: deductions.deductionDate,
 //     })
 //     .from(deductions)
@@ -174,12 +160,6 @@ export const load: PageServerLoad = async ({ params }) => {
 
 //     // --- Combine all results using unionAll ---
 
-
-
-
-
-  
-
 //         return {
 //             staffMember,
 //            staffDeductions,
@@ -189,10 +169,9 @@ export const load: PageServerLoad = async ({ params }) => {
 //             serviceCommissions,
 //             form,
 //             categories,
-   
+
 //         }
 // }
-
 
 // import fs from 'node:fs';
 // import path from 'node:path';
@@ -214,36 +193,28 @@ export const load: PageServerLoad = async ({ params }) => {
 //       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 //       return fail(400, { form });
 //     }
-    
 
-//         const { staffId, firstName, lastName, position, phone, email, salary, hiredAt, govId, contract } = form.data; 
+//         const { staffId, firstName, lastName, position, phone, email, salary, hiredAt, govId, contract } = form.data;
 
-
-
-
-   
-       
 //     try{
 
 //        const files = await db.select({govtId: staff.govtId, contract: staff.contract}).from(staff).where(eq(staff.id, staffId)).then(rows => rows[0]);
 //        let newGovId: string | null;
 //        let newContract: string | null;
 //            if(govId && govId.size > 0){
-             
+
 //              const imageName = `${generateUserId()}${path.extname(govId.name)}`;
-                      
-            
+
 //                        const govPath: string = path.normalize(
-//               path.join(FILES_DIR, imageName));    		
-            
+//               path.join(FILES_DIR, imageName));
+
 //                 const nodejs_wstream = fs.createWriteStream(govPath);
 //                 const web_rstream = govId.stream();
 //                 const nodejs_rstream = Readable.fromWeb(web_rstream);
 
-
 //                 newGovId = imageName;
 //                 await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
-            
+
 //                   return fail(500);
 //                 });
 //            }
@@ -251,14 +222,12 @@ export const load: PageServerLoad = async ({ params }) => {
 //              newGovId = files.govtId
 //            }
 
-
-
 //            if(contract && contract.size > 0){
-             
+
 //             const contractName = `${generateUserId()}${path.extname(contract.name)}`;
 
 //            const contractPath: string = path.normalize(
-//   path.join(FILES_DIR, contractName));    		
+//   path.join(FILES_DIR, contractName));
 
 //     const nodejs_wstreamContract = fs.createWriteStream(contractPath);
 //     const web_rstreamContract = contract.stream();
@@ -272,13 +241,9 @@ export const load: PageServerLoad = async ({ params }) => {
 //            else {
 //              newContract = files.contract
 //            }
-     
 
-  
-  
-  
 //        await db.update(staff).set({
-//         firstName, lastName, 
+//         firstName, lastName,
 //         type: position,
 //         phone, email,
 //         hireDate: new Date(hiredAt),
@@ -294,7 +259,7 @@ export const load: PageServerLoad = async ({ params }) => {
 //        })
 //  delete form.data.govId;
 //    delete form.data.contract;
- 
+
 //       // Stay on the same page and set a flash message
 //       setFlash({ type: 'success', message: "Service Updated Successuflly" }, cookies);
 //     return {
@@ -304,29 +269,24 @@ export const load: PageServerLoad = async ({ params }) => {
 //     }
 //   },
 //     delete: async({cookies, params })=> {
-     
+
 //         const {id} = params;
-         
-    
+
 //         try {
 //         if (!id) {
 //         setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 //           return fail(400);
 //         }
-  
+
 //         await db.delete(staff).where(eq(staff.id, id));
-  
-         
+
 //           setFlash({ type: 'success', message: "Staff Member Deleted Successfully!" }, cookies);
-  
+
 //       } catch (err) {
 //         console.error('Error deleting staff member:', err);
 //         setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 //         return fail(400)
 //       }
-      
-        
-    
-    
+
 //       },
 // };

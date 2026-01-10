@@ -154,3 +154,19 @@ export const formatEthiopianDate = (date: Date | undefined): string => {
 
 	return formatter.format(date);
 };
+
+export const formatEthiopianYearMonth = (
+	year: number,
+	month: number // 1–12
+): string => {
+	// Use day = 1 since only year/month matters
+	const date = new Date(year, month - 1, 1);
+
+	const formatter = new Intl.DateTimeFormat('am-ET', {
+		year: 'numeric',
+		month: 'long',
+		calendar: 'ethiopic'
+	});
+
+	return formatter.format(date);
+};

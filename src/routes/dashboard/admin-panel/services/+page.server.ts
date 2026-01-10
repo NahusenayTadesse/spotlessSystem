@@ -43,18 +43,19 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: 'Please check the form for Errors' });
 		}
 
-		const { name, description, status } = form.data;
+		const { name, category, description, status } = form.data;
 
 		try {
 			await db.insert(department).values({
 				name,
+				categoryId: category,
 				description,
 				status: status
 			});
 
-			return message(form, { type: 'success', text: 'Service Category Successfully Added' });
+			return message(form, { type: 'success', text: 'Service Successfully Added' });
 		} catch (err: any) {
-			if (err.code === 'ER_DUP_ENTRY') setError(form, 'name', 'Service Category already exists.');
+			if (err.code === 'ER_DUP_ENTRY') setError(form, 'name', 'Service already exists.');
 			return message(form, {
 				type: 'error',
 				text:

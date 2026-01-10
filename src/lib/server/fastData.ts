@@ -4,8 +4,10 @@ import {
 	city,
 	region,
 	subcity,
+	department,
 	employee,
 	employmentStatuses,
+	educationalLevel,
 	paymentMethods as paymentMethod,
 	supplySuppliers,
 	employeeTermination,
@@ -124,4 +126,37 @@ export async function service() {
 		.from(services);
 
 	return service;
+}
+
+export async function departments() {
+	const departments = await db
+		.select({
+			value: department.id,
+			name: department.name
+		})
+		.from(department);
+
+	return departments;
+}
+
+export async function empStatus() {
+	const empStatus = await db
+		.select({
+			value: employmentStatuses.id,
+			name: employmentStatuses.name
+		})
+		.from(employmentStatuses);
+
+	return empStatus;
+}
+
+export async function eduLevel() {
+	const eduLevel = await db
+		.select({
+			value: educationalLevel.id,
+			name: educationalLevel.name
+		})
+		.from(educationalLevel);
+
+	return eduLevel;
 }

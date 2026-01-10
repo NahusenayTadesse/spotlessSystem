@@ -19,6 +19,59 @@
 	);
 
 	let link = $derived(`${month}`);
+
+	const MONTH_MAP: Record<string, number> = {
+		january: 1,
+		february: 2,
+		march: 3,
+		april: 4,
+		may: 5,
+		june: 6,
+		july: 7,
+		august: 8,
+		september: 9,
+		october: 10,
+		november: 11,
+		december: 12
+	};
+
+	const getEthiopianMonth = (month: number | string): string => {
+		let monthNumber: number | undefined;
+
+		if (typeof month === 'number') {
+			monthNumber = month;
+		} else {
+			monthNumber = MONTH_MAP[month.toLowerCase()];
+		}
+
+		if (!monthNumber || monthNumber < 1 || monthNumber > 12) {
+			return '';
+		}
+
+		// Fixed reference year to avoid edge cases
+		const date = new Date(2024, monthNumber - 1, 1);
+
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			month: 'long',
+			calendar: 'ethiopic'
+		});
+
+		return formatter.format(date);
+	};
+
+	export const getEthiopianYear = (year: number): string => {
+		if (!year) return '';
+
+		// Use January 1st to avoid Ethiopian new-year boundary issues
+		const date = new Date(year, 0, 1);
+
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			year: 'numeric',
+			calendar: 'ethiopic'
+		});
+
+		return formatter.format(date);
+	};
 </script>
 
 <svelte:head>
@@ -33,7 +86,7 @@
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 				<Frown class="h-12 w-16  animate-bounce" />
 				No salaries or staff data added yet for {data.month}
-				{data.year}
+				{getEthiopianYear(data.year)}
 			</p>
 			<!-- <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button> -->
 		</div>
@@ -43,11 +96,11 @@
 		>
 			<div class="flex-1">
 				<h1 class="text-lg font-semibold text-gray-900 lg:text-2xl dark:text-gray-100">
-					Salaries — {data.month}
-					{data.year}
+					Salaries — {getEthiopianMonth(data?.month)}
+					{getEthiopianYear(data.year)}
 				</h1>
 				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-					Total staff: <span class="font-medium text-gray-800 dark:text-gray-100"
+					Total Employees: <span class="font-medium text-gray-800 dark:text-gray-100"
 						>{data?.payrollData.length}</span
 					>
 				</p>

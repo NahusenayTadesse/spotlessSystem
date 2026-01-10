@@ -1,16 +1,13 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
-	import * as Card from '$lib/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { staffSchema } from '$lib/zodschemas/appointmentSchema';
-	import { fileProxy, superForm } from 'sveltekit-superforms/client';
+	import { add } from './schema';
+	import { superForm } from 'sveltekit-superforms/client';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
-	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
+	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import Input from '$lib/formComponents/InputComp.svelte';
 
 	let { data } = $props();
 	const { form, errors, enhance, message, delayed, capture, restore } = superForm(data.form, {
@@ -20,10 +17,8 @@
 			});
 		},
 
-		validators: zod4Client(staffSchema)
+		validators: zod4Client(add)
 	});
-	const govId = fileProxy(form, 'govId');
-	const contract = fileProxy(form, 'contract');
 
 	export const snapshot: Snapshot = { capture, restore };
 	import { toast } from 'svelte-sonner';
@@ -40,120 +35,219 @@
 	//   const item = items.find(i=> i.value === value);
 	//   return item ? item.name : null; // returns null if not found
 	// }
-	let date = new Date();
+	//
+	const genders = [
+		{ value: 'male', name: 'Male' },
+		{ value: 'female', name: 'Female' }
+	];
 
-	$form.hiredAt = date.toLocaleDateString('en-CA');
+	const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((v) => ({
+		value: v,
+		name: v
+	}));
+
+	const maritalStatuses = ['single', 'married', 'widowed', 'divorced', 'other'].map((v) => ({
+		value: v,
+		name: v.charAt(0).toUpperCase() + v.slice(1)
+	}));
 </script>
 
 <svelte:head>
 	<title>Add New Staff</title>
 </svelte:head>
 
-{#snippet fe(
-	label = '',
-	name = '',
-	type = '',
-	placeholder = '',
-	required = false,
-	min = '',
-	max = ''
-)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name}>{label}</Label>
+<FormCard title="Add New Employee">
+	<form
+		use:enhance
+		action="?/addStaff"
+		id="main"
+		class="flex flex-col gap-4"
+		method="POST"
+		enctype="multipart/form-data"
+	>
 		<Input
-			{type}
-			{name}
-			{placeholder}
-			{required}
-			{min}
-			{max}
-			bind:value={$form[name]}
-			aria-invalid={$errors[name] ? 'true' : undefined}
+			label="Employee ID"
+			name="idNo"
+			{form}
+			placeholder="Enter Employee ID"
+			{errors}
+			type="text"
+			required
 		/>
-		{#if $errors[name]}
-			<span class="text-red-500">{$errors[name]}</span>
-		{/if}
-	</div>
-{/snippet}
-{#snippet selects(name, items)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
+		<Input
+			label="Full Name"
+			name="name"
+			{form}
+			placeholder="Enter Full Name"
+			{errors}
+			type="text"
+			required
+		/>
+		<Input
+			label="Father Name"
+			name="fatherName"
+			{form}
+			placeholder="Enter Father Name"
+			{errors}
+			type="text"
+			required
+		/>
 
-		<SelectComp {name} bind:value={$form[name]} {items} />
-		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-	</div>
-{/snippet}
+		<!-- Row 2 -------------------------------------------------------------- -->
+		<Input
+			label="Grandfather Name"
+			name="grandFatherName"
+			{form}
+			placeholder="Enter Grandfather Name"
+			{errors}
+			type="text"
+			required
+		/>
+		<Input
+			label="Gender"
+			name="gender"
+			{form}
+			placeholder="Select Gender"
+			{errors}
+			type="select"
+			items={genders}
+			required
+		/>
+		<Input
+			label="Phone"
+			name="phone"
+			{form}
+			placeholder="Enter Phone Number"
+			{errors}
+			type="tel"
+			required
+		/>
 
-<Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
-	<Card.Header>
-		<Card.Title class="text-2xl">Add New Staff Member</Card.Title>
-	</Card.Header>
-	<Card.Content>
-		<form
-			use:enhance
-			action="?/addStaff"
-			id="main"
-			class="flex flex-col gap-4"
-			method="POST"
-			enctype="multipart/form-data"
-		>
-			<div class="flex flex-row gap-2">
-				{@render fe('First Name', 'firstName', 'text', "Enter Staff's First Name", true)}
-				{@render fe('Last Name', 'lastName', 'text', "Enter Staff's last Name", true)}
-			</div>
+		<!-- Row 3 -------------------------------------------------------------- -->
+		<Input
+			label="Email"
+			name="email"
+			placeholder="Enter Email"
+			{form}
+			{errors}
+			type="email"
+			required={false}
+		/>
+		<Input label="Nationality" name="nationality" {form} {errors} type="text" />
+		<Input
+			label="Religion"
+			name="religion"
+			{form}
+			{errors}
+			type="select"
+			items={[
+				{
+					value: 'Christian',
+					name: 'Christian'
+				},
+				{ value: 'Muslim', name: 'Muslim' },
+				{ value: 'Other', name: 'Other' }
+			]}
+		/>
 
-			{@render selects('position', data?.allPositions)}
+		<!-- Row 4 -------------------------------------------------------------- -->
+		<Input label="Blood Type" name="bloodType" {form} {errors} type="select" items={bloodTypes} />
+		<Input
+			label="TIN (10 digits)"
+			name="tinNo"
+			placeholder="Enter TIN"
+			{form}
+			{errors}
+			type="text"
+			required
+		/>
+		<Input
+			label="Department"
+			name="departmentId"
+			{form}
+			{errors}
+			type="select"
+			items={data?.departmentList}
+			required
+		/>
 
-			{@render fe('Phone', 'phone', 'tel', 'Enter Phone Number', true)}
+		<!-- Row 5 -------------------------------------------------------------- -->
+		<Input label="Birth Date" name="birthDate" year={true} {form} {errors} type="date" required />
+		<Input
+			label="Pension (%)"
+			name="pensionType"
+			{form}
+			{errors}
+			type="select"
+			items={[
+				{ value: 'Employee Pension Contribution (7%)', name: 'Employee Pension Contribution (7%)' },
+				{
+					value: 'Employer Pension Contribution (11%)',
+					name: 'Employer Pension Contribution (11%)'
+				}
+			]}
+			required
+		/>
+		<Input
+			label="Tax Type (%)"
+			name="taxType"
+			{form}
+			{errors}
+			type="select"
+			items={[
+				{ value: '0%', name: '0% (Up to 600 ETB)' },
+				{ value: '10%', name: '10% (601 – 1,650 ETB)' },
+				{ value: '15%', name: '15% (1,651 – 3,200 ETB)' },
+				{ value: '20%', name: '20% (3,201 – 5,250 ETB)' },
+				{ value: '25%', name: '25% (5,251 – 7,800 ETB)' },
+				{ value: '30%', name: '30% (7,801 – 10,900 ETB)' },
+				{ value: '35%', name: '35% (Above 10,900 ETB)' }
+			]}
+			required
+		/>
 
-			{@render fe('Email', 'email', 'email', 'Enter Email', true)}
-			{@render fe('Salary', 'salary', 'number', 'Enter Salary', true)}
-			<div class="flex w-full flex-col justify-start gap-2">
-				<Label for="hiredAt" class="capitalize">Hired On</Label>
+		<!-- Row 6 -------------------------------------------------------------- -->
+		<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
+		<Input label="Photo" name="photo" {form} {errors} type="file" required />
+		<Input label="Government ID" name="govtId" {form} {errors} type="file" required />
 
-				<DatePicker2 bind:data={$form.hiredAt} />
+		<!-- Row 7 -------------------------------------------------------------- -->
+		<Input label="Hire Date" name="hireDate" {form} {errors} type="date" year={true} required />
+		<Input
+			label="Employment Status"
+			name="employmentStatus"
+			{form}
+			{errors}
+			type="select"
+			items={data?.empStatusList}
+			required
+		/>
 
-				{#if $errors.hiredAt}<span class="text-red-500">{$errors.hiredAt}</span>{/if}
-				<input type="text" name="hiredAt" bind:value={$form.hiredAt} />
-			</div>
+		<!-- Row 8 -------------------------------------------------------------- -->
+		<Input
+			label="Educational Level"
+			name="educationalLevel"
+			{form}
+			{errors}
+			type="select"
+			items={data?.eduLevelList}
+		/>
+		<Input
+			label="Marital Status"
+			name="martialStatus"
+			{form}
+			{errors}
+			type="select"
+			items={maritalStatuses}
+		/>
+		<Button type="submit" class="mt-4" form="main">
+			{#if $delayed}
+				<LoadingBtn name="Adding Staff" />
+			{:else}
+				<Plus class="h-4 w-4" />
 
-			<div class="flex w-full flex-col justify-start gap-2">
-				<Label for="govId" class="capitalize">Upload new staff member Goverment Id</Label>
-				<Input
-					type="file"
-					name="govId"
-					accept="image/*,application/pdf"
-					bind:files={$govId}
-					multiple={false}
-				/>
-				{#if $errors.govId}
-					<span>{$errors.govId}</span>
-				{/if}
-			</div>
-
-			<div class="flex w-full flex-col justify-start gap-2">
-				<Label for="contract" class="capitalize">Upload new staff member Contract</Label>
-				<Input
-					type="file"
-					name="contract"
-					accept="image/*,application/pdf"
-					bind:files={$contract}
-					multiple={false}
-				/>
-				{#if $errors.govId}
-					<span>{$errors.govId}</span>
-				{/if}
-			</div>
-
-			<Button type="submit" class="mt-4" form="main">
-				{#if $delayed}
-					<LoadingBtn name="Adding Staff" />
-				{:else}
-					<Plus class="h-4 w-4" />
-
-					Add Staff
-				{/if}
-			</Button>
-		</form>
-	</Card.Content>
-</Card.Root>
+				Add Staff
+			{/if}
+		</Button>
+	</form>
+</FormCard>

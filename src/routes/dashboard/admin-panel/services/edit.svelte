@@ -90,7 +90,7 @@
 							{errors}
 							label="category"
 							type="select"
-							name="name"
+							name="category"
 							required={true}
 							{items}
 						/>

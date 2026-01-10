@@ -19,7 +19,11 @@
 
 		return `${year}-${month}-${day}`;
 	}
-	let { data = $bindable(), oldDays = false }: { data: string; oldDays?: boolean } = $props();
+	let {
+		data = $bindable(),
+		oldDays = false,
+		year = false
+	}: { data: string; oldDays?: boolean; year?: boolean } = $props();
 
 	const todayDate = oldDays ? undefined : today(getLocalTimeZone());
 
@@ -140,7 +144,13 @@
 			Ethiopian Date: <span class="font-semibold text-foreground">{displayDate}</span>
 		</div>
 
-		<Calendar locale="am-ET" type="single" minValue={todayDate} bind:value={form} />
+		<Calendar
+			locale="am-ET"
+			captionLayout={year ? 'dropdown-years' : 'label'}
+			type="single"
+			minValue={todayDate}
+			bind:value={form}
+		/>
 		{#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In 3 days', value: 3 }, { label: 'In a week', value: 7 }, { label: 'In 2 weeks', value: 14 }] as preset (preset.value)}
 			<Button
 				variant="outline"

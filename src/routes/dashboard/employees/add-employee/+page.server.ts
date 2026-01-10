@@ -2,33 +2,26 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 
-import { staffSchema } from '$lib/zodschemas/appointmentSchema';
+import { add } from './schema';
 import { db } from '$lib/server/db';
-import { staffTypes as positions, salaries, employee } from '$lib/server/db/schema/';
+import { salaries, employee } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
+import { departments, empStatus, eduLevel } from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
 
 export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod4(staffSchema));
+	const form = await superValidate(zod4(add));
 
-	const allPositions = await db
-		.select({
-			value: positions.id,
-			name: positions.name,
-			description: positions.description
-		})
-		.from(positions);
-
-	const allStaff = await db
-		.select({
-			name: employee.firstName
-		})
-		.from(employee);
+	const departmentList = await departments();
+	const empStatusList = await empStatus();
+	const eduLevelList = await eduLevel();
 
 	return {
 		form,
-		allPositions,
-		allStaff
+
+		departmentList,
+		empStatusList,
+		eduLevelList
 	};
 };
 
@@ -51,7 +44,7 @@ import { saveUploadedFile } from '$lib/server/upload';
 export const actions: Actions = {
 	addStaff: async ({ request, locals }) => {
 		console.log('connected');
-		const form = await superValidate(request, zod4(staffSchema));
+		const form = await superValidate(request, zod4(add));
 
 		if (!form.valid) {
 			return fail(400, {
@@ -59,8 +52,17 @@ export const actions: Actions = {
 			});
 		}
 
-		const { firstName, lastName, email, phone, position, salary, hiredAt, contract, govId } =
-			form.data;
+		const {
+			name,
+			fatherName,
+			grandFatherName,
+			email,
+			phone,
+			departmentId,
+			salary,
+			hireDate,
+			govId
+		} = form.data;
 
 		try {
 			const imageName = await saveUploadedFile(govId);
@@ -70,7 +72,7 @@ export const actions: Actions = {
 			const [staffMember] = await db
 				.insert(employee)
 				.values({
-					firstName,
+					name,
 					lastName,
 					email,
 					phone,
@@ -78,23 +80,21 @@ export const actions: Actions = {
 					contract: contractName,
 					type: position,
 					hireDate: new Date(hiredAt),
-					createdBy: locals.user?.id,
-					branchId: locals.user?.branch
+					createdBy: locals.user?.id
 				})
 				.$returningId();
 
 			await db.insert(salaries).values({
 				amount: salary,
 				staffId: staffMember.id,
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
+				createdBy: locals.user?.id
 			});
 
 			delete form.data.govId;
 			delete form.data.contract;
 			return message(form, { type: 'success', text: 'Staff Successfully Added' });
 		} catch (err) {
-			return message(form, { type: 'error', text: `Error: ${err.message}` });
+			return message(form, { type: 'error', text: `Error: ${err?.message}` });
 		}
 	}
 };

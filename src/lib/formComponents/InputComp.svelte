@@ -21,7 +21,8 @@
 		placeholder = '',
 		rows = 5,
 		items = [],
-		oldDays = true
+		oldDays = true,
+		year = false
 	} = $props();
 </script>
 
@@ -30,11 +31,11 @@
 	{#if type === 'textarea'}
 		<Textarea {name} bind:value={$form[name]} {required} {rows} {placeholder} />
 	{:else if type === 'file'}
-		<FileUpload {name} {form} {errors} {label} />
+		<FileUpload {name} {form} {errors} />
 	{:else if type === 'select'}
 		<SelectComp {name} bind:value={$form[name]} {items} />
 	{:else if type === 'date'}
-		<DatePicker2 bind:data={$form[name]} {oldDays} />
+		<DatePicker2 bind:data={$form[name]} {oldDays} {year} />
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'combo'}
 		<ComboboxComp {name} bind:value={$form[name]} {items} {required} />

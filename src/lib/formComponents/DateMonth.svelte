@@ -39,10 +39,11 @@
 
 		return isNaN(d.getTime()) // make sure we really have a valid date
 			? 'Pick a date'
-			: d.toLocaleDateString('en-US', {
+			: d.toLocaleDateString('am-ET', {
 					year: 'numeric',
 					month: 'short',
-					day: 'numeric'
+					day: 'numeric',
+					calendar: 'ethiopic'
 				});
 	}
 
@@ -67,6 +68,14 @@
 			: 'Pick a date'}
 	</Popover.Trigger>
 	<Popover.Content bind:ref={contentRef} class="w-full p-0">
+		<div class="text-sm text-muted-foreground">
+			Ethiopian Date: <span class="font-semibold text-foreground"
+				>{formatDate(value.start ?? 'Pick a start date') +
+					' - ' +
+					formatDate(value.end ?? 'Pick an end date')}</span
+			>
+		</div>
+
 		<RangeCalendar
 			bind:value
 			class="relative w-auto rounded-lg border pb-16 shadow-sm"

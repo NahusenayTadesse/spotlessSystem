@@ -1,14 +1,12 @@
 <script lang="ts">
 	import {
-		User,
 		Users,
 		UserRoundCog,
 		ChartArea,
-		Calendar,
 		SquareChartGantt,
 		IdCardLanyard,
 		LayoutDashboard,
-		ShoppingBasket,
+		GraduationCap,
 		Container,
 		Banknote,
 		BanknoteArrowUp,
@@ -38,9 +36,7 @@
 				{ title: 'Add Customer', url: '/dashboard/customers/add-customer', icon: Plus }
 			]
 		},
-		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
-		{ title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
-		{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
+
 		{
 			title: 'Supplies',
 			url: '/dashboard/supplies',
@@ -49,16 +45,21 @@
 				{ title: 'All Supplies', url: '/dashboard/supplies', icon: Sheet },
 				{ title: 'Add Supply', url: '/dashboard/supplies/add-supplies', icon: Plus },
 				{ title: 'Suppliers', url: '/dashboard/supplies/suppliers', icon: Sheet },
-				{ title: 'Add Supplier', url: '/dashboard/supplies/add-supplier', icon: Plus },
-				{ title: 'Categories', url: '/dashboard/supplies/categories', icon: Sheet },
-				{ title: 'Add Category', url: '/dashboard/supplies/add-category', icon: Plus }
+				{ title: 'Add Supplier', url: '/dashboard/supplies/add-supplier', icon: Plus }
 			]
 		},
 		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
-		{ title: 'Employees', url: '/dashboard/employees', icon: IdCardLanyard },
+		{
+			title: 'Employees',
+			url: '/dashboard/employees',
+			icon: IdCardLanyard,
+			items: [
+				{ title: 'All Employees', url: '/dashboard/employees', icon: List },
+				{ title: 'Add Employee', url: '/dashboard/employees/add-employee', icon: Plus }
+			]
+		},
 		{ title: 'Salary', url: '/dashboard/salary', icon: Banknote },
-		{ title: 'Sales', url: '/dashboard/sales', icon: BanknoteArrowUp },
-		{ title: 'Transactions', url: '/dashboard/transactions', icon: ScanLine },
+		{ title: 'Finance', url: '/dashboard/transactions', icon: ScanLine },
 		{
 			title: 'Admin Panel',
 			url: '/dashboard/admin-panel',
@@ -68,10 +69,21 @@
 				{ title: 'Cities', url: '/dashboard/admin-panel/cities', icon: MapPin },
 				{ title: 'Subcities', url: '/dashboard/admin-panel/subcities', icon: MapPin },
 				{ title: 'Departments', url: '/dashboard/admin-panel/department', icon: Building2 },
+				{ title: 'Services', url: '/dashboard/admin-panel/services', icon: SquareChartGantt },
+				{
+					title: 'Educational Level',
+					url: '/dashboard/admin-panel/educational-level',
+					icon: GraduationCap
+				},
+				{
+					title: 'Employment Status',
+					url: '/dashboard/admin-panel/employment-status',
+					icon: IdCardLanyard
+				},
 				{
 					title: 'Payment Methods',
 					url: '/dashboard/admin-panel/payment-methods',
-					icon: Building2
+					icon: Banknote
 				},
 				{ title: 'Users', url: '/dashboard/admin-panel/users', icon: Users },
 				{ title: 'Roles', url: '/dashboard/admin-panel/roles', icon: Users }
@@ -83,19 +95,19 @@
 
 	const on = 'bg-sidebar-primary text-sidebar-primary-foreground';
 	const off = 'text-sidebar-foreground';
-	function blacken(url: string) {
-		const currentPath = page.url.pathname;
+	// function blacken(url: string) {
+	// 	const currentPath = page.url.pathname;
 
-		// Special case for root dashboard
-		if (url === '/dashboard') {
-			return currentPath === '/dashboard' ? on : off;
-		}
+	// 	// Special case for root dashboard
+	// 	if (url === '/dashboard') {
+	// 		return currentPath === '/dashboard' ? on : off;
+	// 	}
 
-		// For other items, check if current path starts with their URL but is not just /dashboard
-		return currentPath.startsWith(url) && currentPath !== '/dashboard' ? on : off;
-	}
+	// 	// For other items, check if current path starts with their URL but is not just /dashboard
+	// 	return currentPath.startsWith(url) && currentPath !== '/dashboard' ? on : off;
+	// }
 
-	let open = $state(false);
+	// let open = $state(false);
 
 	const sidebar = useSidebar();
 
@@ -106,9 +118,9 @@
 	}
 </script>
 
-<Sidebar.Root collapsible="icon" {...restProps}>
+<Sidebar.Root collapsible="offcanvas" {...restProps}>
 	<Sidebar.Content
-		class="z-[9999]! h-full
+		class="z-9999! h-full
   overflow-y-scroll pt-4
   [scrollbar-color:#a3a3a3_transparent]
   [scrollbar-width:thin]
@@ -123,7 +135,7 @@
 				<div class="flex flex-row items-center justify-center gap-4">
 					<img src="/logo.webp" class="block h-16 w-16 dark:hidden" alt="Logo" />
 					<img src="/logoWhite.webp" class="hidden h-16 w-16 dark:block" alt="Logo" />
-					<h4 class="!text-[22px] text-gray-900 dark:text-white">Spotless</h4>
+					<h4 class="text-[22px]! text-gray-900 dark:text-white">Spotless</h4>
 				</div></Sidebar.GroupLabel
 			>
 			<Sidebar.GroupContent class="my-4">

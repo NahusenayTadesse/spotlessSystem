@@ -4,7 +4,7 @@ import {
 	payrollEntries,
 	salaries,
 	employee,
-	staffTypes
+	department
 } from '$lib/server/db/schema';
 import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -23,8 +23,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			// Select all payroll columns (these will be NULL if no matching entry exists)
 			id: employee.id,
 			staffId: payrollEntries.staffId,
-			name: sql<string>`TRIM(CONCAT(${employee.firstName}, ' ', COALESCE(${employee.lastName}, '')))`,
-			position: staffTypes.name,
+			name: sql<string>`TRIM(CONCAT(${employee.name}, ' ', COALESCE(${employee.fatherName}, '')))`,
+			position: department.name,
 			month: payrollEntries.month,
 			year: payrollEntries.year,
 			payPeriod: sql<string>`CONCAT(DATE_FORMAT(${payrollEntries.payPeriodStart}, '%Y-%m-%d'), ' to ', DATE_FORMAT(${payrollEntries.payPeriodEnd}, '%Y-%m-%d'))`,
@@ -49,13 +49,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			and(
 				eq(payrollEntries.staffId, employee.id),
 				eq(payrollEntries.month, month),
-				eq(payrollEntries.year, year),
-				eq(payrollEntries.branchId, locals?.user?.branch)
+				eq(payrollEntries.year, year)
 			)
 		)
 		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
-		.leftJoin(staffTypes, eq(staffTypes.id, employee.type))
+		.leftJoin(department, eq(department.id, employee.departmentId))
 		.orderBy(desc(payrollEntries.paymentDate));
 
 	return {

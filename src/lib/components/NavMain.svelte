@@ -23,7 +23,7 @@
 	} = $props();
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { slide, fly } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 
 	function variantChecker(url: string) {
 		const currentPath = page.url.pathname;

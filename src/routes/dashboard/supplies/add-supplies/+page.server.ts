@@ -13,6 +13,7 @@ import { supplyCategories } from '$lib/server/fastData';
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
 	const typeList = await supplyCategories();
+
 	return {
 		form,
 		typeList

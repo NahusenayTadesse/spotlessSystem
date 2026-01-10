@@ -118,7 +118,7 @@
 			{errors}
 			label="category"
 			type="select"
-			name="name"
+			name="category"
 			items={data?.categoryList}
 			required={true}
 		/>
