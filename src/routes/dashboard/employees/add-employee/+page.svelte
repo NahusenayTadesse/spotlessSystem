@@ -53,13 +53,13 @@
 </script>
 
 <svelte:head>
-	<title>Add New Staff</title>
+	<title>Add New Employee</title>
 </svelte:head>
 
 <FormCard title="Add New Employee">
 	<form
 		use:enhance
-		action="?/addStaff"
+		action="?/add"
 		id="main"
 		class="flex flex-col gap-4"
 		method="POST"
@@ -172,7 +172,17 @@
 		/>
 
 		<!-- Row 5 -------------------------------------------------------------- -->
-		<Input label="Birth Date" name="birthDate" year={true} {form} {errors} type="date" required />
+		<Input
+			label="Birth Date"
+			name="birthDate"
+			year={true}
+			{form}
+			{errors}
+			type="date"
+			required
+			futureDays={true}
+		/>
+		{$form.birthDate}
 		<Input
 			label="Pension (%)"
 			name="pensionType"
@@ -208,8 +218,8 @@
 
 		<!-- Row 6 -------------------------------------------------------------- -->
 		<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
-		<Input label="Photo" name="photo" {form} {errors} type="file" required />
-		<Input label="Government ID" name="govtId" {form} {errors} type="file" required />
+		<!-- <Input label="Photo" name="photo" {form} {errors} type="file" required />
+		<Input label="Government ID" name="govtId" {form} {errors} type="file" required /> -->
 
 		<!-- Row 7 -------------------------------------------------------------- -->
 		<Input label="Hire Date" name="hireDate" {form} {errors} type="date" year={true} required />

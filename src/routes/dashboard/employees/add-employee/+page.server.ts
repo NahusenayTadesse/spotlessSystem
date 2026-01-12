@@ -1,4 +1,4 @@
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate, message, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 
@@ -25,24 +25,10 @@ export const load: PageServerLoad = async () => {
 	};
 };
 
-// import fs from 'node:fs';
-// import path from 'node:path';
-// import { generateUserId } from '$lib/global.svelte';
-// import { Readable } from 'node:stream';
-// import { pipeline } from 'node:stream/promises';
-// import { env } from '$env/dynamic/private';
-// import { setFlash } from 'sveltekit-flash-message/server';
-// const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
-
-// if (!fs.existsSync(FILES_DIR)) {
-// 	fs.mkdirSync(FILES_DIR, { recursive: true });
-// }
-//
-
 import { saveUploadedFile } from '$lib/server/upload';
 
 export const actions: Actions = {
-	addStaff: async ({ request, locals }) => {
+	add: async ({ request, locals }) => {
 		console.log('connected');
 		const form = await superValidate(request, zod4(add));
 
@@ -53,31 +39,38 @@ export const actions: Actions = {
 		}
 
 		const {
+			idNo,
 			name,
 			fatherName,
 			grandFatherName,
+			birthDate,
 			email,
 			phone,
 			departmentId,
 			salary,
-			hireDate,
-			govId
+			hireDate
 		} = form.data;
 
-		try {
-			const imageName = await saveUploadedFile(govId);
+		const bDay = isUnder18(new Date(birthDate));
 
-			const contractName = await saveUploadedFile(contract);
+		if (bDay) {
+			setError(form, 'birthDate', 'Employee must be at least 18 years old');
+		}
+		try {
+			// const imageName = await saveUploadedFile(govId);
+
+			// const contractName = await saveUploadedFile(contract);
 
 			const [staffMember] = await db
 				.insert(employee)
 				.values({
+					idNo,
 					name,
-					lastName,
+					fatherName,
+					grandFatherName,
 					email,
 					phone,
-					govtId: imageName,
-					contract: contractName,
+
 					type: position,
 					hireDate: new Date(hiredAt),
 					createdBy: locals.user?.id
@@ -98,3 +91,18 @@ export const actions: Actions = {
 		}
 	}
 };
+function isUnder18(birthDate: Date): boolean {
+	const birth = new Date(birthDate);
+	const today = new Date();
+
+	let age = today.getFullYear() - birth.getFullYear();
+	const monthDiff = today.getMonth() - birth.getMonth();
+	const dayDiff = today.getDate() - birth.getDate();
+
+	// Adjust age if birthday hasn't occurred yet this year
+	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+		age--;
+	}
+
+	return age < 18;
+}

@@ -28,26 +28,26 @@ export const add = z.object({
 	pensionType: z.coerce.number().min(0, 'Pension cannot be negative'),
 	taxType: z.coerce.number().min(0, 'Tax type cannot be negative'),
 	salary: z.coerce.number().min(0, 'Salary cannot be negative'),
-	photo: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
-	govtId: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+	// photo: z
+	// 	.instanceof(File, {
+	// 		message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+	// 	})
+	// 	.refine((file) => file.size > 0, 'File cannot be empty.')
+	// 	.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+	// 	.refine(
+	// 		(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+	// 		'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+	// 	),
+	// govtId: z
+	// 	.instanceof(File, {
+	// 		message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+	// 	})
+	// 	.refine((file) => file.size > 0, 'File cannot be empty.')
+	// 	.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+	// 	.refine(
+	// 		(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+	// 		'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+	// 	),
 
 	hireDate: z.coerce.string('Hired date is required'),
 
