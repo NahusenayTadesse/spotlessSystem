@@ -2,47 +2,121 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input/index';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { X } from '@lucide/svelte';
+	import { X, CloudUpload as UploadCloud, FileText, Image as ImageIcon } from '@lucide/svelte';
 	import { fileProxy } from 'sveltekit-superforms/client';
 
 	let { form, name, errors } = $props();
 
 	const file = fileProxy(form, name);
+	let isDragging = $state(false);
+
+	let currentFile = $derived($file?.item(0));
+
+	// Handle the drop event
+	function handleDrop(e: DragEvent) {
+		e.preventDefault();
+		isDragging = false;
+
+		if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+			// Update the fileProxy with the dropped files
+			file.set(e.dataTransfer.files);
+		}
+	}
+
+	function handleDragOver(e: DragEvent) {
+		e.preventDefault();
+		isDragging = true;
+	}
+
+	function handleDragLeave() {
+		isDragging = false;
+	}
 </script>
 
-<div class="flex w-full flex-col justify-start gap-2">
-	<!-- {#if !$file.length}
-		<Label for={name} class="capitalize">{label}</Label>{/if} -->
+<div class="flex w-full flex-col gap-3">
+	{#if !currentFile}
+		<label
+			for={name}
+			class="group relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed py-10 transition-all
+			{isDragging
+				? 'border-primary bg-primary/5'
+				: 'border-muted-foreground/25 bg-muted/50 hover:border-primary/50 hover:bg-muted'}"
+			ondragover={handleDragOver}
+			ondragleave={handleDragLeave}
+			ondrop={handleDrop}
+		>
+			<div class="flex flex-col items-center justify-center gap-2 text-center">
+				<div
+					class="rounded-full bg-background p-3 shadow-sm transition-transform group-hover:scale-110"
+				>
+					<UploadCloud class="h-6 w-6 {isDragging ? 'text-primary' : 'text-muted-foreground'}" />
+				</div>
+				<div class="px-4">
+					<p class="text-sm font-medium">
+						{isDragging ? 'Drop it here!' : 'Click to upload or drag and drop'}
+					</p>
+					<p class="text-xs text-muted-foreground">PDF or Images (Max 10MB)</p>
+				</div>
+			</div>
 
-	<Input
-		type="file"
-		class=" {$file.length ? 'hidden' : ''} "
-		{name}
-		accept="image/*,application/pdf"
-		bind:files={$file}
-		multiple={false}
-	/>
+			<Input
+				id={name}
+				type="file"
+				class="hidden"
+				{name}
+				accept="image/*,application/pdf"
+				bind:files={$file}
+				multiple={false}
+			/>
+		</label>
+	{:else}
+		<div
+			class="relative animate-in overflow-hidden rounded-xl border bg-card p-4 shadow-sm duration-200 zoom-in-95 fade-in"
+		>
+			<div class="mb-3 flex items-center justify-between">
+				<div class="flex items-center gap-3 overflow-hidden">
+					<div
+						class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"
+					>
+						{#if currentFile.type === 'application/pdf'}
+							<FileText class="h-5 w-5" />
+						{:else}
+							<ImageIcon class="h-5 w-5" />
+						{/if}
+					</div>
+					<div class="flex flex-col truncate">
+						<span class="truncate text-sm font-medium">{currentFile.name}</span>
+						<span class="text-xs text-muted-foreground">
+							{(currentFile.size / 1024 / 1024).toFixed(2)} MB
+						</span>
+					</div>
+				</div>
+				<Button
+					variant="ghost"
+					size="icon"
+					class="hover:text-destructive-foreground h-8 w-8 rounded-full hover:bg-destructive"
+					onclick={() => file.set(undefined)}
+				>
+					<X class="h-4 w-4" />
+				</Button>
+			</div>
 
-	{#if $file?.length}
-		<Label for={name} class="capitalize">{$file?.item(0)?.name}</Label>
-		<div class="flex flex-row gap-2">
-			{#if $file[0].type === 'application/pdf'}
-				<iframe
-					src={`${URL.createObjectURL($file[0])}#toolbar=0`}
-					class="h-64 w-64"
-					frameborder="0"
-					title="pdf"
-				></iframe>
-			{:else}
-				<img src={URL.createObjectURL($file[0])} class="h-64 w-64 rounded-md object-cover" alt="" />
-			{/if}
-			<Button variant="ghost" size="icon" onclick={() => file.set(undefined)}>
-				<X class="h-4 w-4" />
-			</Button>
+			<div class="overflow-hidden rounded-lg border bg-muted/30">
+				{#if currentFile.type === 'application/pdf'}
+					<iframe
+						src={`${URL.createObjectURL(currentFile)}#toolbar=0`}
+						class="h-64 w-full"
+						frameborder="0"
+						title="pdf-preview"
+					></iframe>
+				{:else}
+					<img
+						src={URL.createObjectURL(currentFile)}
+						class="max-h-80 w-full object-contain"
+						alt="Preview"
+					/>
+				{/if}
+			</div>
 		</div>
-	{/if}
-
-	{#if $errors[name]}
-		<p class="text-red-500">{$errors[name]}</p>
 	{/if}
 </div>

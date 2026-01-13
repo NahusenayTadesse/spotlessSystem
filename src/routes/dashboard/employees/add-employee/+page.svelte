@@ -54,6 +54,9 @@
 		value: v,
 		name: v.charAt(0).toUpperCase() + v.slice(1)
 	}));
+
+	const sectionStyle = `flex flex-col gap-4 mt-4`;
+	const rowStyle = `grid lg:grid-cols-2 grid-cols-1 gap-4`;
 </script>
 
 <svelte:head>
@@ -61,217 +64,240 @@
 </svelte:head>
 
 <FormCard title="Add New Employee">
-	<Errors allErrors={$allErrors} />
+	<!-- EmployeeAddForm.svelte -->
 	<form
 		use:enhance
 		action="?/add"
 		id="main"
-		class="flex flex-col gap-4"
 		method="POST"
 		enctype="multipart/form-data"
+		class="grid-form"
 	>
-		<Input
-			label="Employee ID"
-			name="idNo"
-			{form}
-			placeholder="Enter Employee ID"
-			{errors}
-			type="text"
-			required
-		/>
-		<Input
-			label="Full Name"
-			name="name"
-			{form}
-			placeholder="Enter Full Name"
-			{errors}
-			type="text"
-			required
-		/>
-		<Input
-			label="Father Name"
-			name="fatherName"
-			{form}
-			placeholder="Enter Father Name"
-			{errors}
-			type="text"
-			required
-		/>
+		<!-- 1. PERSONAL INFO -->
+		<section class={sectionStyle}>
+			<h4>Personal Information</h4>
 
-		<!-- Row 2 -------------------------------------------------------------- -->
-		<Input
-			label="Grandfather Name"
-			name="grandFatherName"
-			{form}
-			placeholder="Enter Grandfather Name"
-			{errors}
-			type="text"
-			required
-		/>
-		<Input
-			label="Gender"
-			name="gender"
-			{form}
-			placeholder="Select Gender"
-			{errors}
-			type="select"
-			items={genders}
-			required
-		/>
-		<Input
-			label="Phone"
-			name="phone"
-			{form}
-			placeholder="Enter Phone Number"
-			{errors}
-			type="tel"
-			required
-		/>
+			<div class={rowStyle}>
+				<Input
+					label="Employee ID"
+					name="idNo"
+					{form}
+					placeholder="Enter Employee ID"
+					{errors}
+					type="text"
+					required
+				/>
+				<Input
+					label="Full Name"
+					name="name"
+					{form}
+					placeholder="Enter Full Name"
+					{errors}
+					type="text"
+					required
+				/>
+				<Input
+					label="Father Name"
+					name="fatherName"
+					{form}
+					placeholder="Enter Father Name"
+					{errors}
+					type="text"
+					required
+				/>
+			</div>
 
-		<!-- Row 3 -------------------------------------------------------------- -->
-		<Input
-			label="Email"
-			name="email"
-			placeholder="Enter Email"
-			{form}
-			{errors}
-			type="email"
-			required={false}
-		/>
-		<Input label="Nationality" name="nationality" {form} {errors} type="text" />
-		<Input
-			label="Religion"
-			name="religion"
-			{form}
-			{errors}
-			type="select"
-			items={[
-				{
-					value: 'Christian',
-					name: 'Christian'
-				},
-				{ value: 'Muslim', name: 'Muslim' },
-				{ value: 'Other', name: 'Other' }
-			]}
-		/>
+			<div class={rowStyle}>
+				<Input
+					label="Grandfather Name"
+					name="grandFatherName"
+					{form}
+					placeholder="Enter Grandfather Name"
+					{errors}
+					type="text"
+					required
+				/>
+				<Input
+					label="Gender"
+					name="gender"
+					{form}
+					placeholder="Select Gender"
+					{errors}
+					type="select"
+					items={genders}
+					required
+				/>
+				<Input
+					label="Phone"
+					name="phone"
+					{form}
+					placeholder="Enter Phone Number"
+					{errors}
+					type="tel"
+					required
+				/>
+			</div>
 
-		<!-- Row 4 -------------------------------------------------------------- -->
-		<Input label="Blood Type" name="bloodType" {form} {errors} type="select" items={bloodTypes} />
-		<Input
-			label="TIN (10 digits)"
-			name="tinNo"
-			placeholder="Enter TIN"
-			{form}
-			{errors}
-			type="text"
-			required
-		/>
-		<Input
-			label="Department"
-			name="departmentId"
-			{form}
-			{errors}
-			type="select"
-			items={data?.departmentList}
-			required
-		/>
+			<div class={rowStyle}>
+				<Input label="Email" name="email" placeholder="Enter Email" {form} {errors} type="email" />
+				<Input label="Nationality" name="nationality" {form} {errors} type="text" />
+				<Input
+					label="Religion"
+					name="religion"
+					{form}
+					{errors}
+					type="select"
+					items={[
+						{ value: 'Christian', name: 'Christian' },
+						{ value: 'Muslim', name: 'Muslim' },
+						{ value: 'Other', name: 'Other' }
+					]}
+				/>
+			</div>
 
-		<!-- Row 5 -------------------------------------------------------------- -->
-		<Input
-			label="Birth Date"
-			name="birthDate"
-			year={true}
-			{form}
-			{errors}
-			type="date"
-			required
-			futureDays={true}
-		/>
-		<Input
-			label="Pension (%)"
-			name="pensionType"
-			{form}
-			{errors}
-			type="select"
-			items={[
-				{ value: '1', name: 'Employee Pension Contribution (7%)' },
-				{
-					value: '1',
-					name: 'Employer Pension Contribution (11%)'
-				}
-			]}
-			required
-		/>
-		<Input
-			label="Tax Type (%)"
-			name="taxType"
-			{form}
-			{errors}
-			type="select"
-			items={[
-				{ value: '0', name: '0% (Up to 600 ETB)' },
-				{ value: '10', name: '10% (601 – 1,650 ETB)' },
-				{ value: '15', name: '15% (1,651 – 3,200 ETB)' },
-				{ value: '20', name: '20% (3,201 – 5,250 ETB)' },
-				{ value: '25', name: '25% (5,251 – 7,800 ETB)' },
-				{ value: '30', name: '30% (7,801 – 10,900 ETB)' },
-				{ value: '35', name: '35% (Above 10,900 ETB)' }
-			]}
-			required
-		/>
+			<div class={rowStyle}>
+				<Input
+					label="Blood Type"
+					name="bloodType"
+					{form}
+					{errors}
+					type="select"
+					items={bloodTypes}
+				/>
+				<Input
+					label="Birth Date"
+					name="birthDate"
+					year
+					{form}
+					{errors}
+					type="date"
+					required
+					futureDays
+				/>
+				<Input
+					label="Marital Status"
+					name="martialStatus"
+					{form}
+					{errors}
+					type="select"
+					items={maritalStatuses}
+				/>
+			</div>
+		</section>
 
-		<!-- Row 6 -------------------------------------------------------------- -->
-		<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
-		<Input label="Photo" name="photo" {form} {errors} type="file" required />
-		<Input label="Government ID" name="govtId" {form} {errors} type="file" required />
+		<!-- 2. GOVERNMENT / LEGAL -->
+		<section class={sectionStyle}>
+			<h4>Government & Legal</h4>
+			<div class={rowStyle}>
+				<Input
+					label="TIN (10 digits)"
+					name="tinNo"
+					placeholder="Enter TIN"
+					{form}
+					{errors}
+					type="text"
+					required
+				/>
+				<Input label="Government ID" name="govtId" {form} {errors} type="file" required />
+			</div>
+		</section>
 
-		<!-- Row 7 -------------------------------------------------------------- -->
-		<Input
-			label="Hire Date"
-			name="hireDate"
-			{form}
-			{errors}
-			type="date"
-			year={true}
-			required
-			oldDays={true}
-			futureDays={false}
-		/>
-		<Input
-			label="Employment Status"
-			name="employmentStatus"
-			{form}
-			{errors}
-			type="select"
-			items={data?.empStatusList}
-			required
-		/>
+		<!-- 3. JOB DETAILS -->
+		<section class={sectionStyle}>
+			<h4>Job Details</h4>
+			<div class={rowStyle}>
+				<Input
+					label="Department"
+					name="departmentId"
+					{form}
+					{errors}
+					type="select"
+					items={data?.departmentList}
+					required
+				/>
+				<Input
+					label="Employment Status"
+					name="employmentStatus"
+					{form}
+					{errors}
+					type="select"
+					items={data?.empStatusList}
+					required
+				/>
+				<Input
+					label="Hire Date"
+					name="hireDate"
+					year
+					{form}
+					{errors}
+					type="date"
+					required
+					oldDays
+					futureDays={false}
+				/>
+			</div>
 
-		<!-- Row 8 -------------------------------------------------------------- -->
-		<Input
-			label="Educational Level"
-			name="educationalLevel"
-			{form}
-			{errors}
-			type="select"
-			items={data?.eduLevelList}
-		/>
-		<Input
-			label="Marital Status"
-			name="martialStatus"
-			{form}
-			{errors}
-			type="select"
-			items={maritalStatuses}
-		/>
-		<Button type="submit" class="mt-4" form="main">
-			{#if $delayed}
-				<LoadingBtn name="Adding Staff" />
-			{:else}
-				<Plus class="h-4 w-4" />
+			<div class={rowStyle}>
+				<Input
+					label="Educational Level"
+					name="educationalLevel"
+					{form}
+					{errors}
+					type="select"
+					items={data?.eduLevelList}
+				/>
+				<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
+				<Input label="Photo" name="photo" {form} {errors} type="file" required />
+			</div>
+		</section>
 
-				Add Staff
-			{/if}
-		</Button>
+		<!-- 4. PAYROLL -->
+		<section class={sectionStyle}>
+			<h4>Payroll Settings</h4>
+			<div class={rowStyle}>
+				<Input
+					label="Pension (%)"
+					name="pensionType"
+					{form}
+					{errors}
+					type="select"
+					items={[
+						{ value: '1', name: 'Employee Pension Contribution (7%)' },
+						{ value: '1', name: 'Employer Pension Contribution (11%)' }
+					]}
+					required
+				/>
+				<Input
+					label="Tax Type (%)"
+					name="taxType"
+					{form}
+					{errors}
+					type="select"
+					items={[
+						{ value: '0', name: '0% (Up to 600 ETB)' },
+						{ value: '10', name: '10% (601 – 1,650 ETB)' },
+						{ value: '15', name: '15% (1,651 – 3,200 ETB)' },
+						{ value: '20', name: '20% (3,201 – 5,250 ETB)' },
+						{ value: '25', name: '25% (5,251 – 7,800 ETB)' },
+						{ value: '30', name: '30% (7,801 – 10,900 ETB)' },
+						{ value: '35', name: '35% (Above 10,900 ETB)' }
+					]}
+					required
+				/>
+			</div>
+		</section>
+
+		<!-- 5. SUBMIT -->
+		<section class={sectionStyle}>
+			<Errors allErrors={$allErrors} />
+			<Button type="submit" form="main">
+				{#if $delayed}
+					<LoadingBtn name="Adding Employee" />
+				{:else}
+					<Plus class="h-4 w-4" />
+					Add Employee
+				{/if}
+			</Button>
+		</section>
 	</form>
 </FormCard>
