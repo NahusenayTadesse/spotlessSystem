@@ -56,14 +56,14 @@
 	}));
 
 	const sectionStyle = `flex flex-col gap-4 mt-4`;
-	const rowStyle = `grid lg:grid-cols-2 grid-cols-1 gap-4`;
+	const rowStyle = `flex lg:flex-row flex-col justify-center items-center gap-4`;
 </script>
 
 <svelte:head>
 	<title>Add New Employee</title>
 </svelte:head>
 
-<FormCard title="Add New Employee">
+<FormCard title="Add New Employee" className="lg:w-full!">
 	<!-- EmployeeAddForm.svelte -->
 	<form
 		use:enhance
@@ -198,7 +198,24 @@
 					type="text"
 					required
 				/>
-				<Input label="Government ID" name="govtId" {form} {errors} type="file" required />
+				<Input
+					label="Government ID"
+					name="govtId"
+					{form}
+					{errors}
+					type="file"
+					required
+					placeholder="Upload a FIDA or A recent ID of Employee"
+				/>
+				<Input
+					label="Contract"
+					name="contract"
+					{form}
+					{errors}
+					type="file"
+					required
+					placeholder="Upload the contract in a PDF format Max 10MB"
+				/>
 			</div>
 		</section>
 
@@ -247,7 +264,15 @@
 					items={data?.eduLevelList}
 				/>
 				<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
-				<Input label="Photo" name="photo" {form} {errors} type="file" required />
+				<Input
+					label="Photo"
+					name="photo"
+					{form}
+					{errors}
+					type="file"
+					required
+					placeholder="Upload a recent photo of Employee 4 X 4 with good Quality, Max 10MB"
+				/>
 			</div>
 		</section>
 

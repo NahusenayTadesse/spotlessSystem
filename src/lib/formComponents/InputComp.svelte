@@ -32,7 +32,7 @@
 	{#if type === 'textarea'}
 		<Textarea {name} bind:value={$form[name]} {required} {rows} {placeholder} />
 	{:else if type === 'file'}
-		<FileUpload {name} {form} {errors} />
+		<FileUpload {name} {form} {placeholder} />
 	{:else if type === 'select'}
 		<SelectComp {name} bind:value={$form[name]} {items} />
 	{:else if type === 'date'}

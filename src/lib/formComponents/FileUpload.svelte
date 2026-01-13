@@ -5,7 +5,7 @@
 	import { X, CloudUpload as UploadCloud, FileText, Image as ImageIcon } from '@lucide/svelte';
 	import { fileProxy } from 'sveltekit-superforms/client';
 
-	let { form, name, errors } = $props();
+	let { form, name, placeholder = 'PDF or Images (Max 10MB)' } = $props();
 
 	const file = fileProxy(form, name);
 	let isDragging = $state(false);
@@ -37,7 +37,7 @@
 	{#if !currentFile}
 		<label
 			for={name}
-			class="group relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed py-10 transition-all
+			class="group relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed py-2! transition-all
 			{isDragging
 				? 'border-primary bg-primary/5'
 				: 'border-muted-foreground/25 bg-muted/50 hover:border-primary/50 hover:bg-muted'}"
@@ -55,7 +55,7 @@
 					<p class="text-sm font-medium">
 						{isDragging ? 'Drop it here!' : 'Click to upload or drag and drop'}
 					</p>
-					<p class="text-xs text-muted-foreground">PDF or Images (Max 10MB)</p>
+					<p class="text-[12px]! text-muted-foreground">{placeholder}</p>
 				</div>
 			</div>
 
