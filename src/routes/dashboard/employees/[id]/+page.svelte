@@ -80,7 +80,7 @@
 				Back
 			{/if}
 		</Button>
-		<Delete redirect="/dashboard/staff" />
+		<Delete redirect="/dashboard/employees" />
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

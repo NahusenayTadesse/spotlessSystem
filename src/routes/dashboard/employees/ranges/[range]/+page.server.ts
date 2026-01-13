@@ -3,20 +3,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 import { db } from '$lib/server/db';
-import {
-	employee,
-	deductions,
-	commissionService,
-	commissionProduct,
-	bonuses,
-	overTime,
-	products,
-	services,
-	transactionProducts,
-	transactionServices,
-	tipsProduct,
-	tipsService
-} from '$lib/server/db/schema';
+import { employee } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
@@ -34,125 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const start = `${y1}-${m1}-${d1}`;
 	const end = `${y2}-${m2}-${d2}`;
 
-	// --- Select Commissions (Service) ---
-	const serviceCommissions = await db
-		.select({
-			staffId: commissionService.staffId,
-			service: services.name,
-			amount: commissionService.amount,
-			date: commissionService.commissionDate
-		})
-		.from(commissionService)
-		.leftJoin(transactionServices, eq(commissionService.saleItemId, transactionServices.id))
-		.leftJoin(services, eq(transactionServices.serviceId, services.id))
-
-		.where(
-			and(
-				currentMonthFilter(commissionService.commissionDate, start, end),
-
-				eq(commissionService.staffId, id)
-			)
-		);
-
-	// --- Select Commissions (Product) ---
-	const productCommissions = await db // <-- add await
-		.select({
-			staffId: commissionProduct.staffId,
-			product: products.name,
-			amount: commissionProduct.amount,
-			date: commissionProduct.commissionDate
-		})
-		.from(commissionProduct)
-		.leftJoin(transactionProducts, eq(commissionProduct.saleItemId, transactionProducts.id))
-		.leftJoin(products, eq(transactionProducts.productId, products.id))
-
-		.where(
-			and(
-				eq(commissionProduct.staffId, id),
-				currentMonthFilter(commissionProduct.commissionDate, start, end)
-			)
-		);
-
-	const serviceTips = await db
-		.select({
-			staffId: tipsService.staffId,
-			service: services.name,
-			amount: tipsService.amount,
-			date: tipsService.tipDate
-		})
-		.from(tipsService)
-		.leftJoin(transactionServices, eq(tipsService.saleItemId, transactionServices.id))
-		.leftJoin(services, eq(transactionServices.serviceId, services.id))
-
-		.where(
-			and(
-				currentMonthFilter(tipsService.tipDate, start, end),
-
-				eq(tipsService.staffId, id)
-			)
-		);
-
-	const productTips = await db // <-- add await
-		.select({
-			staffId: tipsProduct.staffId,
-			product: products.name,
-			amount: tipsProduct.amount,
-			date: tipsProduct.tipDate
-		})
-		.from(tipsProduct)
-		.leftJoin(transactionProducts, eq(tipsProduct.saleItemId, transactionProducts.id))
-		.leftJoin(products, eq(transactionProducts.productId, products.id))
-
-		.where(and(eq(tipsProduct.staffId, id), currentMonthFilter(tipsProduct.tipDate, start, end)));
-
-	// --- Select Bonuses ---
-	const staffBonuses = await db
-		.select({
-			staffId: bonuses.staffId,
-
-			description: bonuses.description,
-			amount: bonuses.amount,
-			date: bonuses.bonusDate
-		})
-		.from(bonuses)
-		.where(and(eq(bonuses.staffId, id), currentMonthFilter(bonuses.bonusDate, start, end)));
-
-	// --- Select Overtime ---
-	const staffOvertime = await db
-		.select({
-			staffId: overTime.staffId,
-			description: sql<string>`CONCAT('Overtime (', ${overTime.hours}, ' hours at $', ${overTime.amountPerHour}, '/hr)')`,
-			amount: overTime.total,
-			date: overTime.date
-		})
-		.from(overTime)
-		.where(and(eq(overTime.staffId, id), currentMonthFilter(overTime.date, start, end)));
-
-	// --- Select Deductions ---
-	const staffDeductions = await db
-		.select({
-			staffId: deductions.staffId,
-			description: deductions.type, // Using the 'type' column for description
-			// Amount is stored as a positive number in the table, but we mark it as a deduction
-			amount: deductions.amount,
-			date: deductions.deductionDate
-		})
-		.from(deductions)
-		.where(
-			and(eq(deductions.staffId, id), currentMonthFilter(deductions.deductionDate, start, end))
-		);
-
-	// --- Combine all results using unionAll ---
-
 	return {
-		staffDeductions,
-		staffOvertime,
-		productTips,
-		serviceTips,
-		staffBonuses,
-		productCommissions,
-		serviceCommissions,
-
 		start,
 		end
 	};

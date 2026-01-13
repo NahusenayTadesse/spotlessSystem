@@ -187,7 +187,6 @@
 			required
 			futureDays={true}
 		/>
-		{$form.birthDate}
 		<Input
 			label="Pension (%)"
 			name="pensionType"
@@ -236,7 +235,7 @@
 			year={true}
 			required
 			oldDays={true}
-			futureDays={true}
+			futureDays={false}
 		/>
 		<Input
 			label="Employment Status"
