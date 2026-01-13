@@ -34,6 +34,7 @@
 		{ name: 'Building', value: data.single?.buildingNumber },
 		{ name: 'Floor', value: data.single?.floor },
 		{ name: 'House Number', value: data.single?.houseNumber },
+
 		{ name: 'Status', value: data.single?.status ? 'Active' : 'Inactive' }
 	]);
 

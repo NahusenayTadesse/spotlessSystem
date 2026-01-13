@@ -8,17 +8,21 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import Input from '$lib/formComponents/InputComp.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();
-	const { form, errors, enhance, message, delayed, capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
+	const { form, errors, enhance, message, delayed, capture, restore, allErrors } = superForm(
+		data.form,
+		{
+			taintedMessage: () => {
+				return new Promise((resolve) => {
+					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+				});
+			},
 
-		validators: zod4Client(add)
-	});
+			validators: zod4Client(add)
+		}
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
 	import { toast } from 'svelte-sonner';
@@ -57,6 +61,7 @@
 </svelte:head>
 
 <FormCard title="Add New Employee">
+	<Errors allErrors={$allErrors} />
 	<form
 		use:enhance
 		action="?/add"
@@ -190,9 +195,9 @@
 			{errors}
 			type="select"
 			items={[
-				{ value: 'Employee Pension Contribution (7%)', name: 'Employee Pension Contribution (7%)' },
+				{ value: '1', name: 'Employee Pension Contribution (7%)' },
 				{
-					value: 'Employer Pension Contribution (11%)',
+					value: '1',
 					name: 'Employer Pension Contribution (11%)'
 				}
 			]}
@@ -205,24 +210,34 @@
 			{errors}
 			type="select"
 			items={[
-				{ value: '0%', name: '0% (Up to 600 ETB)' },
-				{ value: '10%', name: '10% (601 – 1,650 ETB)' },
-				{ value: '15%', name: '15% (1,651 – 3,200 ETB)' },
-				{ value: '20%', name: '20% (3,201 – 5,250 ETB)' },
-				{ value: '25%', name: '25% (5,251 – 7,800 ETB)' },
-				{ value: '30%', name: '30% (7,801 – 10,900 ETB)' },
-				{ value: '35%', name: '35% (Above 10,900 ETB)' }
+				{ value: '0', name: '0% (Up to 600 ETB)' },
+				{ value: '10', name: '10% (601 – 1,650 ETB)' },
+				{ value: '15', name: '15% (1,651 – 3,200 ETB)' },
+				{ value: '20', name: '20% (3,201 – 5,250 ETB)' },
+				{ value: '25', name: '25% (5,251 – 7,800 ETB)' },
+				{ value: '30', name: '30% (7,801 – 10,900 ETB)' },
+				{ value: '35', name: '35% (Above 10,900 ETB)' }
 			]}
 			required
 		/>
 
 		<!-- Row 6 -------------------------------------------------------------- -->
 		<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
-		<!-- <Input label="Photo" name="photo" {form} {errors} type="file" required />
-		<Input label="Government ID" name="govtId" {form} {errors} type="file" required /> -->
+		<Input label="Photo" name="photo" {form} {errors} type="file" required />
+		<Input label="Government ID" name="govtId" {form} {errors} type="file" required />
 
 		<!-- Row 7 -------------------------------------------------------------- -->
-		<Input label="Hire Date" name="hireDate" {form} {errors} type="date" year={true} required />
+		<Input
+			label="Hire Date"
+			name="hireDate"
+			{form}
+			{errors}
+			type="date"
+			year={true}
+			required
+			oldDays={true}
+			futureDays={true}
+		/>
 		<Input
 			label="Employment Status"
 			name="employmentStatus"

@@ -15,7 +15,7 @@ export const add = z.object({
 		.max(15, 'Phone number is too long'),
 	email: z.email().optional(),
 	nationality: z.string().max(50).default('Ethiopia'),
-	religion: z.string().max(50).default('Christianity'),
+	religion: z.string('Religion').max(50).default('Christianity'),
 
 	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).nullable().optional(),
 	// Ethiopian TIN is exactly 10 digits
@@ -23,37 +23,57 @@ export const add = z.object({
 
 	departmentId: z.number().int().positive('Please select a department'),
 
-	birthDate: z.coerce.string('Birth date is required'),
+	birthDate: z.coerce.string('Birth date is required').refine(
+		(value) => {
+			const birth = new Date(value);
 
-	pensionType: z.coerce.number().min(0, 'Pension cannot be negative'),
-	taxType: z.coerce.number().min(0, 'Tax type cannot be negative'),
-	salary: z.coerce.number().min(0, 'Salary cannot be negative'),
-	// photo: z
-	// 	.instanceof(File, {
-	// 		message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-	// 	})
-	// 	.refine((file) => file.size > 0, 'File cannot be empty.')
-	// 	.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-	// 	.refine(
-	// 		(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-	// 		'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-	// 	),
-	// govtId: z
-	// 	.instanceof(File, {
-	// 		message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-	// 	})
-	// 	.refine((file) => file.size > 0, 'File cannot be empty.')
-	// 	.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-	// 	.refine(
-	// 		(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-	// 		'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-	// 	),
+			// invalid date guard
+			if (isNaN(birth.getTime())) return false;
+
+			const today = new Date();
+			let age = today.getFullYear() - birth.getFullYear();
+			const m = today.getMonth() - birth.getMonth();
+
+			if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+				age--;
+			}
+
+			return age >= 18;
+		},
+		{
+			message: 'You must be at least 18 years old'
+		}
+	),
+
+	pensionType: z.coerce.number('Pension ').min(0, 'Pension cannot be negative'),
+	taxType: z.coerce.number('Tax ').min(0, 'Tax type cannot be negative'),
+	salary: z.coerce.number('Salary ').min(0, 'Salary cannot be negative'),
+	photo: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		),
+	govtId: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		),
 
 	hireDate: z.coerce.string('Hired date is required'),
 
-	employmentStatus: z.coerce.number().int().positive('Employment status is required'),
+	employmentStatus: z.number('Employment Status ').int().positive('Employment Status is required'),
 	educationalLevel: z.coerce
-		.number()
+		.number('Educational Level ')
 		.int()
 		.positive('Educational level is required')
 		.nullable()

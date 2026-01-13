@@ -56,14 +56,14 @@ export const employee = mysqlTable(
 		nationality: varchar('nationality', { length: 50 }).notNull().default('Ethiopia'),
 		religion: varchar('religion', { length: 50 }).notNull().default('Christianity'),
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-		tinNo: varchar('tin_no', { length: 20 }).notNull(),
+		tinNo: varchar('tin_no', { length: 10 }).notNull(),
 		departmentId: int('department_id')
 			.notNull()
 			.references(() => department.id),
 		birthDate: date('birth_date').notNull(),
 		photo: varchar('photo', { length: 255 }).notNull(),
 		govtId: varchar('govt_id', { length: 255 }).notNull(),
-		hireDate: timestamp('hire_date').notNull(),
+		hireDate: date('hire_date').notNull(),
 		terminationDate: datetime('termination_date'),
 		employmentStatus: int('employment_status')
 			.references(() => employmentStatuses.id)

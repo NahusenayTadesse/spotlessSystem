@@ -54,7 +54,7 @@
 	{/if}
 
 	{#if $errors[name]}
-		{#if typeof $errors[name] === 'object'}
+		{#if $errors[name]._errors}
 			{#each $errors[name]._errors as error}
 				<p class="text-red-500">{error}</p>
 			{/each}
