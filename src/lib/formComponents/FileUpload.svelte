@@ -10,8 +10,6 @@
 	const file = fileProxy(form, name);
 	let isDragging = $state(false);
 
-	// let currentFile = $derived($file?.item(0));
-
 	// Handle the drop event
 	function handleDrop(e: DragEvent) {
 		e.preventDefault();
@@ -77,16 +75,18 @@
 					<div
 						class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"
 					>
-						{#if $file?.item(0)?.type === 'application/pdf'}
+						{#if $file[0]?.type === 'application/pdf'}
 							<FileText class="h-5 w-5" />
 						{:else}
 							<ImageIcon class="h-5 w-5" />
 						{/if}
 					</div>
 					<div class="flex flex-col truncate">
-						<span class="truncate text-sm font-medium">{$file?.item(0)?.name}</span>
+						<span class="truncate text-sm font-medium">{$file[0]?.name || 'No file selected'}</span>
 						<span class="text-xs text-muted-foreground">
-							{($file?.item(0)?.size / 1024 / 1024).toFixed(2)} MB
+							{$file[0]?.size
+								? ($file[0]?.size / 1024 / 1024).toFixed(2) + ' MB'
+								: 'No file selected'}
 						</span>
 					</div>
 				</div>
@@ -101,16 +101,16 @@
 			</div>
 
 			<div class="overflow-hidden rounded-lg border bg-muted/30">
-				{#if $file?.item(0)?.type === 'application/pdf'}
+				{#if $file[0]?.type === 'application/pdf'}
 					<iframe
-						src={`${URL.createObjectURL($file?.item(0))}#toolbar=0`}
+						src={`${URL.createObjectURL($file[0])}#toolbar=0`}
 						class="h-64 w-full"
 						frameborder="0"
 						title="pdf-preview"
 					></iframe>
-				{:else}
+				{:else if $file[0]?.type?.startsWith('image')}
 					<img
-						src={URL.createObjectURL($file?.item(0))}
+						src={URL.createObjectURL($file[0])}
 						class="max-h-80 w-full object-contain"
 						alt="Preview"
 					/>
