@@ -55,8 +55,8 @@
 		name: v.charAt(0).toUpperCase() + v.slice(1)
 	}));
 
-	const sectionStyle = `flex flex-col gap-4 mt-4`;
-	const rowStyle = `flex lg:flex-row flex-col justify-center items-center gap-4`;
+	const sectionStyle = `flex flex-col gap-4 my-4`;
+	const rowStyle = `flex lg:flex-row flex-col justify-center mt-4  gap-4`;
 </script>
 
 <svelte:head>
@@ -65,6 +65,8 @@
 
 <FormCard title="Add New Employee" className="lg:w-full!">
 	<!-- EmployeeAddForm.svelte -->
+
+	{$form.govtId ? 'Hello' : 'nothing'}
 	<form
 		use:enhance
 		action="?/add"
@@ -88,10 +90,10 @@
 					required
 				/>
 				<Input
-					label="Full Name"
+					label="Name"
 					name="name"
 					{form}
-					placeholder="Enter Full Name"
+					placeholder="Enter Name"
 					{errors}
 					type="text"
 					required
