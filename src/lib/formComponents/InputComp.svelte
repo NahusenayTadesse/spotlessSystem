@@ -8,6 +8,7 @@
 	import ComboboxComp from './ComboboxComp.svelte';
 	import CheckboxComp from './CheckboxComp.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { CircleAlert } from '@lucide/svelte';
 
 	let {
 		label,
@@ -56,7 +57,7 @@
 	{#if $errors[name]}
 		{#if $errors[name]._errors}
 			{#each $errors[name]._errors as error}
-				<p class="text-red-500">{error}</p>
+				<p class="text-red-500"><CircleAlert /> {error}</p>
 			{/each}
 		{:else}
 			<p class="text-red-500">{$errors[name]}</p>

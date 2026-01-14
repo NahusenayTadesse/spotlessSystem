@@ -8,10 +8,8 @@ import { eq, and, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const load: LayoutServerLoad = async ({ params, locals }) => {
-	const { range } = params;
-
-	const id = range.split('-').pop();
+export const load: LayoutServerLoad = async ({ params }) => {
+	const { id } = params;
 
 	const form = await superValidate(zod4(schema));
 
@@ -36,6 +34,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 			photo: employee.photo,
 			govId: employee.govtId,
 			addedBy: user.name,
+			updatedBy: user.name,
 			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`
 		})
 		.from(employee)
