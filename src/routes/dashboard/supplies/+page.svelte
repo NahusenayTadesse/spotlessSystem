@@ -8,6 +8,9 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+
+	let filteredList = $derived(data?.supplyList);
 </script>
 
 <svelte:head>
@@ -32,7 +35,8 @@
 
    <DataTable data={data.supplyList} {columns} />
  </div> -->
-		<DataTable data={data.supplyList} {columns} fileName="Supplies" />
+		<FilterMenu data={data?.supplyList} filterKeys={['type']} bind:filteredList />
+		<DataTable data={filteredList} {columns} fileName="Supplies" />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

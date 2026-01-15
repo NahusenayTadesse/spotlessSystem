@@ -1,5 +1,9 @@
 <script lang="ts">
 	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+	import pluralize from 'pluralize';
+	import { Label } from '$lib/components/ui/label/index';
+	import Button from '../ui/button/button.svelte';
+	import { RotateCcw } from '@lucide/svelte';
 
 	interface Props {
 		data: any[];
@@ -53,25 +57,35 @@
 	});
 </script>
 
-<div class="flex flex-col gap-3 rounded-lg bg-background p-3">
+<div class="mt-3 flex flex-col gap-3 rounded-lg bg-background p-3">
 	<h4 class="text-sm font-medium text-muted-foreground">Filters</h4>
+	<Button
+		variant="ghost"
+		size="icon"
+		class="active:animate-[spin_1s_linear_infinite_reverse]"
+		onclick={() => (filteredList = data)}
+		title="Reset Filters"><RotateCcw /></Button
+	>
 	<div class="flex flex-row flex-wrap gap-2">
 		{#each filterKeys as filterKey (filterKey)}
-			<Select type="single" bind:value={selectedFilters[filterKey]}>
-				<SelectTrigger class="capitalize">
-					{#if selectedFilters[filterKey] === ''}
-						All {filterKey}
-					{:else}
-						{selectedFilters[filterKey]}
-					{/if}
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value="">All {filterKey}</SelectItem>
-					{#each getDistinctValues(filterKey) as value}
-						<SelectItem value={String(value)}>{value}</SelectItem>
-					{/each}
-				</SelectContent>
-			</Select>
+			<div class="flex flex-col gap-2">
+				<Label class="capitalize">{pluralize(filterKey)}</Label>
+				<Select type="single" bind:value={selectedFilters[filterKey]}>
+					<SelectTrigger class="capitalize">
+						{#if selectedFilters[filterKey] === ''}
+							All {pluralize(filterKey)}
+						{:else}
+							{selectedFilters[filterKey]}
+						{/if}
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="" class="capitalize">All {pluralize(filterKey)}</SelectItem>
+						{#each getDistinctValues(filterKey) as value}
+							<SelectItem class="capitalize" value={String(value)}>{value}</SelectItem>
+						{/each}
+					</SelectContent>
+				</Select>
+			</div>
 		{/each}
 	</div>
 </div>

@@ -31,19 +31,7 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'quantity',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Quantity',
-				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true,
-		cell: (info) => info.getValue() // always “day”
-	},
-
-	{
-		accessorKey: 'supplyType',
+		accessorKey: 'type',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Type',
