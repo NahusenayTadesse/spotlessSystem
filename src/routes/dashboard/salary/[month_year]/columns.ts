@@ -12,12 +12,14 @@ import { formatEthiopianDate } from '$lib/global.svelte';
 export const columns = [
 	// 1. Row Index
 	{
-		accessorKey: 'index',
+		id: 'index',
 		header: '#',
-		cell: (info) => info.row.index + 1,
-		sortable: false
+		cell: (info) => {
+			const rowIndex = info.table.getRowModel().rows.findIndex((row) => row.id === info.row.id);
+			return rowIndex + 1;
+		},
+		enableSorting: false
 	},
-
 	// 2. Staff Name (Assumes staffName is included in the SELECT)
 
 	{

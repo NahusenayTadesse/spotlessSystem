@@ -192,10 +192,10 @@
 									</Button>
 								{/snippet}
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content align="center" class="flex w-4 flex-col">
+							<DropdownMenu.Content align="center" class="flex w-4! flex-col">
 								{#each getTableBreakpoints(data) as column (column)}
 									<DropdownMenu.Item
-										class="capitalize"
+										class="w-4! capitalize"
 										onclick={() => {
 											table.setPageSize(column);
 										}}
@@ -205,7 +205,7 @@
 												{...props}
 												variant={pagination.pageSize === column ? 'default' : 'ghost'}
 												size="icon"
-												class="max-w-xm"
+												class="max-w-16"
 												>{column}
 											</Button>
 										{/snippet}

@@ -6,12 +6,16 @@ import { Row } from '$lib/components/ui/table';
 
 export const columns = [
 	{
-		accessorKey: 'index',
+		id: 'index',
 		header: '#',
-		cell: (info) => info.row.index + 1,
-		sortable: false
+		cell: (info) => {
+			const rowIndex = info.table.getRowModel().rows.findIndex((row) => row.id === info.row.id);
+			return rowIndex + 1;
+		},
+		enableSorting: false
 	},
 
+	,
 	{
 		accessorKey: 'name',
 		header: ({ column }) =>
