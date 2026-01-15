@@ -32,7 +32,7 @@
 
    <DataTable data={data.staffList} {columns} filterBlacklist={['id']} />
  </div> -->
-		<DataTable data={data.staffList} {columns} filterBlacklist={['id']} />
+		<DataTable data={data?.staffList} {columns} />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

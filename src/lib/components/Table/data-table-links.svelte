@@ -17,7 +17,7 @@
 					href="{link}/{id}"
 					{target}
 					{...props}
-					class="flex flex-row items-start! justify-start! break-words capitalize transition-all duration-600 ease-in-out hover:scale-110"
+					class="wrap-break-words flex flex-row items-start! justify-start! capitalize transition-all duration-600 ease-in-out hover:scale-110"
 				>
 					{name}
 				</a>
