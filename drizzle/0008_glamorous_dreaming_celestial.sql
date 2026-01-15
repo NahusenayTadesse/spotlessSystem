@@ -1,0 +1,1 @@
+ALTER TABLE `employment_statuses` ADD `status` boolean DEFAULT true NOT NULL;

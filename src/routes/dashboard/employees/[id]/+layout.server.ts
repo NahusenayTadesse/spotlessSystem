@@ -35,6 +35,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			govId: employee.govtId,
 			addedBy: user.name,
 			updatedBy: user.name,
+			terminationDate: employee.terminationDate,
 			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`
 		})
 		.from(employee)

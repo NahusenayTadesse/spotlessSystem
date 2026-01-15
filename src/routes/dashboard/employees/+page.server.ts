@@ -1,13 +1,20 @@
 import { db } from '$lib/server/db';
-import { employee, department, employmentStatuses, educationalLevel } from '$lib/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import {
+	employee,
+	department,
+	employmentStatuses,
+	educationalLevel,
+	employeeTermination
+} from '$lib/server/db/schema';
+import { eq, and, sql, isNull } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	let staffList = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(${employee.name}, ' ', COALESCE(${employee.fatherName}, '')))`,
+			// Handling potential nulls for both name parts
+			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
 			department: department.name,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
@@ -17,7 +24,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
-		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel));
+		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel))
+		// CRITICAL: Added the missing join for the termination check
+		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
+		.where(and(eq(employee.isActive, true), isNull(employeeTermination.staffId)));
 
 	staffList = staffList.map((r) => ({ ...r, years: Number(r.years) }));
 

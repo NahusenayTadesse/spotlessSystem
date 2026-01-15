@@ -29,6 +29,7 @@
 					description: row.original.description,
 					action: '?/edit',
 					removeFromLists: row.original.removeFromLists,
+					terminationStatus: row.original.terminationStatus ? true : false,
 					data: data?.editForm,
 					icon: false,
 					status: row.original.status
@@ -81,6 +82,7 @@
 					id: row.original.id,
 					name: row.original.name,
 					description: row.original.description,
+					terminationStatus: row.original.terminationStatus ? true : false,
 					action: '?/edit',
 					removeFromLists: row.original.removeFromLists,
 					data: data?.editForm,
@@ -136,6 +138,15 @@
 			type="checkboxSingle"
 			name="removeFromLists"
 			placeholder="Remove From Employee Lists"
+			required={true}
+		/>
+		<InputComp
+			{form}
+			{errors}
+			label="Assigned to Terminated Employees"
+			type="checkboxSingle"
+			name="terminationStatus"
+			placeholder="Assign this status to terminated employees"
 			required={true}
 		/>
 

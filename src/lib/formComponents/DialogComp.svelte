@@ -3,9 +3,14 @@
 	import { Button, type ButtonVariant } from '$lib/components/ui/button/index.js';
 	import { Trash } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
+	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
 
-	let { title, children, variant }: { title: string; children: Snippet; variant: ButtonVariant } =
-		$props();
+	let {
+		title,
+		children,
+		variant,
+		class: className = ''
+	}: { title: string; children: Snippet; variant: ButtonVariant; class?: string } = $props();
 </script>
 
 <Dialog.Root>
@@ -19,10 +24,12 @@
 			</Button>
 		{/snippet}
 	</Dialog.Trigger>
-	<Dialog.Content>
+	<Dialog.Content class={className}>
 		<Dialog.Header>
 			<Dialog.Title>{title}</Dialog.Title>
 		</Dialog.Header>
-		{@render children()}
+		<ScrollArea class="h-96 w-full lg:h-[calc(100vh-10rem)]" orientation="both">
+			{@render children()}
+		</ScrollArea>
 	</Dialog.Content>
 </Dialog.Root>

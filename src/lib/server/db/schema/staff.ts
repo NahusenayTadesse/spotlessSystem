@@ -11,7 +11,8 @@ import {
 	date,
 	time,
 	index,
-	boolean
+	boolean,
+	uniqueIndex
 } from 'drizzle-orm/mysql-core';
 import { secureFields, lesserFields } from './secureFields';
 import { user } from './user';
@@ -29,13 +30,22 @@ export const department = mysqlTable('department', {
 	...lesserFields
 });
 
-export const employmentStatuses = mysqlTable('employment_statuses', {
-	id: int('id').autoincrement().primaryKey(),
-	name: varchar('name', { length: 32 }).notNull().unique(),
-	removeFromLists: boolean('remove_from_lists').notNull().default(false),
-	description: varchar('description', { length: 255 }),
-	...lesserFields
-});
+export const employmentStatuses = mysqlTable(
+	'employment_statuses',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		name: varchar('name', { length: 32 }).notNull().unique(),
+		removeFromLists: boolean('remove_from_lists').notNull().default(false),
+		// 1. Change to nullable and remove the default 'false'
+		terminationStatus: boolean('termination_status'),
+		description: varchar('description', { length: 255 }),
+		...lesserFields
+	},
+	(table) => ({
+		// 2. Add a unique index on this column
+		terminationStatusIdx: uniqueIndex('termination_status_idx').on(table.terminationStatus)
+	})
+);
 
 export const educationalLevel = mysqlTable('educational_level', {
 	id: int('id').autoincrement().primaryKey(),
@@ -307,6 +317,7 @@ export const employeeTermination = mysqlTable('empoloyee_termination', {
 		.notNull()
 		.references(() => employee.id),
 	reason: varchar('reason', { length: 255 }),
+	terminationLetter: varchar('termination_letter', { length: 255 }),
 	terminationDate: date('termination_date').notNull(),
 	...secureFields
 });

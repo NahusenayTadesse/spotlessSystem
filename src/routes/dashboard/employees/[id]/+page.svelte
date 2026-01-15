@@ -41,9 +41,7 @@
 		User,
 		Settings
 	} from '@lucide/svelte';
-	import type { Snapshot } from '@sveltejs/kit';
-
-	import Delete from '$lib/forms/Delete.svelte';
+	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
 	import SingleView from '$lib/components/SingleView.svelte';
 
@@ -76,7 +74,13 @@
 			name: 'Hired On',
 			value: formatEthiopianDate(new Date(data?.staffMember?.hireDate))
 		},
-		{ name: 'Years of Service', value: `${data?.staffMember?.years} years` }
+		{ name: 'Years of Service', value: `${data?.staffMember?.years} years` },
+
+		{
+			name: 'Termination Date',
+			value:
+				formatEthiopianDate(new Date(data?.staffMember?.terminationDate)) || 'Employee is Active'
+		}
 	]);
 
 	let systemInformation = $derived([
@@ -84,25 +88,7 @@
 		{ name: 'Last Updated By', value: data?.staffMember?.updatedBy }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
-		validators: zod4Client(editStaff),
-		resetForm: false
-	});
-
-	import { toast } from 'svelte-sonner';
-	import { formatEthiopianDate } from '$lib/global.svelte.js';
-	import { da } from 'zod/v4/locales';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
-
-	export const snapshot: Snapshot = { capture, restore };
+	import Terminate from './terminate.svelte';
 
 	let edit = $state(false);
 </script>
@@ -130,7 +116,10 @@
 				Back
 			{/if}
 		</Button>
-		<Delete redirect="/dashboard/employees" />
+		<Terminate
+			data={data.terminateForm}
+			employee="{data.staffMember?.firstName} {data.staffMember?.lastName}"
+		/>
 	</div>
 	<div class={styles.container}>
 		<div

@@ -22,6 +22,7 @@
 		id,
 		name,
 		removeFromLists,
+		terminationStatus,
 		description,
 		icon = false,
 		status = true
@@ -31,6 +32,7 @@
 		id: number;
 		name: string;
 		icon: boolean;
+		terminationStatus: boolean;
 		description: string;
 		status: boolean;
 		removeFromLists: boolean;
@@ -46,6 +48,7 @@
 	$form.name = name;
 	$form.description = description;
 	$form.status = status;
+	$form.terminationStatus = terminationStatus;
 	$form.removeFromLists = removeFromLists;
 
 	import { toast } from 'svelte-sonner';
@@ -104,7 +107,15 @@
 							placeholder="Remove From Employee Lists"
 							required={true}
 						/>
-
+						<InputComp
+							{form}
+							{errors}
+							label="Assigned to Terminated Employees"
+							type="checkboxSingle"
+							name="terminationStatus"
+							placeholder="Assign this status to terminated employees"
+							required={true}
+						/>
 						<InputComp
 							label="Status"
 							name="status"

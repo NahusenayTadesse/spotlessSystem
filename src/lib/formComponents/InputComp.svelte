@@ -28,7 +28,7 @@
 	} = $props();
 </script>
 
-<div class="flex w-full flex-col justify-start gap-2">
+<div class="flex w-full max-w-full flex-col justify-start gap-2 p-1">
 	<Label for={name} class="capitalize">{label}</Label>
 	{#if type === 'textarea'}
 		<Textarea {name} bind:value={$form[name]} {required} {rows} {placeholder} />

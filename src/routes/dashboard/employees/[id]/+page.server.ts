@@ -3,13 +3,20 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 import { db } from '$lib/server/db';
-import { employee } from '$lib/server/db/schema';
+import { employee, employeeTermination, employmentStatuses } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from '../$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
+import { terminate } from './schema';
+
 import { saveUploadedFile } from '$lib/server/upload';
+
+export const load: PageServerLoad = async () => {
+	const terminateForm = await superValidate(zod4(terminate));
+	return { terminateForm };
+};
 
 export const actions: Actions = {
 	editStaff: async ({ request, cookies, locals }) => {
@@ -74,24 +81,62 @@ export const actions: Actions = {
 			});
 		}
 	},
-	delete: async ({ cookies, params }) => {
-		const { range } = params;
+	terminate: async ({ params, cookies, request, locals }) => {
+		const { id } = params;
 
-		const id = range.split('-').pop()!;
+		console.log('Connected');
+
+		const form = await superValidate(request, zod4(terminate));
+		const { reason, terminationDate, terminationLetter } = form.data;
 
 		try {
 			if (!id) {
-				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-				return fail(400);
+				return message(form, { type: 'error', text: `Employee Not Found` });
 			}
 
-			await db.delete(employee).where(eq(employee.id, id));
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Insert the termination record
+				const terminationLetterName = await saveUploadedFile(terminationLetter);
+				delete form.data.terminationLetter;
+				await tx.insert(employeeTermination).values({
+					staffId: id,
+					reason,
+					terminationDate,
+					terminationLetter: terminationLetterName,
+					createdBy: locals?.user?.id
+				});
 
-			setFlash({ type: 'success', message: 'Staff Member Deleted Successfully!' }, cookies);
+				// 2. Update the employee status
+				//
+				//
+
+				const employmentStatus = await db
+					.select({
+						id: employmentStatuses.id
+					})
+					.from(employmentStatuses)
+					.where(eq(employmentStatuses.terminationStatus, true))
+					.then((data) => data[0].id);
+
+				await tx
+					.update(employee)
+					.set({
+						employmentStatus,
+						terminationDate: new Date(terminationDate) || null,
+						isActive: false,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(employee.id, id));
+			});
+			setFlash({ type: 'success', message: 'Employee Terminated Successfully!' }, cookies);
 		} catch (err) {
-			console.error('Error deleting staff member:', err);
+			console.error('Error terminating employee:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return fail(400);
+			return message(form, {
+				type: 'error',
+				text: 'An error occurred while terminating the employee.'
+			});
 		}
 	}
 };
