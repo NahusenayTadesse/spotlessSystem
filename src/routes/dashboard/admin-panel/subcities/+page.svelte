@@ -84,6 +84,9 @@
 	import { Plus } from '@lucide/svelte';
 
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+
+	let filteredList = $derived(data?.allData);
 
 	import { toast } from 'svelte-sonner';
 	$effect(() => {
@@ -134,6 +137,8 @@
 		</Button>
 	</form>
 </DialogComp>
-{#key data.allData}
-	<DataTable {columns} data={data?.allData} search={true} fileName="Cities" />
+
+<FilterMenu data={data?.allData} filterKeys={['city', 'status']} bind:filteredList />
+{#key data?.allData}
+	<DataTable {columns} data={filteredList} search={true} fileName="Subcities" />
 {/key}

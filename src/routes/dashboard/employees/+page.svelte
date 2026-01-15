@@ -8,10 +8,13 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+
+	let filteredList = $derived(data?.staffList);
 </script>
 
 <svelte:head>
-	<title>Staff List</title>
+	<title>Employee List</title>
 </svelte:head>
 
 {#await data}
@@ -26,13 +29,13 @@
 			<Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button>
 		</div>
 	{:else}
-		<h2 class="my-4 text-2xl">No of Staff {data.staffList?.length}</h2>
-
-		<!-- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
-
-   <DataTable data={data.staffList} {columns} filterBlacklist={['id']} />
- </div> -->
-		<DataTable data={data?.staffList} {columns} />
+		<h2 class="my-4 text-2xl">No of Employees {filteredList?.length}</h2>
+		<FilterMenu
+			data={data?.staffList}
+			bind:filteredList
+			filterKeys={['department', 'education', 'status', 'years']}
+		/>
+		<DataTable data={filteredList} {columns} />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

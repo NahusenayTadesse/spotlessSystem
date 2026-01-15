@@ -192,7 +192,7 @@
 									</Button>
 								{/snippet}
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content align="end">
+							<DropdownMenu.Content align="center" class="flex w-4 flex-col">
 								{#each getTableBreakpoints(data) as column (column)}
 									<DropdownMenu.Item
 										class="capitalize"
@@ -205,7 +205,7 @@
 												{...props}
 												variant={pagination.pageSize === column ? 'default' : 'ghost'}
 												size="icon"
-												class="w-full"
+												class="max-w-xm"
 												>{column}
 											</Button>
 										{/snippet}

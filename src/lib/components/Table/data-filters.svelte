@@ -1,68 +1,62 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import Label from '../ui/label/label.svelte';
 
 	interface Props {
-		data: Record<string, any>[];
+		data: any;
 		filterKey: string;
-		filteredData?: Record<string, any>[];
-		children?: Snippet<[item: Record<string, any>]>;
+		filteredList?: any[];
 	}
 
-	let { data, filterKey, children, filteredData = $bindable(data) }: Props = $props();
+	let { data, filterKey, filteredList = $bindable(data) }: Props = $props();
 
 	// Get distinct values for the filter key
 	const distinctValues = $derived(
 		Array.from(
-			new Set(data.map((item) => item[filterKey]).filter((v) => v !== undefined && v !== null))
+			new Set(data.map((item: any) => item[filterKey]).filter((v) => v !== undefined && v !== null))
 		).sort()
 	);
 
 	// Selected filter value
-	let selectedValue = $state<string>('');
+	let selectedValue = $state.raw<string>('');
 
 	// Update filteredData whenever selectedValue changes
 	$effect(() => {
-		filteredData =
-			selectedValue === ''
-				? data
-				: data.filter((item) => String(item[filterKey]) === selectedValue);
+		if (filteredList.length === data.list) {
+			filteredList =
+				selectedValue === ''
+					? data
+					: data.filter((item: any) => String(item[filterKey]) === selectedValue);
+		} else {
+			filteredList =
+				selectedValue === ''
+					? filteredList
+					: filteredList.filter((item: any) => String(item[filterKey]) === selectedValue);
+		}
 	});
 </script>
 
-<div class="flex w-full flex-col gap-4">
-	<!-- Filter Dropdown -->
-	<div class="flex flex-col gap-2">
-		<Label class="text-sm font-medium">Filter by {filterKey}</Label>
-		<Select type="single" bind:value={selectedValue}>
-			<SelectTrigger class="w-full">
-				{selectedValue === '' ? `Select a ${filterKey}...` : selectedValue}
-			</SelectTrigger>
-			<SelectContent>
-				<SelectItem value="">All {filterKey}s</SelectItem>
-				{#each distinctValues as value}
-					<SelectItem value={String(value)}>{value}</SelectItem>
-				{/each}
-			</SelectContent>
-		</Select>
-	</div>
+<!-- Filter Dropdown -->
+<div class="flex flex-col gap-2">
+	<Select type="single" bind:value={selectedValue}>
+		<SelectTrigger class="capitalize">
+			{selectedValue === '' ? filterKey : selectedValue}
+		</SelectTrigger>
+		<SelectContent>
+			<SelectItem value="">All {filterKey}s</SelectItem>
+			{#each distinctValues as value}
+				<SelectItem value={String(value)}>{value}</SelectItem>
+			{/each}
+		</SelectContent>
+	</Select>
+</div>
 
-	<!-- Results Info -->
-	<div class="text-sm text-muted-foreground">
+<!-- Results Info -->
+<!-- <div class="text-sm text-muted-foreground">
 		Showing {filteredData.length} of {data.length} items
 	</div>
 
 	<!-- Filtered Data Display -->
-	<div class="grid max-h-96 gap-3 overflow-y-auto">
+<!-- <div class="grid max-h-96 gap-3 overflow-y-auto">
 		{#if filteredData.length > 0}
 			{#each filteredData as item (item.id)}
 				{#if children}
@@ -101,4 +95,4 @@
 			</Card>
 		{/if}
 	</div>
-</div>
+</div>  -->
