@@ -60,13 +60,11 @@
 		{ name: 'Blood Type', value: data?.staffMember?.bloodType }
 	]);
 
-	let educations = $derived([
-		{ name: 'Educational Level', value: data?.staffMember?.educationalLevel }
-	]);
-
 	let employment = $derived([
+		{ name: 'ID Number', value: data?.staffMember?.idNo },
 		{ name: 'Employment Status', value: data?.staffMember?.status },
 		{ name: 'Department', value: data?.staffMember?.department },
+		{ name: 'Educational Level', value: data?.staffMember?.educationalLevel },
 		{
 			name: 'Hired On',
 			value: formatEthiopianDate(new Date(data?.staffMember?.hireDate))
@@ -88,6 +86,8 @@
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
 	import EditIdentity from './editIdentity.svelte';
+	import EditEmployment from './editEmployment.svelte';
+	import EditPersonal from './editPersonal.svelte';
 
 	let edit = $state(false);
 </script>
@@ -105,16 +105,6 @@
 		photo={data.staffMember?.photo}
 	>
 		<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-			<Button onclick={() => (edit = !edit)}>
-				{#if !edit}
-					<Pencil class="h-4 w-4" />
-					Edit
-				{:else}
-					<ArrowLeft class="h-4 w-4" />
-
-					Back
-				{/if}
-			</Button>
 			{#if data?.staffMember.isActive}
 				<Terminate
 					data={data.terminateForm}
@@ -168,6 +158,18 @@
 					<div class={styles.cardHeader}>
 						<div class="{styles.iconBox} {styles.employmentIcon}"><BriefcaseBusiness /></div>
 						<h4 class={styles.sectionTitle}>Employment</h4>
+						<EditEmployment
+							data={data?.employmentForm}
+							idNo={data?.staffMember.idNo}
+							department={data?.staffMember.departmentId}
+							educationalLevel={data?.staffMember.educationalLevelId}
+							educationalLevelList={data?.educationalLevelList}
+							employmentStatus={data?.staffMember.statusId}
+							employmentStatusList={data?.statusList}
+							hireDate={data?.staffMember.hireDate}
+							statusList={data?.statusList}
+							departmentList={data?.departmentList}
+						/>
 					</div>
 					<div class={styles.cardContent}>
 						<SingleTable singleTable={employment} />
@@ -178,6 +180,13 @@
 					<div class={styles.cardHeader}>
 						<div class="{styles.iconBox} {styles.personalIcon}"><User /></div>
 						<h4 class={styles.sectionTitle}>Personal Details</h4>
+						<EditPersonal
+							data={data?.personalForm}
+							tinNo={data?.staffMember.tinNo}
+							bloodType={data?.staffMember.bloodType}
+							martialStatus={data?.staffMember.maritalStatus}
+							religion={data?.staffMember.religion}
+						/>
 					</div>
 					<div class={styles.cardContent}>
 						<SingleTable singleTable={personalDetails} />

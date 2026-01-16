@@ -54,3 +54,20 @@ export const editIdentity = z.object({
 	nationality: z.string('Nationality is requried').default('Ethiopia')
 });
 export type EditIdentity = z.infer<typeof editIdentity>;
+
+export const editEmployment = z.object({
+	idNo: z.string('ID Number is required'),
+	department: z.number('Department is required').nonnegative().positive(),
+	hireDate: z.coerce.string('Hired on date is required'),
+	employmentStatus: z.number('Employment Status is required'),
+	educationalLevel: z.number('Educational Level is required')
+});
+export type EditEmployment = z.infer<typeof editEmployment>;
+
+export const editPersonal = z.object({
+	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
+	tinNo: z.string('Tin Number is required').min(10).max(10),
+	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other']),
+	religion: z.string('Religion is required').min(2).max(255)
+});
+export type EditPersonal = z.infer<typeof editPersonal>;

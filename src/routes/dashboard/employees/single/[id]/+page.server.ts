@@ -9,8 +9,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-import { terminate, reinstate, editIdentity } from './schema';
-import { empStatus } from '$lib/server/fastData';
+import { terminate, reinstate, editIdentity, editEmployment, editPersonal } from './schema';
+import { empStatus, departments, eduLevel } from '$lib/server/fastData';
 
 import { saveUploadedFile } from '$lib/server/upload';
 
@@ -18,9 +18,23 @@ export const load: PageServerLoad = async () => {
 	const terminateForm = await superValidate(zod4(terminate));
 	const reinstateForm = await superValidate(zod4(reinstate));
 	const identityForm = await superValidate(zod4(editIdentity));
+	const employmentForm = await superValidate(zod4(editEmployment));
+	const personalForm = await superValidate(zod4(editPersonal));
 
 	const statusList = await empStatus();
-	return { terminateForm, reinstateForm, statusList, identityForm };
+	const departmentList = await departments();
+	const educationalLevelList = await eduLevel();
+
+	return {
+		terminateForm,
+		reinstateForm,
+		statusList,
+		identityForm,
+		departmentList,
+		employmentForm,
+		educationalLevelList,
+		personalForm
+	};
 };
 
 export const actions: Actions = {
@@ -215,6 +229,71 @@ export const actions: Actions = {
 			return message(form, { type: 'success', text: 'Employee Identity Updated Successfully!' });
 		} catch (err) {
 			console.error('Error updating employee identity:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editEmployment: async ({ params, request, locals }) => {
+		const { id } = params;
+
+		const form = await superValidate(request, zod4(editEmployment));
+		const { idNo, department, educationalLevel, employmentStatus, hireDate } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(employee)
+					.set({
+						idNo,
+						departmentId: department,
+						employmentStatus,
+						educationalLevel,
+						hireDate: new Date(hireDate),
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(employee.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Employment Details Updated Successfully!' });
+		} catch (err) {
+			console.error('Error updating employment details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editPersonal: async ({ params, request, locals }) => {
+		const { id } = params;
+
+		const form = await superValidate(request, zod4(editPersonal));
+		const { tinNo, martialStatus, bloodType, religion } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(employee)
+					.set({
+						tinNo,
+						martialStatus,
+						bloodType,
+						religion,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(employee.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Employee Details Updated Successfully!' });
+		} catch (err) {
+			console.error('Error updating employee details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}

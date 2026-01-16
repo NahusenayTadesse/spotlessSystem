@@ -1,42 +1,34 @@
 <script lang="ts">
+	import { type Item } from '$lib/global.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { type Reinstate } from './schema';
+	import { type EditEmployment } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	const genders = [
-		{ value: 'male', name: 'Male' },
-		{ value: 'female', name: 'Female' }
-	];
-
-	type List = {
-		firstName: string;
-		fatherName: string;
-		grandFatherName: string;
-		gender: string;
-		birthDate: string;
-	};
-
+	const maritalStatuses = ['single', 'married', 'widowed', 'divorced', 'other'].map((v) => ({
+		value: v,
+		name: v.charAt(0).toUpperCase() + v.slice(1)
+	}));
+	const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((v) => ({
+		value: v,
+		name: v
+	}));
 	let {
 		data,
-		employee,
-		firstName,
-		fatherName,
-		grandFatherName,
-		gender,
-		birthDate
+		tinNo,
+		martialStatus,
+		religion,
+		bloodType
 	}: {
-		data: SuperValidated<Infer<EditIdentity>>;
-		employee: string;
-		firstName: string;
-		fatherName: string;
-		grandFatherName: string;
-		gender: string;
-		birthDate: Date;
+		data: SuperValidated<Infer<EditEmployment>>;
+		tinNo: string;
+		martialStatus: string;
+		religion: string;
+		bloodType?: string;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
@@ -51,42 +43,41 @@
 		}
 	});
 
-	$form.firstName = firstName;
-	$form.fatherName = fatherName;
-	$form.grandFatherName = grandFatherName;
-	$form.gender = gender;
-	$form.birthDate = birthDate.toLocaleDateString('en-CA');
+	$form.tinNo = tinNo;
+	$form.martialStatus = martialStatus;
+	$form.religion = religion;
+	$form.bloodType = bloodType || '';
 </script>
 
-<DialogComp title="Edit" variant="default" IconComp={SquarePen}>
+<DialogComp title="Edit" variant="default" class="" IconComp={SquarePen}>
 	<form
 		id="main"
-		action="?/editIdentity"
-		class="flex w-full! min-w-full! flex-col items-center justify-center gap-3"
+		action="?/editPersonal"
+		class="flex w-full! min-w-full flex-col items-center justify-center gap-2"
 		use:enhance
 		method="post"
 		enctype="multipart/form-data"
 	>
-		<InputComp label="Name" name="firstName" type="text" {form} {errors} required />
-		<InputComp label="Father Name" name="fatherName" type="text" {form} {errors} required />
+		<InputComp label="Tin Number" name="tinNo" type="text" {form} {errors} required />
 		<InputComp
-			label="Grand Father Name"
-			name="grandFatherName"
-			type="text"
-			{form}
-			{errors}
-			required
-		/>
-		<InputComp
-			label="Gender"
-			name="gender"
+			label="Martial Status   "
+			name="martialStatus"
 			type="select"
 			{form}
 			{errors}
 			required
-			items={genders}
+			items={maritalStatuses}
 		/>
-		<InputComp label="Birth Date" name="birthDate" type="date" {form} {errors} required oldDays />
+		<InputComp
+			label="Blood Type"
+			name="bloodType"
+			type="select"
+			{form}
+			{errors}
+			required={false}
+			items={bloodTypes}
+		/>
+		<InputComp label="Religion" name="religion" type="text" {form} {errors} required />
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">
