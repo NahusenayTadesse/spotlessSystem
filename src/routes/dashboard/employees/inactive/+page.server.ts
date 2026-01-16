@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			department: department.name,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
-			active: employee.isActive,
+			terminationDate: employee.terminationDate,
 			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`,
 			joined: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`
 		})
@@ -26,9 +26,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.leftJoin(department, eq(department.id, employee.departmentId))
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
 		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel))
-		// CRITICAL: Added the missing join for the termination check
 		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
-		.where(and(eq(employee.isActive, true), isNull(employeeTermination.staffId)));
+		.where(eq(employee.isActive, false));
 
 	staffList = staffList.map((r) => ({ ...r, years: Number(r.years) }));
 

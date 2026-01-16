@@ -17,7 +17,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.select({
 			id: employee.id,
 			firstName: employee.name,
-			lastName: employee.fatherName,
+			fatherName: employee.fatherName,
 			grandFatherName: employee.grandFatherName,
 			gender: employee.gender,
 			nationality: employee.nationality,
@@ -33,6 +33,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			hireDate: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`,
 			photo: employee.photo,
 			govId: employee.govtId,
+			isActive: employee.isActive,
 			addedBy: user.name,
 			updatedBy: user.name,
 			terminationDate: employee.terminationDate,

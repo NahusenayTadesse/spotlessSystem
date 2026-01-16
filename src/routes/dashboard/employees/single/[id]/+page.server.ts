@@ -5,17 +5,22 @@ import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 import { db } from '$lib/server/db';
 import { employee, employeeTermination, employmentStatuses } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-import type { Actions, PageServerLoad } from '../$types';
+import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-import { terminate } from './schema';
+import { terminate, reinstate, editIdentity } from './schema';
+import { empStatus } from '$lib/server/fastData';
 
 import { saveUploadedFile } from '$lib/server/upload';
 
 export const load: PageServerLoad = async () => {
 	const terminateForm = await superValidate(zod4(terminate));
-	return { terminateForm };
+	const reinstateForm = await superValidate(zod4(reinstate));
+	const identityForm = await superValidate(zod4(editIdentity));
+
+	const statusList = await empStatus();
+	return { terminateForm, reinstateForm, statusList, identityForm };
 };
 
 export const actions: Actions = {
@@ -100,7 +105,7 @@ export const actions: Actions = {
 				const terminationLetterName = await saveUploadedFile(terminationLetter);
 				delete form.data.terminationLetter;
 				await tx.insert(employeeTermination).values({
-					staffId: id,
+					staffId: Number(id),
 					reason,
 					terminationDate,
 					terminationLetter: terminationLetterName,
@@ -127,16 +132,90 @@ export const actions: Actions = {
 						isActive: false,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(employee.id, id));
+					.where(eq(employee.id, Number(id)));
 			});
-			setFlash({ type: 'success', message: 'Employee Terminated Successfully!' }, cookies);
+			return message(form, { type: 'success', text: 'Employee Terminated Successfully!' });
 		} catch (err) {
 			console.error('Error terminating employee:', err);
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return message(form, {
-				type: 'error',
-				text: 'An error occurred while terminating the employee.'
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	reinstate: async ({ params, request, locals }) => {
+		const { id } = params;
+
+		const form = await superValidate(request, zod4(reinstate));
+		const { newStatus } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Insert the termination record
+
+				// await tx.delete(employeeTermination).where(eq(employeeTermination.staffId, Number(id)));
+
+				// 2. Update the employee status
+				//
+				//
+
+				// const employmentStatus = await db
+				// 	.select({
+				// 		id: employmentStatuses.id
+				// 	})
+				// 	.from(employmentStatuses)
+				// 	.where(eq(employmentStatuses.terminationStatus, true))
+				// 	.then((data) => data[0].id);
+
+				await tx
+					.update(employee)
+					.set({
+						employmentStatus: newStatus,
+						terminationDate: null,
+						isActive: true,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(employee.id, Number(id)));
 			});
+			return message(form, { type: 'success', text: 'Employee Reinstated Successfully!' });
+		} catch (err) {
+			console.error('Error terminating employee:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editIdentity: async ({ params, request, locals }) => {
+		const { id } = params;
+
+		const form = await superValidate(request, zod4(editIdentity));
+		const { firstName, fatherName, grandFatherName, gender, birthDate } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(employee)
+					.set({
+						name: firstName,
+						fatherName,
+						grandFatherName,
+						gender,
+						birthDate: new Date(birthDate),
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(employee.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Employee Identity Updated Successfully!' });
+		} catch (err) {
+			console.error('Error updating employee identity:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}
 };

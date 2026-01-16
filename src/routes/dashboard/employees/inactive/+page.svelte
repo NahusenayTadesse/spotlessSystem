@@ -30,7 +30,7 @@
 			<Button href="/dashboard/services/add-services"><Plus />Add New Employee Members</Button>
 		</div>
 	{:else}
-		<h2 class="my-4 text-2xl">Employees List</h2>
+		<h2 class="my-4 text-2xl">TerminatedEmployees List</h2>
 
 		<FilterMenu
 			data={data?.staffList}

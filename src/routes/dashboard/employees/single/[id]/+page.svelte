@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { editStaff } from '$lib/zodschemas/appointmentSchema';
-
 	let { data } = $props();
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
@@ -22,9 +19,9 @@
 		sectionTitle: 'text-lg font-bold text-gray-800 dark:text-slate-100',
 
 		// Icon Styles
-		iconBox: 'flex bg-white dark:bg-black h-10 w-10 items-center justify-center rounded-lg',
+		iconBox: 'flex gap-4 bg-white dark:bg-black h-10 w-10 items-center justify-center rounded-lg',
 		// Specific Icon Variants
-		identityIcon: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
+		identityIcon: 'bg-indigo-50  text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
 		employmentIcon: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
 		personalIcon: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
 		systemIcon: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
@@ -48,7 +45,7 @@
 	let identity = $derived([
 		{
 			name: 'Full Name',
-			value: `${data?.staffMember?.firstName} ${data?.staffMember?.lastName} ${data?.staffMember?.grandFatherName}`
+			value: `${data?.staffMember?.firstName} ${data?.staffMember?.fatherName} ${data?.staffMember?.grandFatherName}`
 		},
 		{ name: 'Gender', value: data?.staffMember?.gender },
 		{ name: 'Birth Date', value: formatEthiopianDate(data?.staffMember?.birthDate) },
@@ -89,6 +86,8 @@
 	]);
 
 	import Terminate from './terminate.svelte';
+	import Reinstate from './reinstate.svelte';
+	import EditIdentity from './editIdentity.svelte';
 
 	let edit = $state(false);
 </script>
@@ -96,78 +95,105 @@
 <svelte:head>
 	<title>
 		{data.staffMember?.firstName}
-		{data.staffMember?.lastName}
+		{data.staffMember?.fatherName}
 	</title>
 </svelte:head>
+{#key data.staffMember}
+	<SingleView
+		title="{data.staffMember?.firstName} {data.staffMember?.fatherName}"
+		class="w-full!"
+		photo={data.staffMember?.photo}
+	>
+		<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
+			<Button onclick={() => (edit = !edit)}>
+				{#if !edit}
+					<Pencil class="h-4 w-4" />
+					Edit
+				{:else}
+					<ArrowLeft class="h-4 w-4" />
 
-<SingleView
-	title="{data.staffMember?.firstName} {data.staffMember?.lastName}"
-	class="w-full!"
-	photo={data.staffMember?.photo}
->
-	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-		<Button onclick={() => (edit = !edit)}>
-			{#if !edit}
-				<Pencil class="h-4 w-4" />
-				Edit
+					Back
+				{/if}
+			</Button>
+			{#if data?.staffMember.isActive}
+				<Terminate
+					data={data.terminateForm}
+					employee="{data.staffMember?.firstName} {data.staffMember?.fatherName}"
+				/>
 			{:else}
-				<ArrowLeft class="h-4 w-4" />
-
-				Back
+				<Reinstate
+					data={data.reinstateForm}
+					employee="{data.staffMember?.firstName} {data.staffMember?.fatherName}"
+					statusList={data.statusList}
+				/>
 			{/if}
-		</Button>
-		<Terminate
-			data={data.terminateForm}
-			employee="{data.staffMember?.firstName} {data.staffMember?.lastName}"
-		/>
-	</div>
-	<div class={styles.container}>
-		<div
-			class="mx-auto mb-8 flex max-w-6xl flex-col items-center justify-center border-b border-background"
-		>
-			<p class={styles.subHeading}>Comprehensive overview of personnel records.</p>
 		</div>
+		<div class={styles.container}>
+			<div
+				class="mx-auto mb-8 flex max-w-6xl flex-col items-center justify-center border-b border-background"
+			>
+				<p class={styles.subHeading}>Comprehensive overview of personnel records.</p>
+				{#if data?.staffMember.isActive}
+					<p class="text-center text-lg font-semibold text-primary">This Employee is Active</p>
+				{:else}
+					<p class="text-danger text-center text-lg font-semibold text-red-500">
+						This is Employee is Inactive
+					</p>
+				{/if}
+			</div>
 
-		<div class={styles.sectionWrapper}>
-			<section class={`${styles.card} lg:col-span-2`}>
-				<div class={styles.cardHeader}>
-					<div class={`${styles.iconBox} ${styles.identityIcon}`}><IdCard /></div>
-					<h4 class={styles.sectionTitle}>Identity</h4>
-				</div>
-				<div class={styles.cardContent}>
-					<SingleTable singleTable={identity} />
-				</div>
-			</section>
+			<div class={styles.sectionWrapper}>
+				<section class={`${styles.card} lg:col-span-2`}>
+					<div class={styles.cardHeader}>
+						<div class={`${styles.iconBox} ${styles.identityIcon}`}>
+							<IdCard />
+						</div>
+						<h4 class={styles.sectionTitle}>Identity</h4>
+						<EditIdentity
+							data={data.identityForm}
+							employee="{data?.staffMember.firstName} {data?.staffMember.fatherName}"
+							firstName={data?.staffMember.firstName}
+							fatherName={data?.staffMember.fatherName}
+							grandFatherName={data?.staffMember.grandFatherName}
+							gender={data?.staffMember.gender}
+							birthDate={data?.staffMember.birthDate}
+						/>
+					</div>
+					<div class={styles.cardContent}>
+						<SingleTable singleTable={identity} />
+					</div>
+				</section>
 
-			<section class={styles.card}>
-				<div class={styles.cardHeader}>
-					<div class="{styles.iconBox} {styles.employmentIcon}"><BriefcaseBusiness /></div>
-					<h4 class={styles.sectionTitle}>Employment</h4>
-				</div>
-				<div class={styles.cardContent}>
-					<SingleTable singleTable={employment} />
-				</div>
-			</section>
+				<section class={styles.card}>
+					<div class={styles.cardHeader}>
+						<div class="{styles.iconBox} {styles.employmentIcon}"><BriefcaseBusiness /></div>
+						<h4 class={styles.sectionTitle}>Employment</h4>
+					</div>
+					<div class={styles.cardContent}>
+						<SingleTable singleTable={employment} />
+					</div>
+				</section>
 
-			<section class="{styles.card} md:col-span-2 lg:col-span-2">
-				<div class={styles.cardHeader}>
-					<div class="{styles.iconBox} {styles.personalIcon}"><User /></div>
-					<h4 class={styles.sectionTitle}>Personal Details</h4>
-				</div>
-				<div class={styles.cardContent}>
-					<SingleTable singleTable={personalDetails} />
-				</div>
-			</section>
+				<section class="{styles.card} md:col-span-2 lg:col-span-2">
+					<div class={styles.cardHeader}>
+						<div class="{styles.iconBox} {styles.personalIcon}"><User /></div>
+						<h4 class={styles.sectionTitle}>Personal Details</h4>
+					</div>
+					<div class={styles.cardContent}>
+						<SingleTable singleTable={personalDetails} />
+					</div>
+				</section>
 
-			<section class={styles.card}>
-				<div class={styles.cardHeader}>
-					<div class="{styles.iconBox} {styles.systemIcon}"><Settings /></div>
-					<h4 class={styles.sectionTitle}>System Information</h4>
-				</div>
-				<div class={styles.cardContent}>
-					<SingleTable singleTable={systemInformation} />
-				</div>
-			</section>
+				<section class={styles.card}>
+					<div class={styles.cardHeader}>
+						<div class="{styles.iconBox} {styles.systemIcon}"><Settings /></div>
+						<h4 class={styles.sectionTitle}>System Information</h4>
+					</div>
+					<div class={styles.cardContent}>
+						<SingleTable singleTable={systemInformation} />
+					</div>
+				</section>
+			</div>
 		</div>
-	</div>
-</SingleView>
+	</SingleView>
+{/key}

@@ -2,14 +2,19 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { type Terminate } from './schema';
+	import { type Reinstate } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { X } from '@lucide/svelte';
+	import { RotateCcw } from '@lucide/svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import { type Item } from '$lib/global.svelte';
 
-	let { data, employee }: { data: SuperValidated<Infer<Terminate>>; employee: string } = $props();
+	let {
+		data,
+		employee,
+		statusList
+	}: { data: SuperValidated<Infer<Reinstate>>; employee: string; statusList: Item[] } = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
 	import { toast } from 'svelte-sonner';
@@ -25,59 +30,39 @@
 </script>
 
 <DialogComp
-	title="Terminate {employee}"
-	variant="destructive"
+	title="Reinstate {employee}"
+	variant="default"
 	class="flex w-full flex-col items-center justify-center"
+	IconComp={RotateCcw}
 >
 	<form
 		id="main"
-		action="?/terminate"
+		action="?/reinstate"
 		class="flex w-full flex-col items-center justify-center gap-2 space-y-4"
 		use:enhance
 		method="post"
 		enctype="multipart/form-data"
 	>
-		<p class="text-center text-red-500">
-			You are about to terminate {employee}, this will remove employee from lists, salary
-			calculations.
+		<p class="text-center">
+			Reinstate employee, this will reinclude the employee in lists, salary calculations.
 		</p>
 		<InputComp
-			label="Reason"
-			name="reason"
-			type="textarea"
-			{form}
-			rows={5}
-			{errors}
-			required
-			placeholder="Enter reason for termination"
-		/>
-		<InputComp
-			label="Termination Date"
-			name="terminationDate"
-			type="date"
+			label="New Status"
+			name="newStatus"
+			type="select"
 			{form}
 			{errors}
 			required
-			oldDays
-			futureDays
-		/>
-		<InputComp
-			label="Termination Letter"
-			placeholder="Upload termination letter"
-			name="terminationLetter"
-			type="file"
-			required={false}
-			{form}
-			{errors}
+			items={statusList}
 		/>
 
 		<Errors allErrors={$allErrors} />
-		<Button type="submit" class="w-full" form="main" variant="destructive">
+		<Button type="submit" class="w-full" form="main" variant="default">
 			{#if $delayed}
-				<LoadingBtn name="Terminating Employee" />
+				<LoadingBtn name="Reinstating Employee" />
 			{:else}
-				<X class="h-4 w-4" />
-				Terminate Employee
+				<RotateCcw class="h-4 w-4" />
+				Reinstate Employee
 			{/if}
 		</Button>
 	</form>

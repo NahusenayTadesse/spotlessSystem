@@ -3,14 +3,25 @@
 	import { Button, type ButtonVariant } from '$lib/components/ui/button/index.js';
 	import { Trash } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
+	import type { Component } from 'svelte';
+	import type { IconProps } from '@lucide/svelte';
+
 	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
 
 	let {
 		title,
 		children,
 		variant,
+		IconComp,
+
 		class: className = ''
-	}: { title: string; children: Snippet; variant: ButtonVariant; class?: string } = $props();
+	}: {
+		title: string;
+		children: Snippet;
+		variant: ButtonVariant;
+		IconComp?: Component<IconProps>;
+		class?: string;
+	} = $props();
 </script>
 
 <Dialog.Root>
@@ -20,6 +31,9 @@
 				{#if variant === 'destructive'}
 					<Trash />
 				{/if}
+				{#if IconComp}
+					<IconComp />
+				{/if}
 				{title}
 			</Button>
 		{/snippet}
@@ -28,8 +42,10 @@
 		<Dialog.Header>
 			<Dialog.Title>{title}</Dialog.Title>
 		</Dialog.Header>
-		<ScrollArea class="h-96 w-full lg:h-[calc(100vh-10rem)]" orientation="both">
-			{@render children()}
+		<ScrollArea class="h-auto" orientation="both">
+			<div class="h-auto max-h-96 w-full lg:max-h-[calc(100vh-10rem)]">
+				{@render children()}
+			</div>
 		</ScrollArea>
 	</Dialog.Content>
 </Dialog.Root>
