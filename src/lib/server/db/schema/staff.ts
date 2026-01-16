@@ -86,6 +86,7 @@ export const employee = mysqlTable(
 			'divorced',
 			'other'
 		]).default('single'),
+		address: int('address').references(() => address.id),
 
 		...secureFields
 	},

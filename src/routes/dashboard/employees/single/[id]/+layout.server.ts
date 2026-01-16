@@ -8,6 +8,8 @@ import {
 	employee,
 	user,
 	department,
+	address,
+	subcity,
 	educationalLevel
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
@@ -35,7 +37,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			departmentId: department.id,
 			status: employmentStatuses.name,
 			statusId: employmentStatuses.id,
-
+			address: employee.address,
 			birthDate: employee.birthDate,
 			age: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.birthDate}, CURDATE())`,
 			educationalLevel: educationalLevel.name,
@@ -57,15 +59,29 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.leftJoin(user, eq(employee.createdBy, user.id))
 		.where(eq(employee.id, Number(id)))
 		.then((rows) => rows[0]);
-
 	if (!staffMember) {
 		throw error(404, 'Staff member not found');
 	}
 
-	const today = new Date().toISOString().split('T')[0];
+	let employeeAddress = await db
+		.select({
+			id: address.id,
+			street: address.street,
+			subcity: subcity.name,
+			kebele: address.kebele,
+			buildingNumber: address.buildingNumber,
+			floor: address.floor,
+			houseNumber: address.houseNumber,
+			status: address.status
+		})
+		.from(address)
+		.leftJoin(subcity, eq(address.subcityId, subcity.id))
+		.where(eq(address.id, staffMember.address))
+		.then((rows) => rows[0]);
 
 	return {
 		staffMember,
+		address: employeeAddress,
 		form
 	};
 };

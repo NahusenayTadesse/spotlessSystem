@@ -36,7 +36,8 @@
 		Save,
 		Trash,
 		User,
-		Settings
+		Settings,
+		MapPin
 	} from '@lucide/svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -82,14 +83,20 @@
 		{ name: 'Added By', value: data?.staffMember?.addedBy },
 		{ name: 'Last Updated By', value: data?.staffMember?.updatedBy }
 	]);
-
+	let employeeAddress = $derived([
+		{ name: 'Subcity', value: data?.address?.subcity },
+		{ name: 'Street', value: data?.address?.street },
+		{ name: 'Kebele', value: data?.address?.kebele },
+		{ name: 'Building', value: data?.address?.buildingNumber },
+		{ name: 'Floor', value: data?.address?.floor },
+		{ name: 'House Number', value: data?.address?.houseNumber },
+		{ name: 'Status', value: data?.address?.status ? 'Active' : 'Inactive' }
+	]);
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
 	import EditIdentity from './editIdentity.svelte';
 	import EditEmployment from './editEmployment.svelte';
 	import EditPersonal from './editPersonal.svelte';
-
-	let edit = $state(false);
 </script>
 
 <svelte:head>
@@ -133,7 +140,7 @@
 			</div>
 
 			<div class={styles.sectionWrapper}>
-				<section class={`${styles.card} lg:col-span-2`}>
+				<section class={styles.card}>
 					<div class={styles.cardHeader}>
 						<div class={`${styles.iconBox} ${styles.identityIcon}`}>
 							<IdCard />
@@ -151,6 +158,17 @@
 					</div>
 					<div class={styles.cardContent}>
 						<SingleTable singleTable={identity} />
+					</div>
+				</section>
+				<section class={styles.card}>
+					<div class={styles.cardHeader}>
+						<div class={`${styles.iconBox} ${styles.identityIcon}`}>
+							<MapPin />
+						</div>
+						<h4 class={styles.sectionTitle}>Address</h4>
+					</div>
+					<div class={styles.cardContent}>
+						<SingleTable singleTable={employeeAddress} />
 					</div>
 				</section>
 
