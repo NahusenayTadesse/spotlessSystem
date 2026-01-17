@@ -19,26 +19,16 @@
 		sectionTitle: 'text-lg font-bold text-gray-800 dark:text-slate-100',
 
 		// Icon Styles
-		iconBox: 'flex gap-4 bg-white dark:bg-black h-10 w-10 items-center justify-center rounded-lg',
+		iconBox: 'flex gap-4  h-10 w-10 items-center justify-center rounded-lg',
 		// Specific Icon Variants
-		identityIcon: 'bg-indigo-50  text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
-		employmentIcon: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-		personalIcon: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+		identityIcon: 'bg-indigo-100  text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
+		addressIcon: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+		employmentIcon: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+		personalIcon: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
 		systemIcon: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
 	};
 
-	import {
-		ArrowLeft,
-		BriefcaseBusiness,
-		IdCard,
-		Pencil,
-		Plus,
-		Save,
-		Trash,
-		User,
-		Settings,
-		MapPin
-	} from '@lucide/svelte';
+	import { BriefcaseBusiness, IdCard, User, Settings, MapPin } from '@lucide/svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
 	import SingleView from '$lib/components/SingleView.svelte';
@@ -97,6 +87,7 @@
 	import EditIdentity from './editIdentity.svelte';
 	import EditEmployment from './editEmployment.svelte';
 	import EditPersonal from './editPersonal.svelte';
+	import EditAddress from './editAddress.svelte';
 </script>
 
 <svelte:head>
@@ -162,10 +153,17 @@
 				</section>
 				<section class={styles.card}>
 					<div class={styles.cardHeader}>
-						<div class={`${styles.iconBox} ${styles.identityIcon}`}>
+						<div class={`${styles.iconBox} ${styles.addressIcon}`}>
 							<MapPin />
 						</div>
 						<h4 class={styles.sectionTitle}>Address</h4>
+						{#key data?.address}
+							<EditAddress
+								data={data?.addressForm}
+								address={data?.address}
+								subcityList={data?.subcityList}
+							/>
+						{/key}
 					</div>
 					<div class={styles.cardContent}>
 						<SingleTable singleTable={employeeAddress} />

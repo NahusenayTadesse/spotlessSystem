@@ -68,6 +68,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			id: address.id,
 			street: address.street,
 			subcity: subcity.name,
+			subcityId: subcity.id,
 			kebele: address.kebele,
 			buildingNumber: address.buildingNumber,
 			floor: address.floor,
@@ -76,7 +77,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		})
 		.from(address)
 		.leftJoin(subcity, eq(address.subcityId, subcity.id))
-		.where(eq(address.id, staffMember.address))
+		.where(eq(address.id, Number(staffMember.address)))
 		.then((rows) => rows[0]);
 
 	return {

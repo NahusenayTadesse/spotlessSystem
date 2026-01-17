@@ -3,14 +3,21 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 import { db } from '$lib/server/db';
-import { employee, employeeTermination, employmentStatuses } from '$lib/server/db/schema';
+import { employee, employeeTermination, employmentStatuses, address } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-import { terminate, reinstate, editIdentity, editEmployment, editPersonal } from './schema';
-import { empStatus, departments, eduLevel } from '$lib/server/fastData';
+import {
+	terminate,
+	reinstate,
+	editIdentity,
+	editEmployment,
+	editPersonal,
+	editAddress
+} from './schema';
+import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
 import { saveUploadedFile } from '$lib/server/upload';
 
@@ -20,10 +27,12 @@ export const load: PageServerLoad = async () => {
 	const identityForm = await superValidate(zod4(editIdentity));
 	const employmentForm = await superValidate(zod4(editEmployment));
 	const personalForm = await superValidate(zod4(editPersonal));
+	const addressForm = await superValidate(zod4(editAddress));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
 	const educationalLevelList = await eduLevel();
+	const subcityList = await subcities();
 
 	return {
 		terminateForm,
@@ -33,7 +42,9 @@ export const load: PageServerLoad = async () => {
 		departmentList,
 		employmentForm,
 		educationalLevelList,
-		personalForm
+		personalForm,
+		addressForm,
+		subcityList
 	};
 };
 
@@ -294,6 +305,38 @@ export const actions: Actions = {
 			return message(form, { type: 'success', text: 'Employee Details Updated Successfully!' });
 		} catch (err) {
 			console.error('Error updating employee details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editAddress: async ({ request }) => {
+		const form = await superValidate(request, zod4(editAddress));
+		const { id, street, subcity, kebele, buildingNumber, floor, houseNumber, status } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(address)
+					.set({
+						subcityId: subcity,
+						street,
+						kebele,
+						buildingNumber,
+						floor,
+						houseNumber,
+						status
+					})
+					.where(eq(address.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Address Details Updated Successfully!' });
+		} catch (err) {
+			console.error('Error updating Address details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}

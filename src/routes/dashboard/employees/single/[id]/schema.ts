@@ -71,3 +71,15 @@ export const editPersonal = z.object({
 	religion: z.string('Religion is required').min(2).max(255)
 });
 export type EditPersonal = z.infer<typeof editPersonal>;
+
+export const editAddress = z.object({
+	id: z.number('Address Id not found'),
+	subcity: z.number('Subsity is required'),
+	street: z.string('Street is required'),
+	kebele: z.string('Kebele is required'),
+	buildingNumber: z.string().optional(),
+	floor: z.string().optional(),
+	houseNumber: z.string('House Number is Required'),
+	status: z.boolean('Status is required')
+});
+export type EditAddress = z.infer<typeof editAddress>;

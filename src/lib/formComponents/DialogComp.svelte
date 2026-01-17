@@ -25,7 +25,7 @@
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger class="w-auto border-0 px-4">
+	<Dialog.Trigger class="w-auto border-0">
 		{#snippet child({ props })}
 			<Button size="sm" class="border-0" {variant} {...props}>
 				{#if variant === 'destructive'}
@@ -42,7 +42,7 @@
 		<Dialog.Header>
 			<Dialog.Title>{title}</Dialog.Title>
 		</Dialog.Header>
-		<ScrollArea class="h-auto" orientation="both">
+		<ScrollArea class="h-auto w-full px-2 pr-4" orientation="both">
 			<div class="h-auto max-h-96 w-full lg:max-h-[calc(100vh-10rem)]">
 				{@render children()}
 			</div>
