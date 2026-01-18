@@ -177,3 +177,49 @@ export const editQualification = z.object({
 		.optional()
 });
 export type EditQualification = z.infer<typeof editQualification>;
+
+export const addExperience = z.object({
+	companyName: z.string('Company Name is required').min(1).max(100),
+
+	position: z.string('Position is required'),
+	startDate: z.string('Start Date is required'),
+	endDate: z.string('End Date is required'),
+	description: z.string().optional(),
+	certificate: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+		.optional()
+});
+
+export type AddExperience = z.infer<typeof addExperience>;
+
+export const editExperience = z.object({
+	id: z.number('Experience not Found'),
+
+	companyName: z.string('Company Name is required').min(1).max(100),
+
+	position: z.string('Position is required'),
+	startDate: z.string('Start Date is required'),
+	endDate: z.string('End Date is required'),
+	description: z.string().optional(),
+	certificate: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+		.optional()
+});
+
+export type EditExperience = z.infer<typeof editExperience>;

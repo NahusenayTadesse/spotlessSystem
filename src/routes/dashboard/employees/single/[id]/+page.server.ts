@@ -9,7 +9,8 @@ import {
 	employmentStatuses,
 	address,
 	staffFamilies,
-	qualification
+	qualification,
+	workExperience
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -26,7 +27,9 @@ import {
 	editFamily,
 	addFamily,
 	addQualification,
-	editQualification
+	editQualification,
+	addExperience,
+	editExperience
 } from './schema';
 import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
@@ -43,6 +46,8 @@ export const load: PageServerLoad = async () => {
 	const addfamilyForm = await superValidate(zod4(addFamily));
 	const addQualificationForm = await superValidate(zod4(addQualification));
 	const editQualificationForm = await superValidate(zod4(editQualification));
+	const editExperienceForm = await superValidate(zod4(editExperience));
+	const addExperienceForm = await superValidate(zod4(addExperience));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -63,7 +68,9 @@ export const load: PageServerLoad = async () => {
 		familyForm,
 		addfamilyForm,
 		addQualificationForm,
-		editQualificationForm
+		editQualificationForm,
+		addExperienceForm,
+		editExperienceForm
 	};
 };
 
@@ -479,7 +486,6 @@ export const actions: Actions = {
 		}
 	},
 	addQualification: async ({ request, locals, params }) => {
-		console.log('Connected');
 		const { id } = params;
 		const form = await superValidate(request, zod4(addQualification));
 		if (!form.valid) {
@@ -492,18 +498,28 @@ export const actions: Actions = {
 			// Wrap the database operations in a transaction
 			await db.transaction(async (tx) => {
 				// 1. Update the employee identity
+				if (certificate) {
+					const certificateName = await saveUploadedFile(certificate);
 
-				const certificateName = await saveUploadedFile(certificate);
-
-				await tx.insert(qualification).values({
-					staffId: Number(id),
-					field,
-					educationLevel: educationalLevel,
-					graduationDate,
-					schoolName,
-					certificate: certificateName,
-					createdBy: locals?.user?.id
-				});
+					await tx.insert(qualification).values({
+						staffId: Number(id),
+						field,
+						educationLevel: educationalLevel,
+						graduationDate,
+						schoolName,
+						certificate: certificateName,
+						createdBy: locals?.user?.id
+					});
+				} else {
+					await tx.insert(qualification).values({
+						staffId: Number(id),
+						field,
+						educationLevel: educationalLevel,
+						graduationDate,
+						schoolName,
+						createdBy: locals?.user?.id
+					});
+				}
 			});
 			return message(form, {
 				type: 'success',
@@ -517,7 +533,6 @@ export const actions: Actions = {
 	editQualification: async ({ request, locals, params }) => {
 		const form = await superValidate(request, zod4(editQualification));
 
-		console.log(form);
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
@@ -562,6 +577,106 @@ export const actions: Actions = {
 			});
 		} catch (err) {
 			console.error('Error updating Qualification details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	addExperience: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addExperience));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { companyName, position, startDate, endDate, description, certificate } = form.data;
+
+		try {
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+				//
+				if (certificate) {
+					const certificateName = await saveUploadedFile(certificate);
+
+					await tx.insert(workExperience).values({
+						staffId: Number(id),
+						companyName,
+						position,
+						startDate,
+						endDate,
+						description,
+						certificate: certificateName,
+						createdBy: locals?.user?.id
+					});
+				} else {
+					await tx.insert(workExperience).values({
+						staffId: Number(id),
+						companyName,
+						position,
+						startDate,
+						endDate,
+						description,
+						createdBy: locals?.user?.id
+					});
+				}
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Experience Details Added Successfully!'
+			});
+		} catch (err) {
+			console.error('Error added experience details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editExperience: async ({ request, locals, params }) => {
+		const form = await superValidate(request, zod4(editExperience));
+
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { id, companyName, position, startDate, endDate, description, certificate } = form.data;
+
+		try {
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+				if (certificate) {
+					const certificateName = await saveUploadedFile(certificate);
+
+					await tx
+						.update(workExperience)
+						.set({
+							companyName,
+							position,
+							startDate,
+							endDate,
+							description,
+							certificate: certificateName,
+							updatedBy: locals?.user?.id
+						})
+						.where(eq(workExperience.id, Number(id)));
+				} else {
+					await tx
+						.update(workExperience)
+						.set({
+							companyName,
+							position,
+							startDate,
+							endDate,
+							description,
+							updatedBy: locals?.user?.id
+						})
+						.where(eq(workExperience.id, Number(id)));
+				}
+			});
+
+			return message(form, {
+				type: 'success',
+				text: 'Experience Details Updated Successfully!'
+			});
+		} catch (err) {
+			console.error('Error updating experience details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}

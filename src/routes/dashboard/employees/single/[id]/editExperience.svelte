@@ -10,26 +10,27 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
+	import type { EditExperience } from './schema';
 
 	let {
 		data,
 		id,
-		field,
-		educationalLevel,
-		schoolName,
-		graduationDate,
-		eduLevel,
+		companyName,
+		position,
+		startDate,
+		endDate,
+		description,
 		certificate,
 		icon = false
 	}: {
-		data: SuperValidated<Infer<EditQualification>>;
+		data: SuperValidated<Infer<EditExperience>>;
 		id: number;
-		field: string;
-		schoolName: string;
-		educationalLevel: number;
-		graduationDate: Date;
+		companyName: string;
+		position: string;
+		startDate: Date;
+		endDate: Date;
+		description?: string;
 		certificate?: string;
-		eduLevel: Item[];
 		icon: boolean;
 	} = $props();
 
@@ -40,10 +41,11 @@
 	let open = $state(false);
 
 	$form.id = id;
-	$form.field = field;
-	$form.schoolName = schoolName;
-	$form.educationalLevel = educationalLevel;
-	$form.graduationDate = graduationDate?.toLocaleDateString('en-CA');
+	$form.companyName = companyName;
+	$form.position = position;
+	$form.description = description;
+	$form.startDate = startDate?.toLocaleDateString('en-CA');
+	$form.endDate = endDate?.toLocaleDateString('en-CA');
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -68,16 +70,16 @@
 					{#if icon}
 						<SquarePen /> Edit
 					{:else}
-						{field}
+						{companyName}
 					{/if}
 				</Dialog.Trigger>
 				<Dialog.Content class="w-full bg-background">
 					<Dialog.Header>
-						<Dialog.Title class="text-center text-4xl">Edit {field}</Dialog.Title>
+						<Dialog.Title class="text-center text-4xl">Edit {companyName}</Dialog.Title>
 					</Dialog.Header>
 					<ScrollArea class="h-auto w-full px-2 pr-4" orientation="both">
 						<form
-							action="?/editQualification"
+							action="?/editExperience"
 							use:enhance
 							method="post"
 							id="edit"
@@ -87,41 +89,47 @@
 							<Errors allErrors={$allErrors} />
 							<input type="hidden" name="id" value={$form.id} />
 							<InputComp
-								label="Field"
-								name="field"
+								label="Company Name"
+								name="companyName"
 								type="text"
 								{form}
 								{errors}
-								placeholder="Enter Field Name"
+								placeholder="Enter Company Name"
 							/>
-							<InputComp
-								label="Educational Level"
-								name="educationalLevel"
-								type="combo"
-								{form}
-								{errors}
-								items={eduLevel}
-								required
-							/>
+							<InputComp label="Position" name="position" type="text" {form} {errors} required />
 
 							<InputComp
-								label="School Name "
-								name="schoolName"
-								type="text"
+								label="Work and Experience Description"
+								name="description"
+								type="textarea"
 								{form}
 								{errors}
-								required
-								placeholder="Enter School Name"
+								required={false}
+								rows={5}
+								placeholder="Enter Work Experience"
 							/>
 							<InputComp
-								label="Graduation Date"
-								name="graduationDate"
+								label="Start Date"
+								name="startDate"
 								type="date"
 								{form}
 								{errors}
 								oldDays
 								futureDays={false}
+								year
 							/>
+
+							<InputComp
+								label="End Date"
+								name="endDate"
+								type="date"
+								{form}
+								{errors}
+								oldDays
+								futureDays={false}
+								year
+							/>
+
 							<InputComp
 								label="Certificate"
 								name="certificate"
@@ -146,7 +154,7 @@
 			</Dialog.Root>
 		</Tooltip.Trigger>
 		<Tooltip.Content>
-			<p>Edit {field}</p>
+			<p>Edit {companyName}</p>
 		</Tooltip.Content>
 	</Tooltip.Root>
 </Tooltip.Provider>

@@ -10,7 +10,8 @@
 		User,
 		Settings,
 		MapPin,
-		GraduationCap
+		GraduationCap,
+		FileUser
 	} from '@lucide/svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -74,6 +75,7 @@
 	import Section from './section.svelte';
 	import Families from './Families.svelte';
 	import Qualifications from './qualifications.svelte';
+	import Experience from './experience.svelte';
 </script>
 
 <svelte:head>
@@ -177,6 +179,19 @@
 					form={data?.editQualificationForm}
 					addForm={data?.addQualificationForm}
 					eduLevel={data?.educationalLevelList}
+				/>
+			</Section>
+
+			<Section
+				title="Work Experiences"
+				class="lg:col-span-2"
+				IconComp={FileUser}
+				style="employmentIcon"
+			>
+				<Experience
+					data={data?.experience}
+					form={data?.editExperienceForm}
+					addForm={data?.addExperienceForm}
 				/>
 			</Section>
 

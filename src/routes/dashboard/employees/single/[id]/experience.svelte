@@ -4,7 +4,7 @@
 	import Copy from '$lib/Copy.svelte';
 	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 	import Statuses from '$lib/components/Table/statuses.svelte';
-	import Edit from './editQualification.svelte';
+	import Edit from './editExperience.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -17,18 +17,16 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import type { Item } from '$lib/global.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
-	import type { EditQualification, AddQualification } from './schema';
+	import type { EditExperience, AddExperience } from './schema';
 
 	let {
 		data,
 		form: editForm,
-		eduLevel,
 		addForm
 	}: {
 		data: any;
-		form: SuperValidated<Infer<EditQualification>>;
-		eduLevel: Item[];
-		addForm: SuperValidated<Infer<AddQualification>>;
+		form: SuperValidated<Infer<EditExperience>>;
+		addForm: SuperValidated<Infer<AddExperience>>;
 	} = $props();
 	export const columns = [
 		{
@@ -41,10 +39,10 @@
 			enableSorting: false
 		},
 		{
-			accessorKey: 'field',
+			accessorKey: 'companyName',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
-					name: 'Field',
+					name: 'Company Name',
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true,
@@ -52,47 +50,58 @@
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
 					id: row.original?.id,
-					field: row.original?.field,
-					educationalLevel: row.original?.educationalLevelId,
-					schoolName: row.original?.schoolName,
-					graduationDate: row.original?.graduationDate,
+					companyName: row.original?.companyName,
+					position: row.original?.position,
+					startDate: row.original?.startDate,
+					endDate: row.original?.endDate,
+					description: row.original?.description,
 					certificate: row.original?.certificate,
 					data: editForm,
-					icon: false,
-					eduLevel: eduLevel
+					icon: false
 				});
 			}
 		},
 
 		{
-			accessorKey: 'educationalLevel',
+			accessorKey: 'position',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
-					name: 'Educational Level',
+					name: 'Position',
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true
 		},
 
 		{
-			accessorKey: 'schoolName',
+			accessorKey: 'startDate',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
-					name: 'School Name',
-					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
-		},
-		{
-			accessorKey: 'graduationDate',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Graduation Date',
+					name: 'Start Date',
 					onclick: column.getToggleSortingHandler()
 				}),
 			cell: ({ row }) => {
-				return formatEthiopianDate(row.original.graduationDate);
+				return formatEthiopianDate(row.original.startDate);
 			}
+		},
+		{
+			accessorKey: 'endDate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'End Date',
+					onclick: column.getToggleSortingHandler()
+				}),
+			cell: ({ row }) => {
+				return formatEthiopianDate(row.original.endDate);
+			}
+		},
+		{
+			accessorKey: 'description',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Description',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true
 		},
 		{
 			accessorKey: 'certificate',
@@ -133,14 +142,14 @@
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
 					id: row.original?.id,
-					field: row.original?.field,
-					educationalLevel: row.original?.educationalLevelId,
-					schoolName: row.original?.schoolName,
+					companyName: row.original?.companyName,
+					position: row.original?.position,
+					startDate: row.original?.startDate,
+					endDate: row.original?.endDate,
+					description: row.original?.description,
 					certificate: row.original?.certificate,
-					graduationDate: row.original?.graduationDate,
 					data: editForm,
-					icon: true,
-					eduLevel: eduLevel
+					icon: true
 				});
 			}
 		}
@@ -162,9 +171,9 @@
 	});
 </script>
 
-<DialogComp variant="default" title="Add Qualifications" IconComp={Plus}>
+<DialogComp variant="default" title="Add Experience" IconComp={Plus}>
 	<form
-		action="?/addQualification"
+		action="?/addExperience"
 		use:enhance
 		method="post"
 		id="edit"
@@ -173,35 +182,39 @@
 	>
 		<Errors allErrors={$allErrors} />
 		<InputComp
-			label="Field"
-			name="field"
+			label="Company Name"
+			name="companyName"
 			type="text"
 			{form}
 			{errors}
-			placeholder="Enter Field Name"
+			placeholder="Enter Company Name"
 		/>
+		<InputComp label="Position" name="position" type="text" {form} {errors} required />
+
 		<InputComp
-			label="Educational Level"
-			name="educationalLevel"
-			type="combo"
+			label="Work and Experience Description"
+			name="description"
+			type="textarea"
 			{form}
 			{errors}
-			items={eduLevel}
-			required
+			required={false}
+			rows={5}
+			placeholder="Enter Work Experience"
+		/>
+		<InputComp
+			label="Start Date"
+			name="startDate"
+			type="date"
+			{form}
+			{errors}
+			oldDays
+			futureDays={false}
+			year
 		/>
 
 		<InputComp
-			label="School Name "
-			name="schoolName"
-			type="text"
-			{form}
-			{errors}
-			required
-			placeholder="Enter School Name"
-		/>
-		<InputComp
-			label="Graduation Date"
-			name="graduationDate"
+			label="End Date"
+			name="endDate"
 			type="date"
 			{form}
 			{errors}
@@ -214,11 +227,11 @@
 
 		<Button type="submit" class="mt-4" form="edit">
 			{#if $delayed}
-				<LoadingBtn name="Adding Qualification" />
+				<LoadingBtn name="Adding Work Experience" />
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Add Qualification
+				Add Work Experience
 			{/if}
 		</Button>
 	</form>
