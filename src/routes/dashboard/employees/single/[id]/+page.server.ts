@@ -3,7 +3,13 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 import { db } from '$lib/server/db';
-import { employee, employeeTermination, employmentStatuses, address } from '$lib/server/db/schema';
+import {
+	employee,
+	employeeTermination,
+	employmentStatuses,
+	address,
+	staffFamilies
+} from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
@@ -340,6 +346,53 @@ export const actions: Actions = {
 			return message(form, { type: 'success', text: 'Address Details Updated Successfully!' });
 		} catch (err) {
 			console.error('Error updating Address details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editFamily: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editFamily));
+		const {
+			id,
+			name,
+			gender,
+			phone,
+			email,
+			relationShip,
+			otherRelationShip,
+			emergencyContact,
+			status
+		} = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(staffFamilies)
+					.set({
+						name,
+						gender,
+						phone,
+						email,
+						relationship: relationShip,
+						otherRelationship: otherRelationShip,
+						emergencyContact,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffFamilies.id, Number(id)));
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Family Member Details Updated Successfully!'
+			});
+		} catch (err) {
+			console.error('Error updating Family Member details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}

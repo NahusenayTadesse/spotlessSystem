@@ -153,7 +153,7 @@
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />
 			</Section>
-			<Section title="Family Members" class="col-span-2" IconComp={Baby} style="identityIcon">
+			<Section title="Family Members" class="col-span-3" IconComp={Baby} style="identityIcon">
 				<Families data={data?.family} form={data?.familyForm} />
 			</Section>
 

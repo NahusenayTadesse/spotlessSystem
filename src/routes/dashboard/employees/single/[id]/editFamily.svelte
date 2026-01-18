@@ -120,7 +120,7 @@
 						{name}
 					{/if}
 				</Dialog.Trigger>
-				<Dialog.Content class="w-full bg-white">
+				<Dialog.Content class="w-full bg-background">
 					<Dialog.Header>
 						<Dialog.Title class="text-center text-4xl">Edit {name}</Dialog.Title>
 					</Dialog.Header>
@@ -167,7 +167,10 @@
 								type="select"
 								{form}
 								{errors}
-								items={genders}
+								items={[
+									{ value: 'male', name: 'Male' },
+									{ value: 'female', name: 'Female' }
+								]}
 							/>
 
 							<InputComp
@@ -187,6 +190,8 @@
 									{errors}
 								/>
 							{/if}
+
+							<input hidden bind:value={$form.otherRelationShip} name="otherRelationShip" />
 
 							<InputComp
 								label="Is this Family Member an Emergency Contact?"

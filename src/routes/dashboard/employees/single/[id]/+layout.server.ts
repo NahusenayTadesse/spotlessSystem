@@ -13,7 +13,7 @@ import {
 	educationalLevel,
 	staffFamilies
 } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -97,7 +97,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		})
 		.from(staffFamilies)
 		.leftJoin(user, eq(staffFamilies.createdBy, user.id))
-		.where(eq(staffFamilies.staffId, Number(id)));
+		.where(eq(staffFamilies.staffId, Number(id)))
+		.orderBy(desc(staffFamilies.emergencyContact));
 
 	return {
 		staffMember,

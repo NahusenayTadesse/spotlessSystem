@@ -33,7 +33,7 @@
 					name: row.original?.name,
 					phone: row.original?.phone,
 					email: row.original?.email,
-					gender: row.orignal?.gender,
+					gender: data[row.index]?.gender,
 					emergencyContact: row.original?.emergencyContact,
 					relationShip: row.original?.relationShip,
 					otherRelationShip: row.original?.relationShip,
@@ -108,7 +108,7 @@
 			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
-					status: row.original.status ? 'Yes' : 'No'
+					status: row.original.emergencyContact ? 'Yes' : 'No'
 				});
 			}
 		},
@@ -149,7 +149,7 @@
 					name: row.original?.name,
 					phone: row.original?.phone,
 					email: row.original?.email,
-					gender: row.orignal?.gender,
+					gender: data[row.index]?.gender,
 					emergencyContact: row.original?.emergencyContact,
 					relationShip: row.original?.relationShip,
 					otherRelationShip: row.original?.relationShip,

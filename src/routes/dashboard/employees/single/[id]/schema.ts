@@ -105,7 +105,10 @@ const RelationShipEnum = z.enum(
 export const editFamily = z.object({
 	id: z.number('Family Member is not Found'),
 	name: z.string('Family member is required').min(1).max(100),
-	gender: z.enum(['male', 'female'], 'Gender is required'),
+	gender: z.enum(['male', 'female'], {
+		message: 'Please select a valid gender'
+	}),
+
 	phone: z.string(),
 	email: z.email().optional(),
 	emergencyContact: z.boolean().default(false),
