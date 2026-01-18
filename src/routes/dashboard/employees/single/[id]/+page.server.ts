@@ -15,7 +15,8 @@ import {
 	editIdentity,
 	editEmployment,
 	editPersonal,
-	editAddress
+	editAddress,
+	editFamily
 } from './schema';
 import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
@@ -28,6 +29,7 @@ export const load: PageServerLoad = async () => {
 	const employmentForm = await superValidate(zod4(editEmployment));
 	const personalForm = await superValidate(zod4(editPersonal));
 	const addressForm = await superValidate(zod4(editAddress));
+	const familyForm = await superValidate(zod4(editFamily));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -44,7 +46,8 @@ export const load: PageServerLoad = async () => {
 		educationalLevelList,
 		personalForm,
 		addressForm,
-		subcityList
+		subcityList,
+		familyForm
 	};
 };
 

@@ -23,7 +23,6 @@
 
 	let {
 		data,
-		employee,
 		firstName,
 		fatherName,
 		grandFatherName,
@@ -31,7 +30,6 @@
 		birthDate
 	}: {
 		data: SuperValidated<Infer<EditIdentity>>;
-		employee: string;
 		firstName: string;
 		fatherName: string;
 		grandFatherName: string;
@@ -39,7 +37,10 @@
 		birthDate: Date;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+		resetForm: false,
+		invalidateAll: true
+	});
 	import { toast } from 'svelte-sonner';
 	$effect(() => {
 		if ($message) {

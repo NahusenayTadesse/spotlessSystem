@@ -34,7 +34,9 @@
 		educationalLevelList: Item[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+		resetForm: false
+	});
 	import { toast } from 'svelte-sonner';
 	$effect(() => {
 		if ($message) {

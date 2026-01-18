@@ -32,7 +32,10 @@
 		subcityList: Item[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+		resetForm: false, // Resets form to initial 'data' after successful submit
+		invalidateAll: true
+	});
 	import { toast } from 'svelte-sonner';
 	$effect(() => {
 		if ($message) {

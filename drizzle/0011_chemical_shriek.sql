@@ -1,0 +1,1 @@
+ALTER TABLE `staff_families` MODIFY COLUMN `email` varchar(255);

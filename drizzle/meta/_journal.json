@@ -71,6 +71,20 @@
       "when": 1768569794998,
       "tag": "0009_futuristic_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1768677410126,
+      "tag": "0010_typical_black_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1768680149109,
+      "tag": "0011_chemical_shriek",
+      "breakpoints": true
     }
   ]
 }

@@ -191,7 +191,7 @@ export const staffFamilies = mysqlTable('staff_families', {
 	otherRelationship: varchar('other_relationship', { length: 255 }),
 	name: varchar('name', { length: 255 }).notNull(),
 	phone: varchar('phone', { length: 255 }).notNull(),
-	email: varchar('email', { length: 255 }).notNull(),
+	email: varchar('email', { length: 255 }),
 	emergencyContact: boolean('emergency_contact').notNull().default(false),
 	...secureFields
 });
@@ -334,6 +334,19 @@ export const qualification = mysqlTable('qualification', {
 		.notNull(),
 	schoolName: varchar('school_name', { length: 255 }),
 	graduationDate: date('qualification_date').notNull(),
+	...secureFields
+});
+
+export const workExperience = mysqlTable('work_experience', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => employee.id),
+	companyName: varchar('company_name', { length: 255 }),
+	position: varchar('position', { length: 255 }),
+	startDate: date('start_date').notNull(),
+	endDate: date('end_date').notNull(),
+	description: varchar('description', { length: 255 }),
 	...secureFields
 });
 

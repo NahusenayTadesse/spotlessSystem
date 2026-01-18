@@ -83,3 +83,34 @@ export const editAddress = z.object({
 	status: z.boolean('Status is required')
 });
 export type EditAddress = z.infer<typeof editAddress>;
+
+const RelationShipEnum = z.enum(
+	[
+		'mother',
+		'father',
+		'spouse',
+		'son',
+		'daughter',
+		'grandchild',
+		'grandfather',
+		'grandmother',
+		'uncle',
+		'aunt',
+		'brother',
+		'sister',
+		'other'
+	],
+	'Relationship is required'
+);
+export const editFamily = z.object({
+	id: z.number('Family Member is not Found'),
+	name: z.string('Family member is required').min(1).max(100),
+	gender: z.enum(['male', 'female'], 'Gender is required'),
+	phone: z.string(),
+	email: z.email().optional(),
+	emergencyContact: z.boolean().default(false),
+	otherRelationShip: z.string().optional(),
+	relationShip: RelationShipEnum,
+	status: z.boolean().default(true)
+});
+export type EditFamily = z.infer<typeof editFamily>;

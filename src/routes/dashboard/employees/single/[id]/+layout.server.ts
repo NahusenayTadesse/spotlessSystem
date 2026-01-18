@@ -10,7 +10,8 @@ import {
 	department,
 	address,
 	subcity,
-	educationalLevel
+	educationalLevel,
+	staffFamilies
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
@@ -80,9 +81,28 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(address.id, Number(staffMember.address)))
 		.then((rows) => rows[0]);
 
+	let employeeFamily = await db
+		.select({
+			id: staffFamilies.id,
+			name: staffFamilies.name,
+			gender: staffFamilies.gender,
+			phone: staffFamilies.phone,
+			email: staffFamilies.email,
+			relationShip: staffFamilies.relationship, // Note: watch for casing (relationShip vs relationship)
+			otherRelationShip: staffFamilies.otherRelationship,
+			emergencyContact: staffFamilies.emergencyContact,
+			status: staffFamilies.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffFamilies)
+		.leftJoin(user, eq(staffFamilies.createdBy, user.id))
+		.where(eq(staffFamilies.staffId, Number(id)));
+
 	return {
 		staffMember,
 		address: employeeAddress,
+		family: employeeFamily,
 		form
 	};
 };
