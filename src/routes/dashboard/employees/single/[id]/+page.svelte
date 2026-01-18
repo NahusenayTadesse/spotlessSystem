@@ -154,7 +154,7 @@
 				<SingleTable singleTable={personalDetails} />
 			</Section>
 			<Section title="Family Members" class="col-span-3" IconComp={Baby} style="identityIcon">
-				<Families data={data?.family} form={data?.familyForm} />
+				<Families data={data?.family} form={data?.familyForm} addForm={data?.addfamilyForm} />
 			</Section>
 
 			<Section title="System Information" IconComp={Settings} style="systemIcon">

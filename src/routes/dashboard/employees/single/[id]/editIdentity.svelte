@@ -2,7 +2,6 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { type Reinstate } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
@@ -12,14 +11,6 @@
 		{ value: 'male', name: 'Male' },
 		{ value: 'female', name: 'Female' }
 	];
-
-	type List = {
-		firstName: string;
-		fatherName: string;
-		grandFatherName: string;
-		gender: string;
-		birthDate: string;
-	};
 
 	let {
 		data,

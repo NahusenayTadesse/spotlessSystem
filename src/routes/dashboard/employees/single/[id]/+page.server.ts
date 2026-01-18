@@ -22,7 +22,8 @@ import {
 	editEmployment,
 	editPersonal,
 	editAddress,
-	editFamily
+	editFamily,
+	addFamily
 } from './schema';
 import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
@@ -36,6 +37,7 @@ export const load: PageServerLoad = async () => {
 	const personalForm = await superValidate(zod4(editPersonal));
 	const addressForm = await superValidate(zod4(editAddress));
 	const familyForm = await superValidate(zod4(editFamily));
+	const addfamilyForm = await superValidate(zod4(addFamily));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -53,7 +55,8 @@ export const load: PageServerLoad = async () => {
 		personalForm,
 		addressForm,
 		subcityList,
-		familyForm
+		familyForm,
+		addfamilyForm
 	};
 };
 
@@ -346,6 +349,47 @@ export const actions: Actions = {
 			return message(form, { type: 'success', text: 'Address Details Updated Successfully!' });
 		} catch (err) {
 			console.error('Error updating Address details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	addFamily: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addFamily));
+		const {
+			name,
+			gender,
+			phone,
+			email,
+			relationShip,
+			otherRelationShip,
+			emergencyContact,
+			status
+		} = form.data;
+
+		try {
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx.insert(staffFamilies).values({
+					name,
+					staffId: Number(id),
+					gender,
+					phone,
+					email,
+					relationship: relationShip,
+					otherRelationship: otherRelationShip,
+					emergencyContact,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Family Member Details Added Successfully!'
+			});
+		} catch (err) {
+			console.error('Error added Family Member details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},

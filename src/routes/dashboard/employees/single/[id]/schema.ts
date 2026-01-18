@@ -117,3 +117,19 @@ export const editFamily = z.object({
 	status: z.boolean().default(true)
 });
 export type EditFamily = z.infer<typeof editFamily>;
+
+export const addFamily = z.object({
+	name: z.string('Family member is required').min(1).max(100),
+	gender: z.enum(['male', 'female'], {
+		message: 'Please select a valid gender'
+	}),
+
+	phone: z.string(),
+	email: z.email().optional(),
+	emergencyContact: z.boolean().default(false),
+	otherRelationShip: z.string().optional(),
+	relationShip: RelationShipEnum,
+	status: z.boolean().default(true)
+});
+
+export type AddFamily = z.infer<typeof addFamily>;

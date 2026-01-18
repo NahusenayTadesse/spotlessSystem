@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { renderComponent } from '$lib/components/ui/data-table/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import Copy from '$lib/Copy.svelte';
@@ -6,8 +6,49 @@
 	import Statuses from '$lib/components/Table/statuses.svelte';
 	import Edit from './editFamily.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
+	import { superForm } from 'sveltekit-superforms/client';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
-	let { data, form } = $props();
+	const relationShips = [
+		'mother',
+		'father',
+		'spouse',
+		'son',
+		'daughter',
+		'grandchild',
+		'grandfather',
+		'grandmother',
+		'uncle',
+		'aunt',
+		'brother',
+		'sister',
+		'other'
+	].map((v) => ({
+		value: v,
+		name: v.charAt(0).toUpperCase() + v.slice(1)
+	}));
+
+	const genders = [
+		{ value: 'male', name: 'Male' },
+		{ value: 'female', name: 'Female' }
+	];
+
+	import { Plus } from '@lucide/svelte';
+	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+
+	let {
+		data,
+		form: editForm,
+		addForm
+	}: {
+		data: any;
+		form: SuperValidated<Infer<EditFamily>>;
+		addForm: SuperValidated<Infer<AddFamily>>;
+	} = $props();
 	export const columns = [
 		{
 			id: 'index',
@@ -37,7 +78,7 @@
 					emergencyContact: row.original?.emergencyContact,
 					relationShip: row.original?.relationShip,
 					otherRelationShip: row.original?.relationShip,
-					data: form,
+					data: editForm,
 					icon: false,
 					status: row.original?.status
 				});
@@ -153,14 +194,134 @@
 					emergencyContact: row.original?.emergencyContact,
 					relationShip: row.original?.relationShip,
 					otherRelationShip: row.original?.relationShip,
-					data: form,
+					data: editForm,
 					icon: true,
 					status: row.original?.status
 				});
 			}
 		}
 	];
+
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
+		resetForm: false
+	});
+	import { toast } from 'svelte-sonner';
+	import type { AddFamily } from './schema';
+	import EditFamily from './editFamily.svelte';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
+
+<DialogComp variant="default" title="Add Family Members" IconComp={Plus}>
+	<form
+		action="?/addFamily"
+		use:enhance
+		method="post"
+		id="edit"
+		class="flex w-full flex-col gap-4 p-4"
+	>
+		<Errors allErrors={$allErrors} />
+		<input type="hidden" name="id" value={$form.id} />
+		<InputComp
+			label="Name"
+			name="name"
+			type="text"
+			{form}
+			{errors}
+			placeholder="Enter Name of Family Member"
+		/>
+		<InputComp
+			label="Phone"
+			name="phone"
+			type="tel"
+			{form}
+			{errors}
+			required
+			placeholder="Enter Phone Number"
+		/>
+
+		<InputComp
+			label="Email"
+			name="email"
+			type="email"
+			{form}
+			{errors}
+			required={false}
+			placeholder="Enter Email"
+		/>
+		<InputComp
+			label="Gender"
+			name="gender"
+			type="select"
+			{form}
+			{errors}
+			items={[
+				{ value: 'male', name: 'Male' },
+				{ value: 'female', name: 'Female' }
+			]}
+		/>
+
+		<InputComp
+			label="Relationship to Employee"
+			name="relationShip"
+			type="combo"
+			{form}
+			{errors}
+			items={relationShips}
+		/>
+		{#if $form.relationShip === 'other'}
+			<InputComp
+				label="Relationship to Employee"
+				name="otherRelationShip"
+				type="text"
+				{form}
+				{errors}
+			/>
+		{/if}
+
+		<input hidden bind:value={$form.otherRelationShip} name="otherRelationShip" />
+
+		<InputComp
+			label="Is this Family Member an Emergency Contact?"
+			name="emergencyContact"
+			type="select"
+			{form}
+			{errors}
+			items={[
+				{ value: true, name: 'Emergency Contact' },
+				{ value: false, name: 'Not Emergency Contact' }
+			]}
+		/>
+		<InputComp
+			label="Status"
+			name="status"
+			type="select"
+			{form}
+			{errors}
+			items={[
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'Inactive' }
+			]}
+		/>
+
+		<Button type="submit" class="mt-4" form="edit">
+			{#if $delayed}
+				<LoadingBtn name="Saving Changes" />
+			{:else}
+				<Plus class="h-4 w-4" />
+
+				Save Changes
+			{/if}
+		</Button>
+	</form>
+</DialogComp>
 
 {#key data}
 	<DataTable {columns} {data} search={true} fileName="Family" />
