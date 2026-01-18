@@ -3,7 +3,15 @@
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
 
-	import { BriefcaseBusiness, Baby, IdCard, User, Settings, MapPin } from '@lucide/svelte';
+	import {
+		BriefcaseBusiness,
+		Baby,
+		IdCard,
+		User,
+		Settings,
+		MapPin,
+		GraduationCap
+	} from '@lucide/svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
 	import SingleView from '$lib/components/SingleView.svelte';
@@ -65,6 +73,7 @@
 	import EditAddress from './editAddress.svelte';
 	import Section from './section.svelte';
 	import Families from './Families.svelte';
+	import Qualifications from './qualifications.svelte';
 </script>
 
 <svelte:head>
@@ -153,8 +162,22 @@
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />
 			</Section>
-			<Section title="Family Members" class="col-span-3" IconComp={Baby} style="identityIcon">
+			<Section title="Family Members" class="lg:col-span-2" IconComp={Baby} style="identityIcon">
 				<Families data={data?.family} form={data?.familyForm} addForm={data?.addfamilyForm} />
+			</Section>
+
+			<Section
+				title="Qualifications"
+				class="lg:col-span-2"
+				IconComp={GraduationCap}
+				style="identityIcon"
+			>
+				<Qualifications
+					data={data?.qualifications}
+					form={data?.editQualificationForm}
+					addForm={data?.addQualificationForm}
+					eduLevel={data?.educationalLevelList}
+				/>
 			</Section>
 
 			<Section title="System Information" IconComp={Settings} style="systemIcon">

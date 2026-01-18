@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentSchema';
 import { gender } from '$lib/global.svelte';
+import type { educationalLevel } from '$lib/server/db/schema';
 
 export const terminate = z.object({
 	reason: z.string().min(2).max(255),
@@ -133,3 +134,46 @@ export const addFamily = z.object({
 });
 
 export type AddFamily = z.infer<typeof addFamily>;
+
+export const addQualification = z.object({
+	field: z.string('Field name is required').min(1).max(100),
+
+	educationalLevel: z.number('Educational Level is required'),
+	schoolName: z.string('School Name is required'),
+	graduationDate: z.string('Graduation Date is required'),
+	certificate: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+		.optional()
+});
+
+export type AddQualification = z.infer<typeof addQualification>;
+
+export const editQualification = z.object({
+	id: z.number('Qualification not Found'),
+
+	field: z.string('Field name is required').min(1).max(100),
+
+	educationalLevel: z.number('Educational Level is required'),
+	schoolName: z.string('School Name is required'),
+	graduationDate: z.string('Graduation Date is required'),
+	certificate: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+		.optional()
+});
+export type EditQualification = z.infer<typeof editQualification>;

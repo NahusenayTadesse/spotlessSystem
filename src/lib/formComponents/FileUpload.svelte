@@ -5,7 +5,7 @@
 	import { X, CloudUpload as UploadCloud, FileText, Image as ImageIcon } from '@lucide/svelte';
 	import { fileProxy } from 'sveltekit-superforms';
 
-	let { form, name, placeholder = 'PDF or Images (Max 10MB)' } = $props();
+	let { form, name, placeholder = 'PDF or Images (Max 10MB)', image = '' } = $props();
 
 	const file = fileProxy(form, name);
 	let isDragging = $state(false);
@@ -41,7 +41,7 @@
 		bind:files={$file}
 		multiple={false}
 	/>
-	{#if $file?.length === 0}
+	{#if $file?.length === 0 && image === ''}
 		<Label
 			for={name}
 			class="group  relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed py-2! transition-all
@@ -66,6 +66,55 @@
 				</div>
 			</div>
 		</Label>
+	{:else if image}
+		<div
+			class="relative animate-in overflow-hidden rounded-xl border bg-card p-4 shadow-sm duration-200 zoom-in-95 fade-in"
+		>
+			<div class="mb-3 flex items-center justify-between">
+				<div class="flex items-center gap-3 overflow-hidden">
+					<div
+						class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"
+					>
+						{#if image.toLowerCase().endsWith('.pdf')}
+							<FileText class="h-5 w-5" />
+						{:else}
+							<ImageIcon class="h-5 w-5" />
+						{/if}
+					</div>
+					<div class="flex flex-col truncate">
+						<span class="truncate text-sm font-medium"> {image || 'No file selected'}</span>
+					</div>
+				</div>
+				<Button
+					variant="ghost"
+					size="icon"
+					class="hover:text-destructive-foreground h-8 w-8 rounded-full hover:bg-destructive"
+					onclick={() => {
+						file.set(undefined);
+						image = '';
+					}}
+				>
+					<X class="h-4 w-4" />
+				</Button>
+			</div>
+
+			<div class="overflow-hidden rounded-lg border bg-muted/30">
+				{#if image.toLowerCase().endsWith('.pdf')}
+					<iframe
+						src={`/dashboard/files/${image}}#toolbar=0`}
+						class="h-64 w-full"
+						frameborder="0"
+						title="pdf-preview"
+					></iframe>
+				{:else}
+					<img
+						src="/dashboard/files/{image}"
+						class="max-h-80 w-full object-contain"
+						alt="Preview"
+					/>
+				{/if}
+			</div>
+		</div>
 	{:else}
 		<div
 			class="relative animate-in overflow-hidden rounded-xl border bg-card p-4 shadow-sm duration-200 zoom-in-95 fade-in"

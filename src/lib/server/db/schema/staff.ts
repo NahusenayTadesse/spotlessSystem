@@ -334,6 +334,7 @@ export const qualification = mysqlTable('qualification', {
 		.notNull(),
 	schoolName: varchar('school_name', { length: 255 }),
 	graduationDate: date('qualification_date').notNull(),
+	certificate: varchar('certificate', { length: 100 }),
 	...secureFields
 });
 
@@ -347,6 +348,7 @@ export const workExperience = mysqlTable('work_experience', {
 	startDate: date('start_date').notNull(),
 	endDate: date('end_date').notNull(),
 	description: varchar('description', { length: 255 }),
+	certificate: varchar('certificate', { length: 100 }),
 	...secureFields
 });
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { SquarePen, Plus } from '@lucide/svelte';
+	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import type { EditFamily } from './schema';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
@@ -220,7 +220,7 @@
 								{#if $delayed}
 									<LoadingBtn name="Saving Changes" />
 								{:else}
-									<Plus class="h-4 w-4" />
+									<Save class="h-4 w-4" />
 
 									Save Changes
 								{/if}

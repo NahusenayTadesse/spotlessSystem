@@ -43,11 +43,13 @@
 	let {
 		data,
 		form: editForm,
-		addForm
+		addForm,
+		eduLevel
 	}: {
 		data: any;
 		form: SuperValidated<Infer<EditFamily>>;
 		addForm: SuperValidated<Infer<AddFamily>>;
+		eduLevel: Item[];
 	} = $props();
 	export const columns = [
 		{
@@ -313,11 +315,11 @@
 
 		<Button type="submit" class="mt-4" form="edit">
 			{#if $delayed}
-				<LoadingBtn name="Saving Changes" />
+				<LoadingBtn name="Adding Family Member" />
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Save Changes
+				Add Family Member
 			{/if}
 		</Button>
 	</form>

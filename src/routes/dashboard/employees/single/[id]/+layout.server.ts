@@ -11,7 +11,8 @@ import {
 	address,
 	subcity,
 	educationalLevel,
-	staffFamilies
+	staffFamilies,
+	qualification
 } from '$lib/server/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
@@ -100,10 +101,28 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(staffFamilies.staffId, Number(id)))
 		.orderBy(desc(staffFamilies.emergencyContact));
 
+	let employeeQualification = await db
+		.select({
+			id: qualification.id,
+			field: qualification.field,
+			educationalLevel: educationalLevel.name,
+			educationalLevelId: educationalLevel.id,
+			schoolName: qualification.schoolName,
+			graduationDate: qualification.graduationDate,
+			certificate: qualification.certificate,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(qualification)
+		.leftJoin(user, eq(qualification.createdBy, user.id))
+		.leftJoin(educationalLevel, eq(qualification.educationLevel, educationalLevel.id))
+		.where(eq(qualification.staffId, Number(id)));
+
 	return {
 		staffMember,
 		address: employeeAddress,
 		family: employeeFamily,
+		qualifications: employeeQualification,
 		form
 	};
 };

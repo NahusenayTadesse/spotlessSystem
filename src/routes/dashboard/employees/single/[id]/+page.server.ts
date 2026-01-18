@@ -8,7 +8,8 @@ import {
 	employeeTermination,
 	employmentStatuses,
 	address,
-	staffFamilies
+	staffFamilies,
+	qualification
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -23,7 +24,9 @@ import {
 	editPersonal,
 	editAddress,
 	editFamily,
-	addFamily
+	addFamily,
+	addQualification,
+	editQualification
 } from './schema';
 import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
@@ -38,6 +41,8 @@ export const load: PageServerLoad = async () => {
 	const addressForm = await superValidate(zod4(editAddress));
 	const familyForm = await superValidate(zod4(editFamily));
 	const addfamilyForm = await superValidate(zod4(addFamily));
+	const addQualificationForm = await superValidate(zod4(addQualification));
+	const editQualificationForm = await superValidate(zod4(editQualification));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -56,7 +61,9 @@ export const load: PageServerLoad = async () => {
 		addressForm,
 		subcityList,
 		familyForm,
-		addfamilyForm
+		addfamilyForm,
+		addQualificationForm,
+		editQualificationForm
 	};
 };
 
@@ -126,9 +133,12 @@ export const actions: Actions = {
 	terminate: async ({ params, cookies, request, locals }) => {
 		const { id } = params;
 
-		console.log('Connected');
-
 		const form = await superValidate(request, zod4(terminate));
+
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const { reason, terminationDate, terminationLetter } = form.data;
 
 		try {
@@ -181,6 +191,10 @@ export const actions: Actions = {
 		const { id } = params;
 
 		const form = await superValidate(request, zod4(reinstate));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const { newStatus } = form.data;
 
 		try {
@@ -226,6 +240,10 @@ export const actions: Actions = {
 		const { id } = params;
 
 		const form = await superValidate(request, zod4(editIdentity));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const { firstName, fatherName, grandFatherName, gender, birthDate } = form.data;
 
 		try {
@@ -259,6 +277,10 @@ export const actions: Actions = {
 		const { id } = params;
 
 		const form = await superValidate(request, zod4(editEmployment));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const { idNo, department, educationalLevel, employmentStatus, hireDate } = form.data;
 
 		try {
@@ -292,6 +314,10 @@ export const actions: Actions = {
 		const { id } = params;
 
 		const form = await superValidate(request, zod4(editPersonal));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const { tinNo, martialStatus, bloodType, religion } = form.data;
 
 		try {
@@ -322,6 +348,10 @@ export const actions: Actions = {
 	},
 	editAddress: async ({ request }) => {
 		const form = await superValidate(request, zod4(editAddress));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const { id, street, subcity, kebele, buildingNumber, floor, houseNumber, status } = form.data;
 
 		try {
@@ -355,6 +385,10 @@ export const actions: Actions = {
 	addFamily: async ({ request, locals, params }) => {
 		const { id } = params;
 		const form = await superValidate(request, zod4(addFamily));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const {
 			name,
 			gender,
@@ -395,6 +429,10 @@ export const actions: Actions = {
 	},
 	editFamily: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(editFamily));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
 		const {
 			id,
 			name,
@@ -437,6 +475,93 @@ export const actions: Actions = {
 			});
 		} catch (err) {
 			console.error('Error updating Family Member details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	addQualification: async ({ request, locals, params }) => {
+		console.log('Connected');
+		const { id } = params;
+		const form = await superValidate(request, zod4(addQualification));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { field, educationalLevel, graduationDate, schoolName, certificate } = form.data;
+
+		try {
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				const certificateName = await saveUploadedFile(certificate);
+
+				await tx.insert(qualification).values({
+					staffId: Number(id),
+					field,
+					educationLevel: educationalLevel,
+					graduationDate,
+					schoolName,
+					certificate: certificateName,
+					createdBy: locals?.user?.id
+				});
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Qualification Details Added Successfully!'
+			});
+		} catch (err) {
+			console.error('Error added Qualification details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editQualification: async ({ request, locals, params }) => {
+		const form = await superValidate(request, zod4(editQualification));
+
+		console.log(form);
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { id, field, educationalLevel, graduationDate, schoolName, certificate } = form.data;
+
+		try {
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+				if (certificate) {
+					const certificateName = await saveUploadedFile(certificate);
+
+					await tx
+						.update(qualification)
+						.set({
+							field,
+							educationLevel: educationalLevel,
+							graduationDate: new Date(graduationDate),
+							schoolName,
+							certificate: certificateName,
+							updatedBy: locals?.user?.id
+						})
+						.where(eq(qualification.id, Number(id)));
+				} else {
+					await tx
+						.update(qualification)
+						.set({
+							field,
+							educationLevel: educationalLevel,
+							graduationDate: new Date(graduationDate),
+							schoolName,
+							updatedBy: locals?.user?.id
+						})
+						.where(eq(qualification.id, Number(id)));
+				}
+			});
+
+			return message(form, {
+				type: 'success',
+				text: 'Qualification Details Updated Successfully!'
+			});
+		} catch (err) {
+			console.error('Error updating Qualification details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}
