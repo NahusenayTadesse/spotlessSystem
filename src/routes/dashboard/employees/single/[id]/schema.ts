@@ -223,3 +223,34 @@ export const editExperience = z.object({
 });
 
 export type EditExperience = z.infer<typeof editExperience>;
+
+export const editGuarantor = z.object({
+	id: z.number('Guarantor not Found'),
+	name: z.string('Name is required').min(1).max(100),
+	phone: z
+		.string('Phone is required')
+		.min(1)
+		.max(15, 'Phone number must be between 1 and 15 characters'),
+	email: z.email('Email is required'),
+	govtId: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		),
+	document: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+});
+export type EditGuarantor = z.infer<typeof editGuarantor>;

@@ -14,7 +14,7 @@
 		FileUser,
 		ShieldUser
 	} from '@lucide/svelte';
-	import { formatEthiopianDate } from '$lib/global.svelte.js';
+	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
 	import SingleView from '$lib/components/SingleView.svelte';
 
@@ -70,7 +70,7 @@
 
 	let employeeGuarantor = $derived([
 		{ name: 'Name', value: data?.guarantor?.name },
-		{ name: 'Phone', value: data?.guarantor?.phone },
+		{ name: 'Phone', value: data?.guarantor?.phone.slice(0, 15) },
 		{ name: 'Email', value: data?.guarantor?.email },
 		{
 			name: 'Relationship',
@@ -81,16 +81,16 @@
 		},
 		{ name: 'Job Type', value: data?.guarantor?.jobType },
 		{ name: 'Company', value: data?.guarantor?.company },
-		{ name: 'Salary', value: data?.guarantor?.salary }
+		{ name: 'Salary', value: formatETB(Number(data?.guarantor?.salary), true) }
 	]);
 
 	let guarantorAddress = $derived([
-		{ name: 'Street', value: data?.guarantor?.street },
-		{ name: 'Kebele', value: data?.guarantor?.kebele },
-		{ name: 'Building', value: data?.guarantor?.buildingNumber },
-		{ name: 'Floor', value: data?.guarantor?.floor },
-		{ name: 'House Number', value: data?.guarantor?.houseNumber },
-		{ name: 'Status', value: data?.guarantor?.status ? 'Active' : 'Inactive' }
+		{ name: 'Street', value: data?.guarantor?.address?.street },
+		{ name: 'Kebele', value: data?.guarantor?.address?.kebele },
+		{ name: 'Building', value: data?.guarantor?.address?.buildingNumber },
+		{ name: 'Floor', value: data?.guarantor?.address?.floor },
+		{ name: 'House Number', value: data?.guarantor?.address?.houseNumber },
+		{ name: 'Status', value: data?.guarantor?.address?.status ? 'Active' : 'Inactive' }
 	]);
 
 	import Terminate from './terminate.svelte';
@@ -103,6 +103,7 @@
 	import Families from './Families.svelte';
 	import Qualifications from './qualifications.svelte';
 	import Experience from './experience.svelte';
+	import EditGuarantor from './editGuarantor.svelte';
 </script>
 
 <svelte:head>
@@ -191,10 +192,54 @@
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />
 			</Section>
-			<Section title="Guarantor" class="lg:col-span-2" IconComp={ShieldUser} style="identityIcon">
-				<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-					<SingleTable singleTable={employeeGuarantor} />
-					<SingleTable singleTable={guarantorAddress} />
+			<Section
+				title="Guarantor"
+				class="gap-4! lg:col-span-2"
+				IconComp={ShieldUser}
+				style="identityIcon"
+			>
+				<div class="grid grid-cols-1 gap-4 wrap-break-word lg:grid-cols-2">
+					<div class="flex flex-col gap-2">
+						<h4 class="flex items-center gap-2">
+							Guarantor Details
+							{#if data?.guarantor?.address}
+								{#key data?.guarantor}
+									<EditGuarantor
+										data={data?.editGuarantorForm}
+										name={data?.guarantor?.name}
+										phone={data?.guarantor?.phone}
+										email={data?.guarantor?.email}
+										relationShip={data?.guarantor?.relationShip}
+										relation={data?.guarantor?.relation}
+										jobtype={data?.guarantor?.jobtype}
+										company={data?.guarantor?.company}
+										salary={data?.guarantor?.salary}
+										photo={data?.guarantor?.photo}
+										document={data?.guarantor?.document}
+										govtId={data?.guarantor?.govtId}
+										id={data?.guarantor?.id}
+									/>
+								{/key}
+							{/if}
+						</h4>
+
+						<SingleTable singleTable={employeeGuarantor} />
+					</div>
+					<div class="flex flex-col gap-2">
+						<h4 class="flex items-center gap-2">
+							<MapPin class="text-red-400" /> Guarantor Address
+							{#if data?.guarantor?.address}
+								{#key data?.guarantor}
+									<EditAddress
+										data={data?.addressForm}
+										address={data?.guarantor?.address}
+										subcityList={data?.subcityList}
+									/>
+								{/key}
+							{/if}
+						</h4>
+						<SingleTable singleTable={guarantorAddress} />
+					</div>
 				</div>
 			</Section>
 			<Section title="Family Members" class="lg:col-span-3" IconComp={Baby} style="identityIcon">

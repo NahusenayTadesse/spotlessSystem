@@ -150,18 +150,23 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			email: eg.email,
 			govtId: eg.govtId,
 			photo: eg.photo,
-			street: address.street,
-			subcity: subcity.name,
-			subcityId: subcity.id,
-			kebele: address.kebele,
-			buildingNumber: address.buildingNumber,
-			floor: address.floor,
-			houseNumber: address.houseNumber,
+			address: {
+				id: address.id,
+				street: address.street,
+				subcity: subcity.name,
+				subcityId: subcity.id,
+				kebele: address.kebele,
+				buildingNumber: address.buildingNumber,
+				floor: address.floor,
+				houseNumber: address.houseNumber,
+				status: address.status
+			},
 			status: address.status,
 			addedBy: user.name
 		})
 		.from(eg)
 		.leftJoin(address, eq(address.id, eg.address))
+		.leftJoin(subcity, eq(subcity.id, address.subcityId))
 		.leftJoin(user, eq(user.id, eg.createdBy))
 		.where(eq(eg.staffId, Number(id)))
 		.then((rows) => rows[0]);
