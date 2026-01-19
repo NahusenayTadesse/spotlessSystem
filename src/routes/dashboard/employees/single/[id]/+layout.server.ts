@@ -139,6 +139,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 
 	let employeeGarantor = await db
 		.select({
+			id: eg.id,
 			name: eg.name,
 			relationShip: eg.relationship,
 			relation: eg.relation,

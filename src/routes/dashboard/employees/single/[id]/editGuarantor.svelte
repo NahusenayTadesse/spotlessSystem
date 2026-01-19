@@ -8,6 +8,17 @@
 	import { SquarePen, Save } from '@lucide/svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 
+	const relationShips = [
+		{ value: 'mother', name: 'Mother' },
+		{ value: 'father', name: 'Father' },
+		{ value: 'spouse', name: 'Spouse' },
+		{ value: 'brother', name: 'Brother' },
+		{ value: 'sister', name: 'Sister' },
+		{ value: 'son', name: 'Son' },
+		{ value: 'daughter', name: 'Daughter' },
+		{ value: 'other', name: 'Other' }
+	];
+
 	import { type EditGuarantor } from './schema';
 
 	let {
@@ -15,9 +26,9 @@
 		name,
 		phone,
 		email,
-		relationShip,
+		relationship,
 		relation,
-		jobtype,
+		jobType,
 		company,
 		salary,
 		photo,
@@ -29,9 +40,9 @@
 		name: string;
 		phone: string;
 		email: string;
-		relationShip: string;
-		relation: string;
-		jobtype: string;
+		relationship: string;
+		relation?: string;
+		jobType: string;
 		company: string;
 		salary: string;
 		photo: string;
@@ -58,9 +69,9 @@
 	$form.name = name;
 	$form.phone = phone;
 	$form.email = email;
-	$form.relationShip = relationShip;
+	$form.relationship = relationship;
 	$form.relation = relation;
-	$form.jobtype = jobtype;
+	$form.jobType = jobType;
 	$form.company = company;
 	$form.salary = salary;
 </script>
@@ -74,13 +85,28 @@
 		method="post"
 		enctype="multipart/form-data"
 	>
-		<input type="hidden" bind:value={$form.id} />
+		<input type="hidden" name="id" bind:value={$form.id} />
 		<InputComp label="Name" name="name" type="text" {form} {errors} required />
 		<InputComp label="Phone" name="phone" type="tel" {form} {errors} required />
 		<InputComp label="Email" name="email" type="email" {form} {errors} />
 		<InputComp label="Job Type" name="jobType" type="text" {form} {errors} required />
 		<InputComp label="Company" name="company" type="text" {form} {errors} required />
 		<InputComp label="Salary" name="salary" type="text" {form} {errors} required />
+
+		<InputComp
+			label="Relationship to Employee"
+			name="relationship"
+			type="select"
+			{form}
+			{errors}
+			items={relationShips}
+			required
+		/>
+
+		{#if $form.relationship === 'other'}
+			<InputComp label="Other Relationship" name="relation" type="text" {form} {errors} required />
+		{/if}
+
 		<InputComp
 			label="Photo"
 			name="photo"

@@ -108,10 +108,12 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 		'father',
 		'spouse',
 		'son',
+		'brother',
+		'sister',
 		'daughter',
 		'other'
 	]).notNull(),
-	relation: varchar('relation', { length: 255 }).notNull(),
+	relation: varchar('relation', { length: 255 }),
 	jobType: varchar('job_type', { length: 255 }).notNull(),
 	company: varchar('company', { length: 255 }).notNull(),
 	salary: decimal('salary', { precision: 10, scale: 2 }).notNull(),

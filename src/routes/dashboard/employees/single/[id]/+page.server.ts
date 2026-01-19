@@ -10,7 +10,8 @@ import {
 	address,
 	staffFamilies,
 	qualification,
-	workExperience
+	workExperience,
+	employeeGuarantor
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -681,6 +682,88 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Error updating experience details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editGuarantor: async ({ request, locals, params }) => {
+		const form = await superValidate(request, zod4(editGuarantor));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const {
+			id,
+			name,
+			phone,
+			email,
+			relationship,
+			relation,
+			jobType,
+			company,
+			salary,
+			photo,
+			document,
+			govtId
+		} = form.data;
+
+		try {
+			// Use a single transaction
+			await db.transaction(async (tx) => {
+				// 1. Fetch old files using the transaction client 'tx'
+				const existing = await tx
+					.select()
+					.from(employeeGuarantor)
+					.where(eq(employeeGuarantor.id, id))
+					.then((row) => row[0]);
+
+				// if (!existing) throw new Error('Guarantor not found');
+
+				// 2. Helper to handle file logic consistently
+				const resolveFile = async (newVal, oldVal) => {
+					if (newVal instanceof File && newVal.size > 0) {
+						return await saveUploadedFile(newVal);
+					}
+					return oldVal;
+				};
+
+				const newPhoto = await resolveFile(photo, existing.photo);
+				const newDocument = await resolveFile(document, existing.gurantorDocument);
+				const newGovtId = await resolveFile(govtId, existing.govtId);
+
+				// 3. Update using 'tx'
+				await tx
+					.update(employeeGuarantor)
+					.set({
+						name,
+						phone,
+						email,
+						relationship,
+						relation,
+						jobType,
+						company,
+						salary: String(salary),
+						photo: newPhoto,
+						gurantorDocument: newDocument,
+						govtId: newGovtId,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(employeeGuarantor.id, Number(id)));
+
+				return message(form, {
+					type: 'success',
+					text: 'Guarantor Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			console.error('Database Error:', err);
+			return message(
+				form,
+				{
+					type: 'error',
+					text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				},
+				{ status: 500 }
+			);
 		}
 	}
 };

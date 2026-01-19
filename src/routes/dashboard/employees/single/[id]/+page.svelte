@@ -2,6 +2,7 @@
 	let { data } = $props();
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
+	import { Button } from '$lib/components/ui/button/index';
 
 	import {
 		BriefcaseBusiness,
@@ -12,7 +13,8 @@
 		MapPin,
 		GraduationCap,
 		FileUser,
-		ShieldUser
+		ShieldUser,
+		Eye
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -75,8 +77,8 @@
 		{
 			name: 'Relationship',
 			value:
-				data?.guarantor?.relationship !== 'other'
-					? data?.guarantor?.relationship
+				data?.guarantor?.relationShip !== 'other'
+					? data?.guarantor?.relationShip
 					: data?.guarantor?.relation
 		},
 		{ name: 'Job Type', value: data?.guarantor?.jobType },
@@ -209,9 +211,9 @@
 										name={data?.guarantor?.name}
 										phone={data?.guarantor?.phone}
 										email={data?.guarantor?.email}
-										relationShip={data?.guarantor?.relationShip}
+										relationship={data?.guarantor?.relationShip}
 										relation={data?.guarantor?.relation}
-										jobtype={data?.guarantor?.jobtype}
+										jobType={data?.guarantor?.jobType}
 										company={data?.guarantor?.company}
 										salary={data?.guarantor?.salary}
 										photo={data?.guarantor?.photo}
@@ -224,6 +226,21 @@
 						</h4>
 
 						<SingleTable singleTable={employeeGuarantor} />
+						<Button
+							class="text-xs lg:w-2/3"
+							href="/dashboard/files/{data?.guarantor?.photo}"
+							target="_blank"><Eye /> View Guarantor Photo</Button
+						>
+						<Button
+							class="text-xs lg:w-2/3"
+							href="/dashboard/files/{data?.guarantor?.document}"
+							target="_blank"><Eye />View Guarantor Documents</Button
+						>
+						<Button
+							class="text-xs lg:w-2/3"
+							href="/dashboard/files/{data?.guarantor?.govtId}"
+							target="_blank"><Eye />View Guarantor Govt ID</Button
+						>
 					</div>
 					<div class="flex flex-col gap-2">
 						<h4 class="flex items-center gap-2">
