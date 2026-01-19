@@ -31,7 +31,8 @@ import {
 	editQualification,
 	addExperience,
 	editExperience,
-	editGuarantor
+	editGuarantor,
+	addGuarantor
 } from './schema';
 import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
@@ -51,6 +52,7 @@ export const load: PageServerLoad = async () => {
 	const editExperienceForm = await superValidate(zod4(editExperience));
 	const addExperienceForm = await superValidate(zod4(addExperience));
 	const editGuarantorForm = await superValidate(zod4(editGuarantor));
+	const addGuarantorForm = await superValidate(zod4(addGuarantor));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -74,7 +76,8 @@ export const load: PageServerLoad = async () => {
 		editQualificationForm,
 		addExperienceForm,
 		editExperienceForm,
-		editGuarantorForm
+		editGuarantorForm,
+		addGuarantorForm
 	};
 };
 

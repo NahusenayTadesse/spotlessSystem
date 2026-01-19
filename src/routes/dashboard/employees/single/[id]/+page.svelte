@@ -106,6 +106,7 @@
 	import Qualifications from './qualifications.svelte';
 	import Experience from './experience.svelte';
 	import EditGuarantor from './editGuarantor.svelte';
+	import AddGuarantor from './addGuarantor.svelte';
 </script>
 
 <svelte:head>
@@ -196,15 +197,15 @@
 			</Section>
 			<Section
 				title="Guarantor"
-				class="gap-4! lg:col-span-2"
+				class="gap-4! {data?.guarantor ? 'lg:col-span-2' : ''}"
 				IconComp={ShieldUser}
 				style="identityIcon"
 			>
 				<div class="grid grid-cols-1 gap-4 wrap-break-word lg:grid-cols-2">
 					<div class="flex flex-col gap-2">
 						<h4 class="flex items-center gap-2">
-							Guarantor Details
-							{#if data?.guarantor?.address}
+							{#if data.guarantor}
+								Guarantor Details
 								{#key data?.guarantor}
 									<EditGuarantor
 										data={data?.editGuarantorForm}
@@ -222,30 +223,34 @@
 										id={data?.guarantor?.id}
 									/>
 								{/key}
+							{:else}
+								No Guarantor!
+								<AddGuarantor data={data?.addGuarantorForm} />
 							{/if}
 						</h4>
-
-						<SingleTable singleTable={employeeGuarantor} />
-						<Button
-							class="text-xs lg:w-2/3"
-							href="/dashboard/files/{data?.guarantor?.photo}"
-							target="_blank"><Eye /> View Guarantor Photo</Button
-						>
-						<Button
-							class="text-xs lg:w-2/3"
-							href="/dashboard/files/{data?.guarantor?.document}"
-							target="_blank"><Eye />View Guarantor Documents</Button
-						>
-						<Button
-							class="text-xs lg:w-2/3"
-							href="/dashboard/files/{data?.guarantor?.govtId}"
-							target="_blank"><Eye />View Guarantor Govt ID</Button
-						>
+						{#if data.guarantor}
+							<SingleTable singleTable={employeeGuarantor} />
+							<Button
+								class="text-xs lg:w-2/3"
+								href="/dashboard/files/{data?.guarantor?.photo}"
+								target="_blank"><Eye /> View Guarantor Photo</Button
+							>
+							<Button
+								class="text-xs lg:w-2/3"
+								href="/dashboard/files/{data?.guarantor?.document}"
+								target="_blank"><Eye />View Guarantor Documents</Button
+							>
+							<Button
+								class="text-xs lg:w-2/3"
+								href="/dashboard/files/{data?.guarantor?.govtId}"
+								target="_blank"><Eye />View Guarantor Govt ID</Button
+							>
+						{/if}
 					</div>
 					<div class="flex flex-col gap-2">
 						<h4 class="flex items-center gap-2">
-							<MapPin class="text-red-400" /> Guarantor Address
 							{#if data?.guarantor?.address}
+								<MapPin class="text-red-400" /> Guarantor Address
 								{#key data?.guarantor}
 									<EditAddress
 										data={data?.addressForm}
@@ -255,7 +260,9 @@
 								{/key}
 							{/if}
 						</h4>
-						<SingleTable singleTable={guarantorAddress} />
+						{#if data?.guarantor?.address}
+							<SingleTable singleTable={guarantorAddress} />
+						{/if}
 					</div>
 				</div>
 			</Section>

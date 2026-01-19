@@ -272,3 +272,48 @@ export const editGuarantor = z.object({
 		.optional()
 });
 export type EditGuarantor = z.infer<typeof editGuarantor>;
+
+export const addGuarantor = z.object({
+	name: z.string('Name is required').min(1).max(100),
+	phone: z
+		.string('Phone is required')
+		.min(1)
+		.max(15, 'Phone number must be between 1 and 15 characters'),
+	email: z.email('Email is required'),
+	jobType: z.string('Job type is required').min(1).max(100),
+	company: z.string('Company Name is required').min(1).max(100),
+	relationship: z.enum(['mother', 'father', 'spouse', 'son', 'daughter', 'other']),
+	relation: z.string().optional(),
+	salary: z.number('Salary is required').min(0).max(1000000),
+	photo: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		),
+	govtId: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		),
+	document: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+});
+export type AddGuarantor = z.infer<typeof addGuarantor>;
