@@ -96,7 +96,11 @@
 		},
 		{
 			accessorKey: 'certificate',
-			header: 'Certificate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Certificate',
+					onclick: column.getToggleSortingHandler()
+				}),
 			sortable: true,
 			cell: ({ row }) => {
 				return row.original?.certificate

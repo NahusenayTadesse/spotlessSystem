@@ -43,13 +43,11 @@
 	let {
 		data,
 		form: editForm,
-		addForm,
-		eduLevel
+		addForm
 	}: {
 		data: any;
 		form: SuperValidated<Infer<EditFamily>>;
 		addForm: SuperValidated<Infer<AddFamily>>;
-		eduLevel: Item[];
 	} = $props();
 	export const columns = [
 		{

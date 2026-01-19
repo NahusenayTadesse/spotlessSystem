@@ -11,7 +11,8 @@
 		Settings,
 		MapPin,
 		GraduationCap,
-		FileUser
+		FileUser,
+		ShieldUser
 	} from '@lucide/svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -66,6 +67,32 @@
 		{ name: 'House Number', value: data?.address?.houseNumber },
 		{ name: 'Status', value: data?.address?.status ? 'Active' : 'Inactive' }
 	]);
+
+	let employeeGuarantor = $derived([
+		{ name: 'Name', value: data?.guarantor?.name },
+		{ name: 'Phone', value: data?.guarantor?.phone },
+		{ name: 'Email', value: data?.guarantor?.email },
+		{
+			name: 'Relationship',
+			value:
+				data?.guarantor?.relationship !== 'other'
+					? data?.guarantor?.relationship
+					: data?.guarantor?.relation
+		},
+		{ name: 'Job Type', value: data?.guarantor?.jobType },
+		{ name: 'Company', value: data?.guarantor?.company },
+		{ name: 'Salary', value: data?.guarantor?.salary }
+	]);
+
+	let guarantorAddress = $derived([
+		{ name: 'Street', value: data?.guarantor?.street },
+		{ name: 'Kebele', value: data?.guarantor?.kebele },
+		{ name: 'Building', value: data?.guarantor?.buildingNumber },
+		{ name: 'Floor', value: data?.guarantor?.floor },
+		{ name: 'House Number', value: data?.guarantor?.houseNumber },
+		{ name: 'Status', value: data?.guarantor?.status ? 'Active' : 'Inactive' }
+	]);
+
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
 	import EditIdentity from './editIdentity.svelte';
@@ -164,13 +191,19 @@
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />
 			</Section>
-			<Section title="Family Members" class="lg:col-span-2" IconComp={Baby} style="identityIcon">
+			<Section title="Guarantor" class="lg:col-span-2" IconComp={ShieldUser} style="identityIcon">
+				<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+					<SingleTable singleTable={employeeGuarantor} />
+					<SingleTable singleTable={guarantorAddress} />
+				</div>
+			</Section>
+			<Section title="Family Members" class="lg:col-span-3" IconComp={Baby} style="identityIcon">
 				<Families data={data?.family} form={data?.familyForm} addForm={data?.addfamilyForm} />
 			</Section>
 
 			<Section
 				title="Qualifications"
-				class="lg:col-span-2"
+				class="lg:col-span-3"
 				IconComp={GraduationCap}
 				style="identityIcon"
 			>
@@ -184,7 +217,7 @@
 
 			<Section
 				title="Work Experiences"
-				class="lg:col-span-2"
+				class="lg:col-span-3"
 				IconComp={FileUser}
 				style="employmentIcon"
 			>

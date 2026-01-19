@@ -13,7 +13,8 @@ import {
 	educationalLevel,
 	staffFamilies,
 	qualification,
-	workExperience
+	workExperience,
+	employeeGuarantor as eg
 } from '$lib/server/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
@@ -136,12 +137,42 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(workExperience.staffId, Number(id)))
 		.orderBy(desc(workExperience.endDate));
 
+	let employeeGarantor = await db
+		.select({
+			name: eg.name,
+			relationShip: eg.relationship,
+			relation: eg.relation,
+			jobType: eg.jobType,
+			company: eg.company,
+			salary: eg.salary,
+			document: eg.gurantorDocument,
+			phone: eg.phone,
+			email: eg.email,
+			govtId: eg.govtId,
+			photo: eg.photo,
+			street: address.street,
+			subcity: subcity.name,
+			subcityId: subcity.id,
+			kebele: address.kebele,
+			buildingNumber: address.buildingNumber,
+			floor: address.floor,
+			houseNumber: address.houseNumber,
+			status: address.status,
+			addedBy: user.name
+		})
+		.from(eg)
+		.leftJoin(address, eq(address.id, eg.address))
+		.leftJoin(user, eq(user.id, eg.createdBy))
+		.where(eq(eg.staffId, Number(id)))
+		.then((rows) => rows[0]);
+
 	return {
 		staffMember,
 		address: employeeAddress,
 		family: employeeFamily,
 		qualifications: employeeQualification,
 		experience: employeeWorkExperience,
+		guarantor: employeeGarantor,
 		form
 	};
 };
