@@ -768,5 +768,90 @@ export const actions: Actions = {
 				{ status: 500 }
 			);
 		}
+	},
+	addGuarantor: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addGuarantor));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const {
+			name,
+			phone,
+			email,
+			relationship,
+			relation,
+			jobType,
+			company,
+			salary,
+			photo,
+			document,
+			govtId,
+			street,
+			subcity,
+			kebele,
+			buildingNumber,
+			floor,
+			houseNumber
+		} = form.data;
+
+		try {
+			// Use a single transaction
+			await db.transaction(async (tx) => {
+				// 1. Fetch old files using the transaction client 'tx'
+
+				const [newAddress] = await db
+					.insert(address)
+					.values({
+						street,
+						subcityId: subcity,
+						kebele,
+						buildingNumber,
+						floor,
+						houseNumber,
+						status: true
+					})
+					.$returningId();
+
+				const newPhoto = await saveUploadedFile(photo);
+				const newDocument = await saveUploadedFile(document);
+				const newGovtId = await saveUploadedFile(govtId);
+
+				// 3. Update using 'tx'
+				await tx.insert(employeeGuarantor).values({
+					name,
+					staffId: Number(id),
+					phone,
+					email,
+					relationship,
+					relation,
+					jobType,
+					company,
+					salary: String(salary),
+					photo: newPhoto,
+					gurantorDocument: newDocument,
+					govtId: newGovtId,
+					createdBy: locals?.user?.id,
+					address: newAddress.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Guarantor Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			console.error('Database Error:', err);
+			return message(
+				form,
+				{
+					type: 'error',
+					text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				},
+				{ status: 500 }
+			);
+		}
 	}
 };

@@ -282,7 +282,16 @@ export const addGuarantor = z.object({
 	email: z.email('Email is required'),
 	jobType: z.string('Job type is required').min(1).max(100),
 	company: z.string('Company Name is required').min(1).max(100),
-	relationship: z.enum(['mother', 'father', 'spouse', 'son', 'daughter', 'other']),
+	relationship: z.enum([
+		'mother',
+		'father',
+		'spouse',
+		'brother',
+		'sister',
+		'son',
+		'daughter',
+		'other'
+	]),
 	relation: z.string().optional(),
 	salary: z.number('Salary is required').min(0).max(1000000),
 	photo: z
@@ -314,6 +323,12 @@ export const addGuarantor = z.object({
 		.refine(
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		),
+	subcity: z.number('Subsity is required'),
+	street: z.string('Street is required'),
+	kebele: z.string('Kebele is required'),
+	buildingNumber: z.string().optional(),
+	floor: z.string().optional(),
+	houseNumber: z.string('House Number is Required')
 });
 export type AddGuarantor = z.infer<typeof addGuarantor>;

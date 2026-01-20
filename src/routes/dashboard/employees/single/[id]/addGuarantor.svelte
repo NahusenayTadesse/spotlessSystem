@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { SquarePen, Save } from '@lucide/svelte';
+	import { Plus } from '@lucide/svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 
 	const relationShips = [
@@ -22,9 +22,11 @@
 	import { type AddGuarantor } from './schema';
 
 	let {
-		data
+		data,
+		subcityList
 	}: {
 		data: SuperValidated<Infer<AddGuarantor>>;
+		subcityList: Item[];
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -32,6 +34,7 @@
 		invalidateAll: true
 	});
 	import { toast } from 'svelte-sonner';
+	import type { Item } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -43,7 +46,8 @@
 	});
 </script>
 
-<DialogComp title="Add Guarantor" variant="default" IconComp={SquarePen}>
+<DialogComp title="Add Guarantor" variant="default" IconComp={Plus}
+	>Plus
 	<form
 		id="main"
 		action="?/addGuarantor"
@@ -156,14 +160,37 @@
 			placeholder="Upload a government ID(FIDA) of Guarantor"
 			required
 		/>
+		<h4>Guarantor Address</h4>
+
+		<InputComp
+			label="Subcity"
+			name="subcity"
+			type="combo"
+			{form}
+			{errors}
+			required
+			items={subcityList}
+		/>
+		<InputComp label="Street" name="street" type="text" {form} {errors} required />
+		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />
+		<InputComp
+			label="Building Name or Number"
+			name="buildingNumber"
+			type="text"
+			{form}
+			{errors}
+			required
+		/>
+		<InputComp label="Floor" name="floor" type="number" {form} {errors} required />
+		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} required />
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">
 			{#if $delayed}
-				<LoadingBtn name="Saving Changes" />
+				<LoadingBtn name="Adding Guarantor" />
 			{:else}
-				<Save class="h-4 w-4" />
-				Save Changes
+				<Plus class="h-4 w-4" />
+				Add Guarantor
 			{/if}
 		</Button>
 	</form>

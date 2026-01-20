@@ -225,7 +225,7 @@
 								{/key}
 							{:else}
 								No Guarantor!
-								<AddGuarantor data={data?.addGuarantorForm} />
+								<AddGuarantor data={data?.addGuarantorForm} subcityList={data?.subcityList} />
 							{/if}
 						</h4>
 						{#if data.guarantor}
