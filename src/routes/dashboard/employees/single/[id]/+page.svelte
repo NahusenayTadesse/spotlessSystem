@@ -151,6 +151,27 @@
 					/>
 				{/snippet}
 				<SingleTable singleTable={identity} />
+				<DialogComp
+					title="View Guarantor Photo"
+					variant="default"
+					class="flex flex-col! items-center! justify-center!"
+					IconComp={Eye}
+				>
+					{#if data?.staffMember?.govId.endsWith('.pdf')}
+						<iframe
+							src="/dashboard/files/{data?.staffMember?.govId}"
+							title="Goverment Id PDF"
+							class="h-125 w-full border-none"
+						></iframe>
+					{:else}
+						<img
+							src="/dashboard/files/{data?.staffMember?.govId}"
+							class="justify-self-center"
+							alt="Goverment Id Pdf"
+							loading="lazy"
+						/>
+					{/if}
+				</DialogComp>
 			</Section>
 
 			<Section title="Address" IconComp={MapPin} style="addressIcon">
@@ -288,7 +309,7 @@
 										<iframe
 											src="/dashboard/files/{data?.guarantor?.govtId}"
 											title="Guarantor PDF"
-											class="w-full border-none"
+											class="h-125 w-full border-none"
 										></iframe>
 									{:else}
 										<img

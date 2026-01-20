@@ -12,8 +12,11 @@ import {
 	time,
 	index,
 	boolean,
-	uniqueIndex
+	uniqueIndex,
+	tinyint,
+	check
 } from 'drizzle-orm/mysql-core';
+import { sql } from 'drizzle-orm';
 import { secureFields, lesserFields } from './secureFields';
 import { user } from './user';
 import { paymentMethods, transactionServices } from './finance';
@@ -291,16 +294,22 @@ export const deductions = mysqlTable('deductions', {
 	...secureFields
 });
 
-export const staffSchedule = mysqlTable('staff_schedule', {
-	id: int('id').autoincrement().primaryKey(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => employee.id, { onDelete: 'cascade' }),
-	shiftDate: date('shift_date').notNull(),
-	startTime: time('start_time').notNull(),
-	endTime: time('end_time').notNull(),
-	...secureFields
-});
+export const staffSchedule = mysqlTable(
+	'staff_schedule',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		staffId: int('staff_id')
+			.notNull()
+			.references(() => employee.id, { onDelete: 'cascade' }),
+		weekDay: tinyint('week_day').notNull(),
+		startTime: time('start_time').notNull(),
+		endTime: time('end_time').notNull(),
+		...secureFields
+	},
+	(table) => ({
+		realDaysOnly: check('real_days_only', sql`${table.weekDay} >= 0 AND ${table.weekDay} <= 6`)
+	})
+);
 
 export const staffServicesRelations = relations(staffServices, ({ one }) => ({
 	staff: one(employee, { fields: [staffServices.staffId], references: [employee.id] }),
