@@ -14,7 +14,8 @@
 		GraduationCap,
 		FileUser,
 		ShieldUser,
-		Eye
+		Eye,
+		FileX
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -151,27 +152,42 @@
 					/>
 				{/snippet}
 				<SingleTable singleTable={identity} />
-				<DialogComp
-					title="View Guarantor Photo"
-					variant="default"
-					class="flex flex-col! items-center! justify-center!"
-					IconComp={Eye}
-				>
-					{#if data?.staffMember?.govId.endsWith('.pdf')}
-						<iframe
-							src="/dashboard/files/{data?.staffMember?.govId}"
-							title="Goverment Id PDF"
-							class="h-125 w-full border-none"
-						></iframe>
+
+				<div class="flex flex-wrap items-center gap-2">
+					{#if data?.staffMember?.photo}
+						<Button
+							variant="outline"
+							href="/dashboard/files/{data.staffMember.photo}"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<Eye class="mr-2" size={16} />
+							View {data.staffMember.firstName}'s Photo
+						</Button>
 					{:else}
-						<img
-							src="/dashboard/files/{data?.staffMember?.govId}"
-							class="justify-self-center"
-							alt="Goverment Id Pdf"
-							loading="lazy"
-						/>
+						<Button variant="ghost" disabled class="cursor-not-allowed">
+							<FileX class="mr-2" size={16} />
+							No Photo Added
+						</Button>
 					{/if}
-				</DialogComp>
+					{#if data?.staffMember?.govId}
+						<Button
+							title="View {data?.staffMember?.firstName}'s ID"
+							variant="outline"
+							href="/dashboard/files/{data?.staffMember?.govId}"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="View {data?.staffMember?.firstName}'s Government Id(FIDA) in a new tab"
+						>
+							<Eye /> View {data?.staffMember?.firstName}'s ID
+						</Button>
+					{:else}
+						<Button variant="ghost" disabled class="cursor-not-allowed">
+							<FileX class="mr-2" size={16} />
+							No Id Added
+						</Button>
+					{/if}
+				</div>
 			</Section>
 
 			<Section title="Address" IconComp={MapPin} style="addressIcon">
@@ -254,73 +270,6 @@
 						</h4>
 						{#if data.guarantor}
 							<SingleTable singleTable={employeeGuarantor} />
-							<div class="flex flex-col items-start justify-center gap-2 lg:w-1/2">
-								<DialogComp
-									title="View Guarantor Photo"
-									variant="default"
-									class="flex flex-col! items-center! justify-center!"
-									IconComp={Eye}
-								>
-									{#if data?.guarantor?.photo.endsWith('.pdf')}
-										<iframe
-											src="/dashboard/files/{data?.guarantor?.photo}"
-											title="Guarantor PDF"
-											class="w-full border-none"
-										></iframe>
-									{:else}
-										<img
-											src="/dashboard/files/{data?.guarantor?.photo}"
-											class="justify-self-center"
-											alt="Guarantor"
-											loading="lazy"
-										/>
-									{/if}
-								</DialogComp>
-
-								<DialogComp
-									title="View Guarantor Documents"
-									variant="default"
-									class="flex flex-col! items-center! justify-center!"
-									IconComp={Eye}
-								>
-									{#if data?.guarantor?.document?.endsWith('.pdf')}
-										<iframe
-											src="/dashboard/files/{data?.guarantor?.document}"
-											title="Guarantor PDF"
-											class="h-125 w-full border-none"
-										></iframe>
-									{:else}
-										<img
-											src="/dashboard/files/{data?.guarantor?.document}"
-											class="justify-self-center"
-											alt="Guarantor Documents"
-											loading="lazy"
-										/>
-									{/if}
-								</DialogComp>
-
-								<DialogComp
-									title="View Guarantor Govt ID"
-									variant="default"
-									class="flex flex-col! items-center! justify-center!"
-									IconComp={Eye}
-								>
-									{#if data?.guarantor?.govtId?.endsWith('.pdf')}
-										<iframe
-											src="/dashboard/files/{data?.guarantor?.govtId}"
-											title="Guarantor PDF"
-											class="h-125 w-full border-none"
-										></iframe>
-									{:else}
-										<img
-											src="/dashboard/files/{data?.guarantor?.govtId}"
-											class="justify-self-center"
-											alt="Guarantor Govt ID"
-											loading="lazy"
-										/>
-									{/if}
-								</DialogComp>
-							</div>
 						{/if}
 					</div>
 					<div class="flex flex-col gap-2">
@@ -340,6 +289,58 @@
 							<SingleTable singleTable={guarantorAddress} />
 						{/if}
 					</div>
+				</div>
+				<div class="flex w-full flex-wrap items-center gap-2">
+					{#if data?.guarantor?.photo}
+						<Button
+							variant="outline"
+							href="/dashboard/files/{data?.guarantor?.photo}"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<Eye class="mr-2" size={16} />
+							View Photo
+						</Button>
+					{:else}
+						<Button variant="ghost" disabled class="cursor-not-allowed">
+							<FileX class="mr-2" size={16} />
+							No Photo Added
+						</Button>
+					{/if}
+					{#if data?.guarantor?.govtId}
+						<Button
+							title="View {data?.guarantor?.name}'s ID"
+							variant="outline"
+							href="/dashboard/files/{data?.guarantor?.govtId}"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="View {data?.guarantor?.name}'s Government Id(FIDA) in a new tab"
+						>
+							<Eye /> View Guarantor ID
+						</Button>
+					{:else}
+						<Button variant="ghost" disabled class="cursor-not-allowed">
+							<FileX class="mr-2" size={16} />
+							No Id Added
+						</Button>
+					{/if}
+					{#if data?.guarantor?.document}
+						<Button
+							title="View {data?.guarantor?.name}'s ID"
+							variant="outline"
+							href="/dashboard/files/{data?.guarantor?.document}"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="View {data?.guarantor?.name}'s Government Id(FIDA) in a new tab"
+						>
+							<Eye /> View Guarantor Document
+						</Button>
+					{:else}
+						<Button variant="ghost" disabled class="cursor-not-allowed">
+							<FileX class="mr-2" size={16} />
+							No Id Added
+						</Button>
+					{/if}
 				</div>
 			</Section>
 			<Section title="Family Members" class="lg:col-span-3" IconComp={Baby} style="identityIcon">
