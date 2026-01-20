@@ -258,7 +258,7 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const { firstName, fatherName, grandFatherName, gender, birthDate } = form.data;
+		const { firstName, fatherName, grandFatherName, gender, birthDate, photo, govtId } = form.data;
 
 		try {
 			if (!id) {
@@ -268,7 +268,24 @@ export const actions: Actions = {
 			// Wrap the database operations in a transaction
 			await db.transaction(async (tx) => {
 				// 1. Update the employee identity
+				const existing = await tx
+					.select()
+					.from(employee)
+					.where(eq(employee.id, Number(id)))
+					.then((row) => row[0]);
 
+				// if (!existing) throw new Error('Guarantor not found');
+
+				// 2. Helper to handle file logic consistently
+				const resolveFile = async (newVal, oldVal) => {
+					if (newVal instanceof File && newVal.size > 0) {
+						return await saveUploadedFile(newVal);
+					}
+					return oldVal;
+				};
+
+				const newPhoto = await resolveFile(photo, existing.photo);
+				const newGovtId = await resolveFile(govtId, existing.govtId);
 				await tx
 					.update(employee)
 					.set({
@@ -276,6 +293,8 @@ export const actions: Actions = {
 						fatherName,
 						grandFatherName,
 						gender,
+						photo: newPhoto,
+						govtId: newGovtId,
 						birthDate: new Date(birthDate),
 						updatedBy: locals?.user?.id
 					})

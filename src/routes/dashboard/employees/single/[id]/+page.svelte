@@ -107,6 +107,7 @@
 	import Experience from './experience.svelte';
 	import EditGuarantor from './editGuarantor.svelte';
 	import AddGuarantor from './addGuarantor.svelte';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 </script>
 
 <svelte:head>
@@ -139,12 +140,14 @@
 			<Section title="Identity" IconComp={IdCard} style="identityIcon">
 				{#snippet editDialog()}
 					<EditIdentity
-						data={data.identityForm}
-						firstName={data?.staffMember.firstName}
-						fatherName={data?.staffMember.fatherName}
-						grandFatherName={data?.staffMember.grandFatherName}
-						gender={data?.staffMember.gender}
-						birthDate={data?.staffMember.birthDate}
+						data={data?.identityForm}
+						firstName={data?.staffMember?.firstName}
+						fatherName={data?.staffMember?.fatherName}
+						grandFatherName={data?.staffMember?.grandFatherName}
+						gender={data?.staffMember?.gender}
+						birthDate={data?.staffMember?.birthDate}
+						image={data?.staffMember?.photo}
+						govtIdPhoto={data?.staffMember?.govId}
 					/>
 				{/snippet}
 				<SingleTable singleTable={identity} />
@@ -230,21 +233,73 @@
 						</h4>
 						{#if data.guarantor}
 							<SingleTable singleTable={employeeGuarantor} />
-							<Button
-								class="text-xs lg:w-2/3"
-								href="/dashboard/files/{data?.guarantor?.photo}"
-								target="_blank"><Eye /> View Guarantor Photo</Button
-							>
-							<Button
-								class="text-xs lg:w-2/3"
-								href="/dashboard/files/{data?.guarantor?.document}"
-								target="_blank"><Eye />View Guarantor Documents</Button
-							>
-							<Button
-								class="text-xs lg:w-2/3"
-								href="/dashboard/files/{data?.guarantor?.govtId}"
-								target="_blank"><Eye />View Guarantor Govt ID</Button
-							>
+							<div class="flex flex-col items-start justify-center gap-2 lg:w-1/2">
+								<DialogComp
+									title="View Guarantor Photo"
+									variant="default"
+									class="flex flex-col! items-center! justify-center!"
+									IconComp={Eye}
+								>
+									{#if data?.guarantor?.photo.endsWith('.pdf')}
+										<iframe
+											src="/dashboard/files/{data?.guarantor?.photo}"
+											title="Guarantor PDF"
+											class="w-full border-none"
+										></iframe>
+									{:else}
+										<img
+											src="/dashboard/files/{data?.guarantor?.photo}"
+											class="justify-self-center"
+											alt="Guarantor"
+											loading="lazy"
+										/>
+									{/if}
+								</DialogComp>
+
+								<DialogComp
+									title="View Guarantor Documents"
+									variant="default"
+									class="flex flex-col! items-center! justify-center!"
+									IconComp={Eye}
+								>
+									{#if data?.guarantor?.document?.endsWith('.pdf')}
+										<iframe
+											src="/dashboard/files/{data?.guarantor?.document}"
+											title="Guarantor PDF"
+											class="h-125 w-full border-none"
+										></iframe>
+									{:else}
+										<img
+											src="/dashboard/files/{data?.guarantor?.document}"
+											class="justify-self-center"
+											alt="Guarantor Documents"
+											loading="lazy"
+										/>
+									{/if}
+								</DialogComp>
+
+								<DialogComp
+									title="View Guarantor Govt ID"
+									variant="default"
+									class="flex flex-col! items-center! justify-center!"
+									IconComp={Eye}
+								>
+									{#if data?.guarantor?.govtId?.endsWith('.pdf')}
+										<iframe
+											src="/dashboard/files/{data?.guarantor?.govtId}"
+											title="Guarantor PDF"
+											class="w-full border-none"
+										></iframe>
+									{:else}
+										<img
+											src="/dashboard/files/{data?.guarantor?.govtId}"
+											class="justify-self-center"
+											alt="Guarantor Govt ID"
+											loading="lazy"
+										/>
+									{/if}
+								</DialogComp>
+							</div>
 						{/if}
 					</div>
 					<div class="flex flex-col gap-2">

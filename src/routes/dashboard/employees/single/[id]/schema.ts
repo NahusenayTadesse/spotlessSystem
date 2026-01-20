@@ -52,7 +52,29 @@ export const editIdentity = z.object({
 			message: 'You must be at least 18 years old'
 		}
 	),
-	nationality: z.string('Nationality is requried').default('Ethiopia')
+	nationality: z.string('Nationality is requried').default('Ethiopia'),
+	photo: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+		.optional(),
+	govtId: z
+		.instanceof(File, {
+			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		})
+		.refine((file) => file.size > 0, 'File cannot be empty.')
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+		.refine(
+			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
+			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
+		)
+		.optional()
 });
 export type EditIdentity = z.infer<typeof editIdentity>;
 
@@ -234,7 +256,16 @@ export const editGuarantor = z.object({
 	email: z.email('Email is required'),
 	jobType: z.string('Job type is required').min(1).max(100),
 	company: z.string('Company Name is required').min(1).max(100),
-	relationship: z.enum(['mother', 'father', 'spouse', 'son', 'daughter', 'other']),
+	relationship: z.enum([
+		'mother',
+		'father',
+		'spouse',
+		'brother',
+		'sister',
+		'son',
+		'daughter',
+		'other'
+	]),
 	relation: z.string().optional(),
 	salary: z.number('Salary is required').min(0).max(1000000),
 	photo: z

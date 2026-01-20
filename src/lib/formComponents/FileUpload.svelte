@@ -101,7 +101,7 @@
 			<div class="overflow-hidden rounded-lg border bg-muted/30">
 				{#if image.toLowerCase().endsWith('.pdf')}
 					<iframe
-						src={`/dashboard/files/${image}}#toolbar=0`}
+						src="/dashboard/files/{image}"
 						class="h-64 w-full"
 						frameborder="0"
 						title="pdf-preview"

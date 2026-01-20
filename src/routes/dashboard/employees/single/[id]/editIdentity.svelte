@@ -17,6 +17,8 @@
 		firstName,
 		fatherName,
 		grandFatherName,
+		image,
+		govtIdPhoto,
 		gender,
 		birthDate
 	}: {
@@ -24,6 +26,8 @@
 		firstName: string;
 		fatherName: string;
 		grandFatherName: string;
+		image: string;
+		govtIdPhoto: string;
 		gender: string;
 		birthDate: Date;
 	} = $props();
@@ -79,6 +83,24 @@
 			items={genders}
 		/>
 		<InputComp label="Birth Date" name="birthDate" type="date" {form} {errors} required oldDays />
+		<InputComp
+			label="Photo"
+			name="photo"
+			type="file"
+			{form}
+			{errors}
+			required={false}
+			image={image ? image : ''}
+		/>
+		<InputComp
+			label="Goverment Id"
+			name="govtId"
+			type="file"
+			{form}
+			{errors}
+			required={false}
+			image={govtIdPhoto ? govtIdPhoto : ''}
+		/>
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">
