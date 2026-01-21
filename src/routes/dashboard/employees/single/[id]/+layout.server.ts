@@ -14,7 +14,8 @@ import {
 	staffFamilies,
 	qualification,
 	workExperience,
-	employeeGuarantor as eg
+	employeeGuarantor as eg,
+	staffSchedule
 } from '$lib/server/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
@@ -172,6 +173,20 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(eg.staffId, Number(id)))
 		.then((rows) => rows[0]);
 
+	let schedule = await db
+		.select({
+			id: staffSchedule.id,
+			day: staffSchedule.weekDay,
+			startTime: staffSchedule.startTime,
+			endTime: staffSchedule.endTime,
+			status: staffSchedule.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffSchedule)
+		.leftJoin(user, eq(staffSchedule.createdBy, user.id))
+		.where(eq(staffSchedule.staffId, Number(id)));
+
 	return {
 		staffMember,
 		address: employeeAddress,
@@ -179,6 +194,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		qualifications: employeeQualification,
 		experience: employeeWorkExperience,
 		guarantor: employeeGarantor,
+		schedule,
 		form
 	};
 };

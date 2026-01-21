@@ -11,7 +11,8 @@ import {
 	staffFamilies,
 	qualification,
 	workExperience,
-	employeeGuarantor
+	employeeGuarantor,
+	staffSchedule
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -32,7 +33,9 @@ import {
 	addExperience,
 	editExperience,
 	editGuarantor,
-	addGuarantor
+	addGuarantor,
+	addSchedule,
+	editSchedule
 } from './schema';
 import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
 
@@ -53,6 +56,8 @@ export const load: PageServerLoad = async () => {
 	const addExperienceForm = await superValidate(zod4(addExperience));
 	const editGuarantorForm = await superValidate(zod4(editGuarantor));
 	const addGuarantorForm = await superValidate(zod4(addGuarantor));
+	const addScheduleForm = await superValidate(zod4(addSchedule));
+	const editScheduleForm = await superValidate(zod4(editSchedule));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -77,7 +82,9 @@ export const load: PageServerLoad = async () => {
 		addExperienceForm,
 		editExperienceForm,
 		editGuarantorForm,
-		addGuarantorForm
+		addGuarantorForm,
+		addScheduleForm,
+		editScheduleForm
 	};
 };
 
@@ -868,6 +875,81 @@ export const actions: Actions = {
 				{
 					type: 'error',
 					text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				},
+				{ status: 500 }
+			);
+		}
+	},
+	addSchedule: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addSchedule));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { day, startTime, endTime, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx.insert(staffSchedule).values({
+					weekDay: day,
+					startTime,
+					staffId: Number(id),
+					endTime,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Schedule Details Created Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(
+				form,
+				{
+					type: 'error',
+					text: `Creating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				},
+				{ status: 500 }
+			);
+		}
+	},
+	editSchedule: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editSchedule));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, day, startTime, endTime, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(staffSchedule)
+					.set({
+						weekDay: day,
+						startTime,
+						endTime,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffSchedule.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Schedule Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(
+				form,
+				{
+					type: 'error',
+					text: `Updating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 				},
 				{ status: 500 }
 			);

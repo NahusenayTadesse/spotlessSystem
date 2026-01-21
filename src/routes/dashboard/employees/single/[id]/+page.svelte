@@ -15,7 +15,8 @@
 		FileUser,
 		ShieldUser,
 		Eye,
-		FileX
+		FileX,
+		Sheet
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -109,6 +110,7 @@
 	import EditGuarantor from './editGuarantor.svelte';
 	import AddGuarantor from './addGuarantor.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import Schedules from './schedules.svelte';
 </script>
 
 <svelte:head>
@@ -345,6 +347,14 @@
 			</Section>
 			<Section title="Family Members" class="lg:col-span-3" IconComp={Baby} style="identityIcon">
 				<Families data={data?.family} form={data?.familyForm} addForm={data?.addfamilyForm} />
+			</Section>
+
+			<Section title="Schedule" class="lg:col-span-3" IconComp={Sheet} style="identityIcon">
+				<Schedules
+					data={data?.schedule}
+					form={data?.editScheduleForm}
+					addForm={data?.addScheduleForm}
+				/>
 			</Section>
 
 			<Section
