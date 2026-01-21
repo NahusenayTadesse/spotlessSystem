@@ -1,54 +1,100 @@
 <script lang="ts">
- import CalendarIcon from "@lucide/svelte/icons/calendar";
- import {
-	CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
+	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+	import { Calendar } from '$lib/components/ui/calendar';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
+	import { cn } from '$lib/utils.js';
+	import { CalendarDate, getLocalTimeZone, today, parseDate } from '@internationalized/date';
+	import { CalendarIcon } from '@lucide/svelte';
 
-  today
+	let {
+		data = $bindable(''), // Expects "YYYY-MM-DD,YYYY-MM-DD"
+		oldDays = false,
+		year = false,
+		futureDays = false
+	}: {
+		data: string;
+		oldDays?: boolean;
+		year?: boolean;
+		futureDays?: boolean;
+	} = $props();
 
- } from "@internationalized/date";
- import { cn } from "$lib/utils.js";
- import { buttonVariants } from "$lib/components/ui/button/index.js";
- import { Calendar } from "$lib/components/ui/calendar/index.js";
- import * as Popover from "$lib/components/ui/popover/index.js";
- 
- const df = new DateFormatter("en-US", {
-  dateStyle: "long"
- });
+	const tz = getLocalTimeZone();
+	const minDate = $derived(oldDays ? undefined : today(tz));
+	const maxDate = $derived(futureDays ? today(tz) : undefined);
 
- let { value= $bindable(), name, minValue= new CalendarDate(1995,1,1), maxValue=today(getLocalTimeZone()), captionLayout="dropdown" } = $props();
- 
- let contentRef = $state<HTMLElement | null>(null);
+	// Internal state is now an array
+	let selectedDates = $state<CalendarDate[]>(
+		data ? data.split(',').map((d) => parseDate(d.trim())) : []
+	);
 
- 
+	// Sync internal state back to the 'data' string prop
+	$effect(() => {
+		data = selectedDates.map((d) => d.toString()).join(',');
+	});
 
+	const formatEthiopianDate = (date: CalendarDate): string => {
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+			calendar: 'ethiopic'
+		});
+		return formatter.format(date.toDate(tz));
+	};
+
+	// Derived label for the trigger button
+	const displayLabel = $derived.by(() => {
+		if (selectedDates.length === 0) return 'Select dates';
+		if (selectedDates.length === 1) return formatEthiopianDate(selectedDates[0]);
+		return `${selectedDates.length} dates selected`;
+	});
 </script>
- 
+
 <Popover.Root>
- <Popover.Trigger
-  class={cn(
-   buttonVariants({
-    variant: "outline",
-    class: `w-full border border-gray-300 dark:border-gray-700 
-rounded-lg px-4 py-2 bg-gray-50 dark:bg-dark text-gray-900 dark:text-gray-100 
-focus:outline-none focus:ring-1 dark:focus:ring-white focus:ring-dark transition capitalize flex flex-start justify-start`
-   }),
-   !value && "text-muted-foreground"
-  )}
- >
-  <CalendarIcon />
-  {value ? df.format(value.toDate(getLocalTimeZone())) : name.replace(/([a-z])([A-Z])/g, '$1 $2')}
- </Popover.Trigger>
- <Popover.Content bind:ref={contentRef} class="w-auto p-0">
-  <Calendar type="single" {captionLayout} bind:value
-   {minValue}
-    class={"dark:bg-dark dark:text-white"}
-    {maxValue}
-     />
+	<Popover.Trigger
+		class={cn(
+			buttonVariants({
+				variant: 'outline',
+				class: 'w-full justify-start text-left font-normal'
+			}),
+			selectedDates.length === 0 && 'text-muted-foreground'
+		)}
+	>
+		<CalendarIcon class="mr-2 h-4 w-4" />
+		{displayLabel}
+	</Popover.Trigger>
 
- </Popover.Content>
+	<Popover.Content class="flex w-auto flex-col gap-2 p-4">
+		<div class="flex flex-col text-sm text-muted-foreground">
+			{#if selectedDates.length > 0}
+				<ScrollArea class="h-24">
+					<ul class="flex max-h-24 flex-col gap-2">
+						{#each selectedDates as date}
+							<li>{formatEthiopianDate(date)}</li>
+						{/each}
+					</ul>
+				</ScrollArea>
+			{:else}No dates selected{/if}
+			<!-- {selectedDates.length > 0
+				? `Selected: ${selectedDates.map(formatEthiopianDate).join(', ')}`
+				: 'No dates selected'} -->
+		</div>
+
+		<Calendar
+			locale="am-ET"
+			type="multiple"
+			captionLayout={year ? 'dropdown-years' : 'label'}
+			minValue={minDate}
+			maxValue={maxDate}
+			bind:value={selectedDates}
+		/>
+
+		<div class="grid grid-cols-2 gap-2">
+			<Button variant="secondary" size="sm" onclick={() => (selectedDates = [today(tz)])}>
+				Today Only
+			</Button>
+			<Button variant="ghost" size="sm" onclick={() => (selectedDates = [])}>Clear All</Button>
+		</div>
+	</Popover.Content>
 </Popover.Root>
-
-
-<input type="hidden" {name} bind:value>

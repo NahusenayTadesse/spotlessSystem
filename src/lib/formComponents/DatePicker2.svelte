@@ -3,29 +3,20 @@
 	import { Calendar } from '$lib/components/ui/calendar';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { cn } from '$lib/utils.js';
-	import {
-		CalendarDate,
-		EthiopicCalendar,
-		getLocalTimeZone,
-		today,
-		parseDate,
-		type DateValue
-	} from '@internationalized/date';
+	import { CalendarDate, getLocalTimeZone, today, parseDate } from '@internationalized/date';
 	import { CalendarIcon } from '@lucide/svelte';
-	// function getTodayDate() {
-	// 	const today = new Date();
-	// 	const year = today.getFullYear();
-	// 	const month = String(today.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
-	// 	const day = String(today.getDate()).padStart(2, '0');
 
-	// 	return `${year}-${month}-${day}`;
-	// }
 	let {
 		data = $bindable(),
 		oldDays = false,
 		year = false,
 		futureDays = false
-	}: { data: string; oldDays?: boolean; year?: boolean; futureDays?: boolean } = $props();
+	}: {
+		data: string;
+		oldDays?: boolean;
+		year?: boolean;
+		futureDays?: boolean;
+	} = $props();
 
 	const todayDate = $derived(oldDays ? undefined : today(getLocalTimeZone()));
 
@@ -50,12 +41,6 @@
 		return formatter.format(date.toDate(getLocalTimeZone()));
 	};
 	const displayDate = $derived(form ? formatEthiopianDate(form) : formatEthiopianDate(todayDate));
-
-	const maxValue = $derived(() => {
-		if (!futureDays) return undefined;
-		const today = new Date();
-		return new CalendarDate(today.getFullYear(), today.getMonth(), today.getDate());
-	});
 </script>
 
 <Popover.Root>
@@ -81,8 +66,8 @@
 
 		<Calendar
 			locale="am-ET"
-			captionLayout={year ? 'dropdown-years' : 'label'}
 			type="single"
+			captionLayout={year ? 'dropdown-years' : 'label'}
 			minValue={todayDate}
 			maxValue={futureDays ? today(getLocalTimeZone()) : undefined}
 			bind:value={form}
