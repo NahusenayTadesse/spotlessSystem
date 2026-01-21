@@ -55,6 +55,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(department, eq(department.id, employee.departmentId))
+		.where(eq(employee.isActive, true))
 		.orderBy(desc(payrollEntries.paymentDate));
 
 	return {

@@ -90,6 +90,7 @@ export const employee = mysqlTable(
 			'other'
 		]).default('single'),
 		address: int('address').references(() => address.id),
+		leavesLeft: int('leaves_left').notNull().default(0),
 
 		...secureFields
 	},
@@ -369,3 +370,17 @@ export const staffQualificationRelations = relations(qualification, ({ one }) =>
 		references: [employee.id]
 	})
 }));
+export const missingDays = mysqlTable('missing_days', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => employee.id, { onDelete: 'cascade' }),
+	day: date('day').notNull(),
+	reason: varchar('reason', { length: 255 }).notNull(),
+	deductable: boolean('deductable').notNull().default(false),
+	deductableAmount: decimal('deductable_amount', { precision: 10, scale: 2 }),
+	approval: mysqlEnum('approval', ['pending', 'approved', 'rejected'])
+		.default('approved')
+		.notNull(),
+	...secureFields
+});

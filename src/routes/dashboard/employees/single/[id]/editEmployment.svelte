@@ -18,6 +18,7 @@
 		hireDate,
 		idNo,
 		departmentList,
+		leavesLeft,
 		employmentStatusList,
 		educationalLevelList
 	}: {
@@ -26,6 +27,7 @@
 		employmentStatus: number;
 		idNo: string;
 		department: number;
+		leavesLeft: number;
 		educationalLevel: number;
 		hireDate: Date;
 		statusList: Item[];
@@ -53,6 +55,7 @@
 	$form.educationalLevel = educationalLevel;
 	$form.department = department;
 	$form.hireDate = hireDate;
+	$form.leavesLeft = leavesLeft;
 </script>
 
 <DialogComp title="Edit" variant="default" class="" IconComp={SquarePen}>
@@ -74,6 +77,9 @@
 			required
 			items={departmentList}
 		/>
+
+		<InputComp label="Leaves Left" name="leavesLeft" type="number" {form} {errors} required />
+
 		<InputComp
 			label="Educational Level"
 			name="educationalLevel"

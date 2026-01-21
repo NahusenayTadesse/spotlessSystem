@@ -1,7 +1,6 @@
 import { z } from 'zod/v4';
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentSchema';
 import { gender } from '$lib/global.svelte';
-import type { educationalLevel } from '$lib/server/db/schema';
 
 export const terminate = z.object({
 	reason: z.string().min(2).max(255),
@@ -83,6 +82,7 @@ export const editEmployment = z.object({
 	department: z.number('Department is required').nonnegative().positive(),
 	hireDate: z.coerce.string('Hired on date is required'),
 	employmentStatus: z.number('Employment Status is required'),
+	leavesLeft: z.number('Leaves Left is required').default(0),
 	educationalLevel: z.number('Educational Level is required')
 });
 export type EditEmployment = z.infer<typeof editEmployment>;

@@ -16,7 +16,7 @@
 		ShieldUser,
 		Eye,
 		FileX,
-		Sheet
+		CalendarDays
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -45,6 +45,7 @@
 		{ name: 'Employment Status', value: data?.staffMember?.status },
 		{ name: 'Department', value: data?.staffMember?.department },
 		{ name: 'Educational Level', value: data?.staffMember?.educationalLevel },
+		{ name: 'Leaves Left', value: data?.staffMember?.leavesLeft + ' Days' },
 		{
 			name: 'Hired On',
 			value: formatEthiopianDate(new Date(data?.staffMember?.hireDate))
@@ -109,7 +110,6 @@
 	import Experience from './experience.svelte';
 	import EditGuarantor from './editGuarantor.svelte';
 	import AddGuarantor from './addGuarantor.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import Schedules from './schedules.svelte';
 </script>
 
@@ -217,6 +217,7 @@
 							employmentStatus={data?.staffMember.statusId}
 							employmentStatusList={data?.statusList}
 							hireDate={data?.staffMember.hireDate}
+							leavesLeft={data?.staffMember.leavesLeft}
 							statusList={data?.statusList}
 							departmentList={data?.departmentList}
 						/>
@@ -349,7 +350,12 @@
 				<Families data={data?.family} form={data?.familyForm} addForm={data?.addfamilyForm} />
 			</Section>
 
-			<Section title="Schedule" class="lg:col-span-3" IconComp={Sheet} style="identityIcon">
+			<Section
+				title="Schedule"
+				class="lg:col-span-3"
+				IconComp={CalendarDays}
+				style="employmentIcon"
+			>
 				<Schedules
 					data={data?.schedule}
 					form={data?.editScheduleForm}

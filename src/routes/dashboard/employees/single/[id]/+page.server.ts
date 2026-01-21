@@ -321,7 +321,8 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const { idNo, department, educationalLevel, employmentStatus, hireDate } = form.data;
+		const { idNo, leavesLeft, department, educationalLevel, employmentStatus, hireDate } =
+			form.data;
 
 		try {
 			if (!id) {
@@ -339,6 +340,7 @@ export const actions: Actions = {
 						departmentId: department,
 						employmentStatus,
 						educationalLevel,
+						leavesLeft,
 						hireDate: new Date(hireDate),
 						updatedBy: locals?.user?.id
 					})
