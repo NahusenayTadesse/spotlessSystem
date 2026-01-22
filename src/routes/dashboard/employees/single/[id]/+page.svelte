@@ -16,7 +16,9 @@
 		ShieldUser,
 		Eye,
 		FileX,
-		CalendarDays
+		CalendarDays,
+		Phone,
+		Banknote
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -111,6 +113,8 @@
 	import EditGuarantor from './editGuarantor.svelte';
 	import AddGuarantor from './addGuarantor.svelte';
 	import Schedules from './schedules.svelte';
+	import Contacts from './contacts.svelte';
+	import Accounts from './accounts.svelte';
 </script>
 
 <svelte:head>
@@ -192,6 +196,19 @@
 				</div>
 			</Section>
 
+			<Section
+				title="Contact Information"
+				class="lg:col-span-2"
+				IconComp={Phone}
+				style="identityIcon"
+			>
+				<Contacts
+					data={data?.contacts}
+					form={data?.editContactForm}
+					addForm={data?.addContactForm}
+				/>
+			</Section>
+
 			<Section title="Address" IconComp={MapPin} style="addressIcon">
 				{#snippet editDialog()}
 					{#key data?.address}
@@ -238,9 +255,17 @@
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />
 			</Section>
+			<Section title="Bank Accounts" class="lg:col-span-3" IconComp={Banknote} style="identityIcon">
+				<Accounts
+					data={data?.accounts}
+					form={data?.editAccountForm}
+					addForm={data?.addAccountForm}
+					paymentMethods={data?.bankList}
+				/>
+			</Section>
 			<Section
 				title="Guarantor"
-				class="gap-4! {data?.guarantor ? 'lg:col-span-2' : ''}"
+				class="gap-4! {data?.guarantor ? 'lg:col-span-3' : ''}"
 				IconComp={ShieldUser}
 				style="identityIcon"
 			>

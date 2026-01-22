@@ -380,3 +380,36 @@ export const editSchedule = z.object({
 	status: z.boolean('Status is Required').default(true)
 });
 export type EditSchedule = z.infer<typeof editSchedule>;
+
+export const addContact = z.object({
+	contactType: z.string('Contact Type is Required'),
+	contactDetail: z.string('Contact Detail is required'),
+	status: z.boolean('Status is Required').default(true)
+});
+export type AddContact = z.infer<typeof addContact>;
+
+export const editContact = z.object({
+	id: z.number('Schedule not found'),
+	contactType: z.string('Contact Type is Required'),
+	contactDetail: z.string('Contact Detail is required'),
+
+	status: z.boolean('Status is Required').default(true)
+});
+
+export type EditContact = z.infer<typeof editContact>;
+
+export const addAccount = z.object({
+	paymentMethod: z.number('Bank Name is Required'),
+	accountDetail: z.string('Account Detail is required'),
+	status: z.boolean('Status is Required').default(true)
+});
+export type AddAccount = z.infer<typeof addAccount>;
+
+export const editAccount = z.object({
+	id: z.number('Schedule not found'),
+	paymentMethod: z.number('Bank Name is Required'),
+	accountDetail: z.string('Account Detail is required'),
+	status: z.boolean('Status is Required').default(true)
+});
+
+export type EditAccount = z.infer<typeof editAccount>;

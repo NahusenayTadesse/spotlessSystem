@@ -15,7 +15,10 @@ import {
 	qualification,
 	workExperience,
 	employeeGuarantor as eg,
-	staffSchedule
+	staffSchedule,
+	staffContacts,
+	staffAccounts,
+	paymentMethods
 } from '$lib/server/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
@@ -188,6 +191,34 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.leftJoin(user, eq(staffSchedule.createdBy, user.id))
 		.where(eq(staffSchedule.staffId, Number(id)));
 
+	let contacts = await db
+		.select({
+			id: staffContacts.id,
+			contactType: staffContacts.contactType,
+			contactDetail: staffContacts.contactDetail,
+			status: staffContacts.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffContacts)
+		.leftJoin(user, eq(staffContacts.createdBy, user.id))
+		.where(eq(staffContacts.staffId, Number(id)));
+
+	let accounts = await db
+		.select({
+			id: staffAccounts.id,
+			paymentMethod: paymentMethods.name,
+			accountDetail: staffAccounts.accountDetail,
+			paymentMethodId: staffAccounts.paymentMethodId,
+			status: staffAccounts.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffAccounts)
+		.leftJoin(user, eq(staffAccounts.createdBy, user.id))
+		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
+		.where(eq(staffAccounts.staffId, Number(id)));
+
 	return {
 		staffMember,
 		address: employeeAddress,
@@ -195,7 +226,9 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		qualifications: employeeQualification,
 		experience: employeeWorkExperience,
 		guarantor: employeeGarantor,
+		contacts,
 		schedule,
+		accounts,
 		form
 	};
 };

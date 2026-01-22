@@ -9,11 +9,10 @@ import {
 	overTime,
 	deductions,
 	bonuses,
-	commissionProduct,
-	commissionService,
-	employee
+	employee,
+	missingDays
 } from '$lib/server/db/schema';
-import { eq, isNull, sql, and } from 'drizzle-orm';
+import { eq, isNull, sql, and, count } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
@@ -28,24 +27,20 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
 
 			// sum of all commissions from commissionProduct AND commissionService
-			commissions: sql<number>`
-           COALESCE(SUM(${commissionProduct.amount}), 0)
-           + COALESCE(SUM(${commissionService.amount}), 0)
-          `,
 
 			// base salary (assumed single row per staff)
 			baseSalary: salaries.amount,
+			missingDays: count(missingDays.id),
 			overtime: overTime.total,
 			bonus: bonuses.amount
 		})
 		.from(employee)
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(deductions, eq(deductions.staffId, employee.id))
+		.leftJoin(missingDays, eq(missingDays.staffId, employee.id))
 		.leftJoin(overTime, eq(overTime.staffId, employee.id))
 		.leftJoin(bonuses, eq(bonuses.staffId, employee.id))
-		.leftJoin(commissionProduct, eq(commissionProduct.staffId, employee.id))
-		.leftJoin(commissionService, eq(commissionService.staffId, employee.id))
-		.where(eq(employee.id, id))
+		.where(eq(employee.id, Number(id)))
 		.groupBy(employee.id, salaries.amount)
 		.then((rows) => rows[0]);
 

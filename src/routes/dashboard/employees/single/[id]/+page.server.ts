@@ -12,7 +12,9 @@ import {
 	qualification,
 	workExperience,
 	employeeGuarantor,
-	staffSchedule
+	staffSchedule,
+	staffContacts,
+	staffAccounts
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -35,9 +37,13 @@ import {
 	editGuarantor,
 	addGuarantor,
 	addSchedule,
-	editSchedule
+	editSchedule,
+	addContact,
+	editContact,
+	addAccount,
+	editAccount
 } from './schema';
-import { empStatus, departments, eduLevel, subcities } from '$lib/server/fastData';
+import { empStatus, departments, eduLevel, subcities, paymentMethods } from '$lib/server/fastData';
 
 import { saveUploadedFile } from '$lib/server/upload';
 
@@ -58,11 +64,16 @@ export const load: PageServerLoad = async () => {
 	const addGuarantorForm = await superValidate(zod4(addGuarantor));
 	const addScheduleForm = await superValidate(zod4(addSchedule));
 	const editScheduleForm = await superValidate(zod4(editSchedule));
+	const editContactForm = await superValidate(zod4(editContact));
+	const addContactForm = await superValidate(zod4(addContact));
+	const addAccountForm = await superValidate(zod4(addAccount));
+	const editAccountForm = await superValidate(zod4(editAccount));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
 	const educationalLevelList = await eduLevel();
 	const subcityList = await subcities();
+	const bankList = await paymentMethods();
 
 	return {
 		terminateForm,
@@ -84,7 +95,12 @@ export const load: PageServerLoad = async () => {
 		editGuarantorForm,
 		addGuarantorForm,
 		addScheduleForm,
-		editScheduleForm
+		editScheduleForm,
+		addContactForm,
+		editContactForm,
+		addAccountForm,
+		editAccountForm,
+		bankList
 	};
 };
 
@@ -684,8 +700,8 @@ export const actions: Actions = {
 						.set({
 							companyName,
 							position,
-							startDate,
-							endDate,
+							startDate: new Date(startDate),
+							endDate: new Date(endDate),
 							description,
 							certificate: certificateName,
 							updatedBy: locals?.user?.id
@@ -697,8 +713,8 @@ export const actions: Actions = {
 						.set({
 							companyName,
 							position,
-							startDate,
-							endDate,
+							startDate: new Date(startDate),
+							endDate: new Date(endDate),
 							description,
 							updatedBy: locals?.user?.id
 						})
@@ -711,7 +727,6 @@ export const actions: Actions = {
 				text: 'Experience Details Updated Successfully!'
 			});
 		} catch (err) {
-			console.error('Error updating experience details:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},
@@ -787,14 +802,10 @@ export const actions: Actions = {
 			});
 		} catch (err) {
 			console.error('Database Error:', err);
-			return message(
-				form,
-				{
-					type: 'error',
-					text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-				},
-				{ status: 500 }
-			);
+			return message(form, {
+				type: 'error',
+				text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	},
 	addGuarantor: async ({ request, locals, params }) => {
@@ -871,15 +882,10 @@ export const actions: Actions = {
 				});
 			});
 		} catch (err) {
-			console.error('Database Error:', err);
-			return message(
-				form,
-				{
-					type: 'error',
-					text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-				},
-				{ status: 500 }
-			);
+			return message(form, {
+				type: 'error',
+				text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	},
 	addSchedule: async ({ request, locals, params }) => {
@@ -909,14 +915,10 @@ export const actions: Actions = {
 				});
 			});
 		} catch (err) {
-			return message(
-				form,
-				{
-					type: 'error',
-					text: `Creating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-				},
-				{ status: 500 }
-			);
+			return message(form, {
+				type: 'error',
+				text: `Creating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	},
 	editSchedule: async ({ request, locals }) => {
@@ -947,14 +949,141 @@ export const actions: Actions = {
 				});
 			});
 		} catch (err) {
-			return message(
-				form,
-				{
-					type: 'error',
-					text: `Updating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-				},
-				{ status: 500 }
-			);
+			return message(form, {
+				type: 'error',
+				text: `Updating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	addContact: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addContact));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { contactDetail, contactType, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx.insert(staffContacts).values({
+					staffId: Number(id),
+					contactDetail,
+					contactType,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Contact Details Created Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Creating Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	editContact: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editContact));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, contactDetail, contactType, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(staffContacts)
+					.set({
+						contactDetail,
+						contactType,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffContacts.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Contact Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Updated Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	addAccount: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addAccount));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { paymentMethod, accountDetail, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx.insert(staffAccounts).values({
+					staffId: Number(id),
+					paymentMethodId: paymentMethod,
+					accountDetail,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Account Details Creating Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Creating Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	editAccount: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editAccount));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, paymentMethod, accountDetail, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(staffAccounts)
+					.set({
+						paymentMethodId: paymentMethod,
+						accountDetail,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffAccounts.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Account Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			console.error(err?.message);
+			return message(form, {
+				type: 'error',
+				text: `Updated Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	}
 };
