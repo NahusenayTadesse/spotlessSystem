@@ -380,8 +380,6 @@ export const missingDays = mysqlTable('missing_days', {
 	reason: varchar('reason', { length: 255 }).notNull(),
 	deductable: boolean('deductable').notNull().default(false),
 	deductableAmount: decimal('deductable_amount', { precision: 10, scale: 2 }),
-	approval: mysqlEnum('approval', ['pending', 'approved', 'rejected'])
-		.default('approved')
-		.notNull(),
+	approval: mysqlEnum('approval', ['pending', 'approved', 'rejected']).default('pending').notNull(),
 	...secureFields
 });

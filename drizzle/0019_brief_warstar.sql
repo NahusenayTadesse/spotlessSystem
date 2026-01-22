@@ -1,0 +1,1 @@
+ALTER TABLE `missing_days` MODIFY COLUMN `approval` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending';

@@ -134,6 +134,13 @@
       "when": 1769103049016,
       "tag": "0018_medical_nighthawk",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1769110414962,
+      "tag": "0019_brief_warstar",
+      "breakpoints": true
     }
   ]
 }

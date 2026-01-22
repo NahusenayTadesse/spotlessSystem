@@ -2,8 +2,14 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import { superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+const form = await superValidate(zod4(edit));
+
 import { minutesToHoursString } from '$lib/global.svelte';
 import Copy from '$lib/Copy.svelte';
+import { edit } from './schema';
+import Edit from './edit.svelte';
 
 export const columns = [
 	{
@@ -50,6 +56,24 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true
+	},
+	{
+		accessorKey: 'missingDays',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Missing Days',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			// You can pass whatever you need from `row.original` to the component
+			return renderComponent(Edit, {
+				data: form,
+				id: row.original.id,
+				name: row.original.name,
+				count: row.original.missingDays
+			});
+		}
 	},
 
 	// {
