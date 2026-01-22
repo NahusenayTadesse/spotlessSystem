@@ -15,7 +15,8 @@
 		Plus,
 		MapPin,
 		Building2,
-		Sheet
+		Sheet,
+		BanknoteArrowDown
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -58,7 +59,15 @@
 				{ title: 'Add Employee', url: '/dashboard/employees/add-employee', icon: Plus }
 			]
 		},
-		{ title: 'Salary', url: '/dashboard/salary', icon: Banknote },
+		{
+			title: 'Salary',
+			url: '/dashboard/salary',
+			icon: Banknote,
+			items: [
+				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
+				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
+			]
+		},
 		{ title: 'Finance', url: '/dashboard/transactions', icon: ScanLine },
 		{
 			title: 'Admin Panel',

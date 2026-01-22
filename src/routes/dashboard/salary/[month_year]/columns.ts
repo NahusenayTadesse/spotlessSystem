@@ -46,7 +46,7 @@ export const columns = [
 		accessorKey: 'position',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Position',
+				name: 'Department',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true
@@ -126,7 +126,7 @@ export const columns = [
 		accessorKey: 'paymentMethodName',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Payment Method',
+				name: 'Bank',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,

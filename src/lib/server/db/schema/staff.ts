@@ -144,7 +144,8 @@ export const pensionType = mysqlTable('pension_type', {
 	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
 	taxtype: int('tax_type')
 		.references(() => taxType.id)
-		.notNull()
+		.notNull(),
+	...lesserFields
 });
 
 export const pension = mysqlTable('pension', {

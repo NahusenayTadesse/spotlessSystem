@@ -4,7 +4,8 @@ import {
 	payrollEntries,
 	salaries,
 	employee,
-	department
+	department,
+	staffAccounts
 } from '$lib/server/db/schema';
 import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -35,6 +36,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			bonusAmount: payrollEntries.bonusAmount,
 			netAmount: payrollEntries.netAmount,
 			paidAmount: payrollEntries.paidAmount,
+			paymentMethod: paymentMethods.name,
 			taxAmount: payrollEntries.taxAmount,
 			status: payrollEntries.status,
 			paymentMethodId: payrollEntries.paymentMethodId,
@@ -52,7 +54,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				eq(payrollEntries.year, year)
 			)
 		)
-		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
+		.leftJoin(staffAccounts, eq(staffAccounts.staffId, employee.id))
+		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(department, eq(department.id, employee.departmentId))
 		.where(eq(employee.isActive, true))

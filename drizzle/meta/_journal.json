@@ -127,6 +127,13 @@
       "when": 1769003196977,
       "tag": "0017_naive_jack_power",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1769103049016,
+      "tag": "0018_medical_nighthawk",
+      "breakpoints": true
     }
   ]
 }

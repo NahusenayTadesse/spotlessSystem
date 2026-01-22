@@ -123,11 +123,7 @@
 			</div>
 		</div>
 
-		<!-- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
-
-   <DataTable data={data.payrollData} {columns}  />
- </div> -->
-		<DataTable data={data.payrollData} {columns} />
+		<DataTable data={data.payrollData} class="w-7xl!" {columns} fileName="Bank Accounts" />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

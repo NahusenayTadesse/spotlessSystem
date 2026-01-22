@@ -24,6 +24,7 @@
 		data,
 		columns,
 		search = true,
+		class: className = '',
 		fileName = 'Spotless File'
 	}: DataTableProps<TData, TValue> = $props();
 	// let filterSchema = $derived(
@@ -45,6 +46,7 @@
 		columns: ColumnDef<TData, TValue>[];
 		data: TData[];
 		search?: boolean;
+		class?: string;
 		filterBlacklist?: string[];
 		fileName?: string;
 	};
@@ -135,7 +137,7 @@
 
 <Resizable.PaneGroup
 	direction="horizontal"
-	class="lg:max-w-8xl mt-4 flex w-full min-w-full gap-0 rounded-lg lg:w-fit lg:min-w-2xl "
+	class="lg:max-w-8xl mt-4 flex w-full min-w-full gap-0 rounded-lg lg:w-fit lg:min-w-2xl {className}"
 >
 	<Resizable.Pane
 		defaultSize={isMobile()

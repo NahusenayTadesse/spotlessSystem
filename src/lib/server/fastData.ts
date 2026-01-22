@@ -13,7 +13,8 @@ import {
 	employeeTermination,
 	supplyTypes,
 	serviceCategories,
-	services
+	services,
+	taxType
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -159,4 +160,15 @@ export async function eduLevel() {
 		.from(educationalLevel);
 
 	return eduLevel;
+}
+
+export async function taxTypes() {
+	const taxTypes = await db
+		.select({
+			value: taxType.id,
+			name: taxType.name
+		})
+		.from(taxType);
+
+	return taxTypes;
 }
