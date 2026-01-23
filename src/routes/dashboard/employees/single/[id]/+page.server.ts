@@ -1032,6 +1032,12 @@ export const actions: Actions = {
 
 		try {
 			await db.transaction(async (tx) => {
+				if (status === true) {
+					await tx
+						.update(staffAccounts)
+						.set({ isActive: false })
+						.where(eq(staffAccounts.staffId, Number(id)));
+				}
 				await tx.insert(staffAccounts).values({
 					staffId: Number(id),
 					paymentMethodId: paymentMethod,
@@ -1039,11 +1045,10 @@ export const actions: Actions = {
 					isActive: status,
 					createdBy: locals?.user?.id
 				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Account Details Creating Successfully!'
-				});
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Account Details Creating Successfully!'
 			});
 		} catch (err) {
 			return message(form, {
@@ -1052,9 +1057,9 @@ export const actions: Actions = {
 			});
 		}
 	},
-	editAccount: async ({ request, locals }) => {
+	editAccount: async ({ request, locals, params }) => {
 		const form = await superValidate(request, zod4(editAccount));
-
+		const { id: staffId } = params;
 		if (!form.valid) {
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
@@ -1063,6 +1068,12 @@ export const actions: Actions = {
 
 		try {
 			await db.transaction(async (tx) => {
+				if (status === true) {
+					await tx
+						.update(staffAccounts)
+						.set({ isActive: false })
+						.where(eq(staffAccounts.staffId, Number(staffId)));
+				}
 				await tx
 					.update(staffAccounts)
 					.set({
@@ -1072,11 +1083,10 @@ export const actions: Actions = {
 						updatedBy: locals?.user?.id
 					})
 					.where(eq(staffAccounts.id, id));
-
-				return message(form, {
-					type: 'success',
-					text: 'Account Details Updated Successfully!'
-				});
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Account Details Updated Successfully!'
 			});
 		} catch (err) {
 			console.error(err?.message);

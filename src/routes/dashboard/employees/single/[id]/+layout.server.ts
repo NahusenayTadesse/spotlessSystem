@@ -217,7 +217,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.from(staffAccounts)
 		.leftJoin(user, eq(staffAccounts.createdBy, user.id))
 		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
-		.where(eq(staffAccounts.staffId, Number(id)));
+		.where(eq(staffAccounts.staffId, Number(id)))
+		.orderBy(desc(staffAccounts.isActive));
 
 	return {
 		staffMember,
