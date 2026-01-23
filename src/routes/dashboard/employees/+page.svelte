@@ -9,7 +9,6 @@
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
-	import Badge from '$lib/components/ui/badge/badge.svelte';
 
 	let filteredList = $derived(data?.staffList);
 </script>

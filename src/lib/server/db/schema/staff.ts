@@ -90,6 +90,7 @@ export const employee = mysqlTable(
 			'other'
 		]).default('single'),
 		address: int('address').references(() => address.id),
+		taxType: int('tax_type').references(() => taxType.id),
 		leavesLeft: int('leaves_left').notNull().default(0),
 
 		...secureFields
@@ -228,6 +229,7 @@ export const staffAccounts = mysqlTable('staff_accounts', {
 		onDelete: 'set null'
 	}),
 	accountDetail: varchar('account_detail', { length: 255 }).notNull(),
+	primary: boolean('primary').default(false),
 	...secureFields
 });
 

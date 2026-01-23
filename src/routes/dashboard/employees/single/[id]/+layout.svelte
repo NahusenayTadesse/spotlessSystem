@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 
-	import { Plus, Sheet } from '@lucide/svelte';
+	import { Edit, Edit2, Plus, Sheet } from '@lucide/svelte';
 	let { children } = $props();
 	let startUrl = `/dashboard/employees/single/${page.params.id}/salary/`;
 </script>
@@ -27,7 +27,7 @@
 	<Button
 		href="{startUrl}change-salary"
 		variant={page.url.pathname === `${startUrl}change-salary` ? 'default' : 'outline'}
-		><Plus /> Change Salary</Button
+		><Edit2 /> Change Salary</Button
 	>
 	<Button
 		href="{startUrl}salary-history"

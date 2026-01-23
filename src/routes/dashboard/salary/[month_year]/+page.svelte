@@ -72,6 +72,9 @@
 
 		return formatter.format(date);
 	};
+
+	import Filter from '$lib/components/Table/FilterMenu.svelte';
+	let filteredList = $derived(data?.payrollData);
 </script>
 
 <svelte:head>
@@ -123,7 +126,13 @@
 			</div>
 		</div>
 
-		<DataTable data={data.payrollData} class="w-7xl!" {columns} fileName="Bank Accounts" />
+		<Filter
+			data={data?.payrollData}
+			bind:filteredList
+			filterKeys={['missingDays', 'bank', 'department', 'status']}
+		/>
+
+		<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

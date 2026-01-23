@@ -66,35 +66,39 @@
 	</Popover.Trigger>
 
 	<Popover.Content class="flex w-auto flex-col gap-2 p-4">
-		<div class="flex flex-col text-sm text-muted-foreground">
-			{#if selectedDates.length > 0}
-				<ScrollArea class="h-24">
-					<ul class="flex max-h-24 flex-col gap-2">
-						{#each selectedDates as date}
-							<li>{formatEthiopianDate(date)}</li>
-						{/each}
-					</ul>
-				</ScrollArea>
-			{:else}No dates selected{/if}
-			<!-- {selectedDates.length > 0
-				? `Selected: ${selectedDates.map(formatEthiopianDate).join(', ')}`
-				: 'No dates selected'} -->
-		</div>
-
-		<Calendar
-			locale="am-ET"
-			type="multiple"
-			captionLayout={year ? 'dropdown-years' : 'label'}
-			minValue={minDate}
-			maxValue={maxDate}
-			bind:value={selectedDates}
-		/>
-
-		<div class="grid grid-cols-2 gap-2">
-			<Button variant="secondary" size="sm" onclick={() => (selectedDates = [today(tz)])}>
-				Today Only
-			</Button>
-			<Button variant="ghost" size="sm" onclick={() => (selectedDates = [])}>Clear All</Button>
-		</div>
+		<ScrollArea class="h-80">
+			<div class="flex flex-col text-sm text-muted-foreground">
+				{#if selectedDates.length > 0}
+					<ScrollArea class="m-2 max-h-24">
+						<ul class="flex max-h-24 max-w-72 flex-row flex-wrap gap-2 rounded-lg border">
+							{#each selectedDates as date}
+								<li
+									class="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
+								>
+									{formatEthiopianDate(date)}
+								</li>
+							{/each}
+						</ul>
+					</ScrollArea>
+				{:else}No dates selected{/if}
+			</div>
+			<div class="mt-4 grid grid-cols-2 gap-2">
+				<Button variant="secondary" size="sm" onclick={() => (selectedDates = [today(tz)])}>
+					Today Only
+				</Button>
+				<Button variant="ghost" size="sm" onclick={() => (selectedDates = [])}>Clear All</Button>
+			</div>
+			<ScrollArea>
+				<Calendar
+					locale="am-ET"
+					type="multiple"
+					captionLayout={year ? 'dropdown-years' : 'label'}
+					minValue={minDate}
+					maxValue={maxDate}
+					bind:value={selectedDates}
+					class="h-72"
+				/>
+			</ScrollArea>
+		</ScrollArea>
 	</Popover.Content>
 </Popover.Root>

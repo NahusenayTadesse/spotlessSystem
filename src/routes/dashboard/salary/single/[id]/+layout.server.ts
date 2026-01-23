@@ -21,7 +21,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const salaryDetail = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(${employee.firstName}, ' ', COALESCE(${employee.lastName}, '')))`,
+			name: sql<string>`TRIM(CONCAT(${employee.name}, ' ', COALESCE(${employee.fatherName}, '')))`,
 
 			// sum of all deductions for the staff
 			deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,

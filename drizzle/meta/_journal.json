@@ -141,6 +141,48 @@
       "when": 1769110414962,
       "tag": "0019_brief_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1769176287840,
+      "tag": "0020_curious_darkstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1769177885307,
+      "tag": "0021_nosy_thunderbolts",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1769178125252,
+      "tag": "0022_quick_dreaming_celestial",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1769178167495,
+      "tag": "0023_sharp_tinkerer",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1769178340019,
+      "tag": "0024_happy_preak",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1769178414727,
+      "tag": "0025_cute_starfox",
+      "breakpoints": true
     }
   ]
 }
