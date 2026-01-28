@@ -1,1 +1,0 @@
-ALTER TABLE `pension_type` ADD `status` boolean DEFAULT true NOT NULL;

@@ -2,7 +2,7 @@
 
 import { mysqlTable, int, varchar, boolean, date, decimal } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
-import { transactions } from './finance';
+import { customers } from './customers';
 import { address } from './locations';
 
 export const site = mysqlTable('site', {
@@ -12,8 +12,11 @@ export const site = mysqlTable('site', {
 	address: int('address')
 		.notNull()
 		.references(() => address.id),
-	startDate: date('startDate').notNull(),
-	endDate: date('endDate').notNull(),
+	startDate: date('start_date').notNull(),
+	customerId: int('customer_id')
+		.notNull()
+		.references(() => customers.id),
+	endDate: date('end_date').notNull(),
 	includeVat: boolean().notNull().default(false),
 	siteCommission: boolean().notNull().default(false),
 	...secureFields
@@ -21,7 +24,7 @@ export const site = mysqlTable('site', {
 
 export const sitePaymentAdjustment = mysqlTable('site_payment_adjustment', {
 	id: int('id').primaryKey().autoincrement(),
-	siteId: int('siteId')
+	siteId: int('site_id')
 		.notNull()
 		.references(() => site.id),
 	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),

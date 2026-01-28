@@ -1,1 +1,0 @@
-ALTER TABLE `employee` ADD `leaves_left` int DEFAULT 0 NOT NULL;

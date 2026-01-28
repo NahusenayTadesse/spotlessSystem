@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "f368815b-b10b-45e0-b848-ee228c6473e8",
+  "id": "2a167810-fb12-4415-b8b7-1927a8765eb4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "customer_contacts": {
@@ -1107,20 +1107,6 @@
         "tin_no": {
           "name": "tin_no",
           "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "region": {
-          "name": "region",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "city": {
-          "name": "city",
-          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -3521,6 +3507,14 @@
           "notNull": false,
           "autoincrement": false
         },
+        "deductable": {
+          "name": "deductable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
         "reason": {
           "name": "reason",
           "type": "varchar(255)",
@@ -3670,6 +3664,13 @@
           "notNull": true,
           "autoincrement": true
         },
+        "supply_type_id": {
+          "name": "supply_type_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "name": {
           "name": "name",
           "type": "varchar(50)",
@@ -3697,13 +3698,6 @@
           "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
-        },
-        "cost_per_unit": {
-          "name": "cost_per_unit",
-          "type": "decimal(10,2)",
-          "primaryKey": false,
-          "notNull": true,
           "autoincrement": false
         },
         "reorder_level": {
@@ -3768,6 +3762,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "supplies_supply_type_id_supply_types_id_fk": {
+          "name": "supplies_supply_type_id_supply_types_id_fk",
+          "tableFrom": "supplies",
+          "tableTo": "supply_types",
+          "columnsFrom": [
+            "supply_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "supplies_created_by_user_id_fk": {
           "name": "supplies_created_by_user_id_fk",
           "tableFrom": "supplies",
@@ -4419,101 +4426,17 @@
           "notNull": false,
           "autoincrement": false
         },
-        "is_active": {
-          "name": "is_active",
+        "status": {
+          "name": "status",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": true
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "service_categories_created_by_user_id_fk": {
-          "name": "service_categories_created_by_user_id_fk",
-          "tableFrom": "service_categories",
-          "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "service_categories_updated_by_user_id_fk": {
-          "name": "service_categories_updated_by_user_id_fk",
-          "tableFrom": "service_categories",
-          "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "service_categories_deleted_by_user_id_fk": {
-          "name": "service_categories_deleted_by_user_id_fk",
-          "tableFrom": "service_categories",
-          "tableTo": "user",
-          "columnsFrom": [
-            "deleted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "service_categories_id": {
           "name": "service_categories_id",
@@ -4563,57 +4486,13 @@
           "notNull": false,
           "autoincrement": false
         },
-        "is_active": {
-          "name": "is_active",
+        "status": {
+          "name": "status",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": true
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
@@ -4624,45 +4503,6 @@
           "tableTo": "service_categories",
           "columnsFrom": [
             "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "services_created_by_user_id_fk": {
-          "name": "services_created_by_user_id_fk",
-          "tableFrom": "services",
-          "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "services_updated_by_user_id_fk": {
-          "name": "services_updated_by_user_id_fk",
-          "tableFrom": "services",
-          "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "services_deleted_by_user_id_fk": {
-          "name": "services_deleted_by_user_id_fk",
-          "tableFrom": "services",
-          "tableTo": "user",
-          "columnsFrom": [
-            "deleted_by"
           ],
           "columnsTo": [
             "id"
@@ -5372,7 +5212,7 @@
         },
         "tin_no": {
           "name": "tin_no",
-          "type": "varchar(20)",
+          "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -5407,7 +5247,7 @@
         },
         "hire_date": {
           "name": "hire_date",
-          "type": "timestamp",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -5440,6 +5280,28 @@
           "notNull": false,
           "autoincrement": false,
           "default": "'single'"
+        },
+        "address": {
+          "name": "address",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "tax_type": {
+          "name": "tax_type",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "leaves_left": {
+          "name": "leaves_left",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "is_active": {
           "name": "is_active",
@@ -5557,6 +5419,32 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
+        "employee_address_address_id_fk": {
+          "name": "employee_address_address_id_fk",
+          "tableFrom": "employee",
+          "tableTo": "address",
+          "columnsFrom": [
+            "address"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "employee_tax_type_tax_type_id_fk": {
+          "name": "employee_tax_type_tax_type_id_fk",
+          "tableFrom": "employee",
+          "tableTo": "tax_type",
+          "columnsFrom": [
+            "tax_type"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "employee_created_by_user_id_fk": {
           "name": "employee_created_by_user_id_fk",
           "tableFrom": "employee",
@@ -5634,7 +5522,7 @@
         },
         "relationship": {
           "name": "relationship",
-          "type": "enum('mother','father','spouse','son','daughter','other')",
+          "type": "enum('mother','father','spouse','son','brother','sister','daughter','other')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -5643,7 +5531,7 @@
           "name": "relation",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "job_type": {
@@ -5865,6 +5753,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "termination_letter": {
+          "name": "termination_letter",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "termination_date": {
           "name": "termination_date",
           "type": "date",
@@ -6016,6 +5911,13 @@
           "autoincrement": false,
           "default": false
         },
+        "termination_status": {
+          "name": "termination_status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "description": {
           "name": "description",
           "type": "varchar(255)",
@@ -6032,7 +5934,15 @@
           "default": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "termination_status_idx": {
+          "name": "termination_status_idx",
+          "columns": [
+            "termination_status"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "employment_statuses_id": {
@@ -6242,6 +6152,179 @@
       "compositePrimaryKeys": {
         "leave_id": {
           "name": "leave_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "missing_days": {
+      "name": "missing_days",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "day": {
+          "name": "day",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "deductable": {
+          "name": "deductable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "deductable_amount": {
+          "name": "deductable_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "approval": {
+          "name": "approval",
+          "type": "enum('pending','approved','rejected')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "missing_days_staff_id_employee_id_fk": {
+          "name": "missing_days_staff_id_employee_id_fk",
+          "tableFrom": "missing_days",
+          "tableTo": "employee",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "missing_days_created_by_user_id_fk": {
+          "name": "missing_days_created_by_user_id_fk",
+          "tableFrom": "missing_days",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "missing_days_updated_by_user_id_fk": {
+          "name": "missing_days_updated_by_user_id_fk",
+          "tableFrom": "missing_days",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "missing_days_deleted_by_user_id_fk": {
+          "name": "missing_days_deleted_by_user_id_fk",
+          "tableFrom": "missing_days",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "missing_days_id": {
+          "name": "missing_days_id",
           "columns": [
             "id"
           ]
@@ -6524,6 +6607,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
         }
       },
       "indexes": {},
@@ -6596,6 +6687,13 @@
           "type": "date",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "certificate": {
+          "name": "certificate",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "is_active": {
@@ -6917,6 +7015,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "primary": {
+          "name": "primary",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "is_active": {
           "name": "is_active",
@@ -7257,7 +7363,7 @@
           "name": "email",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "emergency_contact": {
@@ -7404,9 +7510,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "shift_date": {
-          "name": "shift_date",
-          "type": "date",
+        "week_day": {
+          "name": "week_day",
+          "type": "tinyint",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -7542,7 +7648,12 @@
         }
       },
       "uniqueConstraints": {},
-      "checkConstraint": {}
+      "checkConstraint": {
+        "real_days_only": {
+          "name": "real_days_only",
+          "value": "`staff_schedule`.`week_day` >= 0 AND `staff_schedule`.`week_day` <= 6"
+        }
+      }
     },
     "staff_services": {
       "name": "staff_services",
@@ -7803,6 +7914,184 @@
       "compositePrimaryKeys": {
         "user_staff_id": {
           "name": "user_staff_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "work_experience": {
+      "name": "work_experience",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "company_name": {
+          "name": "company_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "position": {
+          "name": "position",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "certificate": {
+          "name": "certificate",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "work_experience_staff_id_employee_id_fk": {
+          "name": "work_experience_staff_id_employee_id_fk",
+          "tableFrom": "work_experience",
+          "tableTo": "employee",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "work_experience_created_by_user_id_fk": {
+          "name": "work_experience_created_by_user_id_fk",
+          "tableFrom": "work_experience",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "work_experience_updated_by_user_id_fk": {
+          "name": "work_experience_updated_by_user_id_fk",
+          "tableFrom": "work_experience",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "work_experience_deleted_by_user_id_fk": {
+          "name": "work_experience_deleted_by_user_id_fk",
+          "tableFrom": "work_experience",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "work_experience_id": {
+          "name": "work_experience_id",
           "columns": [
             "id"
           ]
@@ -8112,15 +8401,22 @@
           "notNull": true,
           "autoincrement": false
         },
-        "startDate": {
-          "name": "startDate",
+        "start_date": {
+          "name": "start_date",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "endDate": {
-          "name": "endDate",
+        "customer_id": {
+          "name": "customer_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_date": {
+          "name": "end_date",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
@@ -8210,6 +8506,19 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
+        "site_customer_id_customers_id_fk": {
+          "name": "site_customer_id_customers_id_fk",
+          "tableFrom": "site",
+          "tableTo": "customers",
+          "columnsFrom": [
+            "customer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "site_created_by_user_id_fk": {
           "name": "site_created_by_user_id_fk",
           "tableFrom": "site",
@@ -8271,8 +8580,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "siteId": {
-          "name": "siteId",
+        "site_id": {
+          "name": "site_id",
           "type": "int",
           "primaryKey": false,
           "notNull": true,
@@ -8340,12 +8649,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "site_payment_adjustment_siteId_site_id_fk": {
-          "name": "site_payment_adjustment_siteId_site_id_fk",
+        "site_payment_adjustment_site_id_site_id_fk": {
+          "name": "site_payment_adjustment_site_id_site_id_fk",
           "tableFrom": "site_payment_adjustment",
           "tableTo": "site",
           "columnsFrom": [
-            "siteId"
+            "site_id"
           ],
           "columnsTo": [
             "id"

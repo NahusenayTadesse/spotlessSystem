@@ -1,1 +1,0 @@
-ALTER TABLE `empoloyee_termination` ADD `termination_letter` varchar(255);

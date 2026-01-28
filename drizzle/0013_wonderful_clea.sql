@@ -1,2 +1,0 @@
-ALTER TABLE `employee_guarantor` MODIFY COLUMN `relationship` enum('mother','father','spouse','son','brother','sisiter','daughter','other') NOT NULL;--> statement-breakpoint
-ALTER TABLE `employee_guarantor` MODIFY COLUMN `relation` varchar(255);

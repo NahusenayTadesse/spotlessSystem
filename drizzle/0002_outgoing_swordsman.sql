@@ -1,2 +1,0 @@
-ALTER TABLE `supplies` ADD `supply_type_id` int NOT NULL;--> statement-breakpoint
-ALTER TABLE `supplies` ADD CONSTRAINT `supplies_supply_type_id_supply_types_id_fk` FOREIGN KEY (`supply_type_id`) REFERENCES `supply_types`(`id`) ON DELETE no action ON UPDATE no action;

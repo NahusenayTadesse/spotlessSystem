@@ -82,7 +82,7 @@
 							{form}
 							{errors}
 							label="Reason"
-							type="text"
+							type="textarea"
 							name="reason"
 							placeholder="Enter reason"
 							required={true}

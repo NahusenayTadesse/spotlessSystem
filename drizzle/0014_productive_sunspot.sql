@@ -1,1 +1,0 @@
-ALTER TABLE `employee_guarantor` MODIFY COLUMN `relationship` enum('mother','father','spouse','son','brother','sister','daughter','other') NOT NULL;

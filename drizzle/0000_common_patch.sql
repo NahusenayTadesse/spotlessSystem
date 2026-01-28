@@ -107,8 +107,6 @@ CREATE TABLE `customers` (
 	`phone` varchar(20) NOT NULL,
 	`email` varchar(100) NOT NULL,
 	`tin_no` varchar(50) NOT NULL,
-	`region` int NOT NULL,
-	`city` int NOT NULL,
 	`address` int,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
@@ -364,6 +362,7 @@ CREATE TABLE `damaged_supplies` (
 	`supply_id` int NOT NULL,
 	`quantity` int NOT NULL,
 	`damaged_by` int,
+	`deductable` boolean NOT NULL DEFAULT false,
 	`reason` varchar(255) NOT NULL,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
@@ -377,11 +376,11 @@ CREATE TABLE `damaged_supplies` (
 --> statement-breakpoint
 CREATE TABLE `supplies` (
 	`id` int AUTO_INCREMENT NOT NULL,
+	`supply_type_id` int NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`description` varchar(255),
 	`quantity` int NOT NULL DEFAULT 0,
 	`unit_of_measure` varchar(20),
-	`cost_per_unit` decimal(10,2) NOT NULL,
 	`reorder_level` int,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
@@ -467,13 +466,7 @@ CREATE TABLE `service_categories` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`description` varchar(255),
-	`is_active` boolean NOT NULL DEFAULT true,
-	`created_by` varchar(255),
-	`updated_by` varchar(255),
-	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3),
-	`deleted_at` datetime,
-	`deleted_by` varchar(255),
+	`status` boolean NOT NULL DEFAULT true,
 	CONSTRAINT `service_categories_id` PRIMARY KEY(`id`),
 	CONSTRAINT `service_categories_name_unique` UNIQUE(`name`)
 );
@@ -483,13 +476,7 @@ CREATE TABLE `services` (
 	`name` varchar(50) NOT NULL,
 	`category_id` int,
 	`description` varchar(255),
-	`is_active` boolean NOT NULL DEFAULT true,
-	`created_by` varchar(255),
-	`updated_by` varchar(255),
-	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3),
-	`deleted_at` datetime,
-	`deleted_by` varchar(255),
+	`status` boolean NOT NULL DEFAULT true,
 	CONSTRAINT `services_id` PRIMARY KEY(`id`),
 	CONSTRAINT `services_name_unique` UNIQUE(`name`)
 );
@@ -575,16 +562,19 @@ CREATE TABLE `employee` (
 	`nationality` varchar(50) NOT NULL DEFAULT 'Ethiopia',
 	`religion` varchar(50) NOT NULL DEFAULT 'Christianity',
 	`blood_type` enum('A+','A-','B+','B-','AB+','AB-','O+','O-'),
-	`tin_no` varchar(20) NOT NULL,
+	`tin_no` varchar(10) NOT NULL,
 	`department_id` int NOT NULL,
 	`birth_date` date NOT NULL,
 	`photo` varchar(255) NOT NULL,
 	`govt_id` varchar(255) NOT NULL,
-	`hire_date` timestamp NOT NULL,
+	`hire_date` date NOT NULL,
 	`termination_date` datetime,
 	`employment_status` int NOT NULL,
 	`educational_level` int,
 	`martial_status` enum('single','married','widowed','divorced','other') DEFAULT 'single',
+	`address` int,
+	`tax_type` int,
+	`leaves_left` int NOT NULL DEFAULT 0,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
 	`updated_by` varchar(255),
@@ -599,8 +589,8 @@ CREATE TABLE `employee_guarantor` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`staff_id` int NOT NULL,
 	`name` varchar(255) NOT NULL,
-	`relationship` enum('mother','father','spouse','son','daughter','other') NOT NULL,
-	`relation` varchar(255) NOT NULL,
+	`relationship` enum('mother','father','spouse','son','brother','sister','daughter','other') NOT NULL,
+	`relation` varchar(255),
 	`job_type` varchar(255) NOT NULL,
 	`company` varchar(255) NOT NULL,
 	`salary` decimal(10,2) NOT NULL,
@@ -624,6 +614,7 @@ CREATE TABLE `empoloyee_termination` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`staff_id` int NOT NULL,
 	`reason` varchar(255),
+	`termination_letter` varchar(255),
 	`termination_date` date NOT NULL,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
@@ -639,10 +630,12 @@ CREATE TABLE `employment_statuses` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(32) NOT NULL,
 	`remove_from_lists` boolean NOT NULL DEFAULT false,
+	`termination_status` boolean,
 	`description` varchar(255),
 	`status` boolean NOT NULL DEFAULT true,
 	CONSTRAINT `employment_statuses_id` PRIMARY KEY(`id`),
-	CONSTRAINT `employment_statuses_name_unique` UNIQUE(`name`)
+	CONSTRAINT `employment_statuses_name_unique` UNIQUE(`name`),
+	CONSTRAINT `termination_status_idx` UNIQUE(`termination_status`)
 );
 --> statement-breakpoint
 CREATE TABLE `leave` (
@@ -663,6 +656,24 @@ CREATE TABLE `leave` (
 	`deleted_at` datetime,
 	`deleted_by` varchar(255),
 	CONSTRAINT `leave_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `missing_days` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`staff_id` int NOT NULL,
+	`day` date NOT NULL,
+	`reason` varchar(255) NOT NULL,
+	`deductable` boolean NOT NULL DEFAULT false,
+	`deductable_amount` decimal(10,2),
+	`approval` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+	`is_active` boolean NOT NULL DEFAULT true,
+	`created_by` varchar(255),
+	`updated_by` varchar(255),
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3),
+	`deleted_at` datetime,
+	`deleted_by` varchar(255),
+	CONSTRAINT `missing_days_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `over_time` (
@@ -698,6 +709,7 @@ CREATE TABLE `pension_type` (
 	`name` varchar(255) NOT NULL,
 	`rate` decimal(15,2) NOT NULL,
 	`tax_type` int NOT NULL,
+	`status` boolean NOT NULL DEFAULT true,
 	CONSTRAINT `pension_type_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -708,6 +720,7 @@ CREATE TABLE `qualification` (
 	`education_level` int NOT NULL,
 	`school_name` varchar(255),
 	`qualification_date` date NOT NULL,
+	`certificate` varchar(100),
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
 	`updated_by` varchar(255),
@@ -739,6 +752,7 @@ CREATE TABLE `staff_accounts` (
 	`staff_id` int NOT NULL,
 	`payment_Method_id` int,
 	`account_detail` varchar(255) NOT NULL,
+	`primary` boolean DEFAULT false,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
 	`updated_by` varchar(255),
@@ -772,7 +786,7 @@ CREATE TABLE `staff_families` (
 	`other_relationship` varchar(255),
 	`name` varchar(255) NOT NULL,
 	`phone` varchar(255) NOT NULL,
-	`email` varchar(255) NOT NULL,
+	`email` varchar(255),
 	`emergency_contact` boolean NOT NULL DEFAULT false,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
@@ -787,7 +801,7 @@ CREATE TABLE `staff_families` (
 CREATE TABLE `staff_schedule` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`staff_id` int NOT NULL,
-	`shift_date` date NOT NULL,
+	`week_day` tinyint NOT NULL,
 	`start_time` time NOT NULL,
 	`end_time` time NOT NULL,
 	`is_active` boolean NOT NULL DEFAULT true,
@@ -797,7 +811,8 @@ CREATE TABLE `staff_schedule` (
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3),
 	`deleted_at` datetime,
 	`deleted_by` varchar(255),
-	CONSTRAINT `staff_schedule_id` PRIMARY KEY(`id`)
+	CONSTRAINT `staff_schedule_id` PRIMARY KEY(`id`),
+	CONSTRAINT `real_days_only` CHECK(`staff_schedule`.`week_day` >= 0 AND `staff_schedule`.`week_day` <= 6)
 );
 --> statement-breakpoint
 CREATE TABLE `staff_services` (
@@ -827,6 +842,25 @@ CREATE TABLE `user_staff` (
 	`user_id` varchar(255),
 	`staff_id` int,
 	CONSTRAINT `user_staff_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `work_experience` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`staff_id` int NOT NULL,
+	`company_name` varchar(255),
+	`position` varchar(255),
+	`start_date` date NOT NULL,
+	`end_date` date NOT NULL,
+	`description` varchar(255),
+	`certificate` varchar(100),
+	`is_active` boolean NOT NULL DEFAULT true,
+	`created_by` varchar(255),
+	`updated_by` varchar(255),
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3),
+	`deleted_at` datetime,
+	`deleted_by` varchar(255),
+	CONSTRAINT `work_experience_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `address` (
@@ -872,8 +906,9 @@ CREATE TABLE `site` (
 	`name` varchar(50) NOT NULL,
 	`phone` varchar(20) NOT NULL,
 	`address` int NOT NULL,
-	`startDate` date NOT NULL,
-	`endDate` date NOT NULL,
+	`start_date` date NOT NULL,
+	`customer_id` int NOT NULL,
+	`end_date` date NOT NULL,
 	`includeVat` boolean NOT NULL DEFAULT false,
 	`siteCommission` boolean NOT NULL DEFAULT false,
 	`is_active` boolean NOT NULL DEFAULT true,
@@ -888,7 +923,7 @@ CREATE TABLE `site` (
 --> statement-breakpoint
 CREATE TABLE `site_payment_adjustment` (
 	`id` int AUTO_INCREMENT NOT NULL,
-	`siteId` int NOT NULL,
+	`site_id` int NOT NULL,
 	`amount` decimal(10,2) NOT NULL,
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_by` varchar(255),
@@ -990,6 +1025,7 @@ ALTER TABLE `damaged_supplies` ADD CONSTRAINT `damaged_supplies_damaged_by_emplo
 ALTER TABLE `damaged_supplies` ADD CONSTRAINT `damaged_supplies_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `damaged_supplies` ADD CONSTRAINT `damaged_supplies_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `damaged_supplies` ADD CONSTRAINT `damaged_supplies_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `supplies` ADD CONSTRAINT `supplies_supply_type_id_supply_types_id_fk` FOREIGN KEY (`supply_type_id`) REFERENCES `supply_types`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies` ADD CONSTRAINT `supplies_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies` ADD CONSTRAINT `supplies_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supplies` ADD CONSTRAINT `supplies_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -1003,13 +1039,7 @@ ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_updated_
 ALTER TABLE `supplies_adjustments` ADD CONSTRAINT `supplies_adjustments_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `supply_suppliers` ADD CONSTRAINT `supply_suppliers_address_address_id_fk` FOREIGN KEY (`address`) REFERENCES `address`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `audit_log` ADD CONSTRAINT `audit_log_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `service_categories` ADD CONSTRAINT `service_categories_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `service_categories` ADD CONSTRAINT `service_categories_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `service_categories` ADD CONSTRAINT `service_categories_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `services` ADD CONSTRAINT `services_category_id_service_categories_id_fk` FOREIGN KEY (`category_id`) REFERENCES `service_categories`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `services` ADD CONSTRAINT `services_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `services` ADD CONSTRAINT `services_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `services` ADD CONSTRAINT `services_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `bonuses` ADD CONSTRAINT `bonuses_staff_id_employee_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `employee`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `bonuses` ADD CONSTRAINT `bonuses_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `bonuses` ADD CONSTRAINT `bonuses_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -1025,6 +1055,8 @@ ALTER TABLE `deductions` ADD CONSTRAINT `deductions_deleted_by_user_id_fk` FOREI
 ALTER TABLE `employee` ADD CONSTRAINT `employee_department_id_department_id_fk` FOREIGN KEY (`department_id`) REFERENCES `department`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_employment_status_employment_statuses_id_fk` FOREIGN KEY (`employment_status`) REFERENCES `employment_statuses`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_educational_level_educational_level_id_fk` FOREIGN KEY (`educational_level`) REFERENCES `educational_level`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee` ADD CONSTRAINT `employee_address_address_id_fk` FOREIGN KEY (`address`) REFERENCES `address`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee` ADD CONSTRAINT `employee_tax_type_tax_type_id_fk` FOREIGN KEY (`tax_type`) REFERENCES `tax_type`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -1042,6 +1074,10 @@ ALTER TABLE `leave` ADD CONSTRAINT `leave_site_id_site_id_fk` FOREIGN KEY (`site
 ALTER TABLE `leave` ADD CONSTRAINT `leave_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `leave` ADD CONSTRAINT `leave_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `leave` ADD CONSTRAINT `leave_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `missing_days` ADD CONSTRAINT `missing_days_staff_id_employee_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `employee`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `missing_days` ADD CONSTRAINT `missing_days_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `missing_days` ADD CONSTRAINT `missing_days_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `missing_days` ADD CONSTRAINT `missing_days_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `over_time` ADD CONSTRAINT `over_time_staff_id_employee_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `employee`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `over_time` ADD CONSTRAINT `over_time_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `over_time` ADD CONSTRAINT `over_time_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -1081,14 +1117,19 @@ ALTER TABLE `staff_services` ADD CONSTRAINT `staff_services_updated_by_user_id_f
 ALTER TABLE `staff_services` ADD CONSTRAINT `staff_services_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `user_staff` ADD CONSTRAINT `user_staff_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `user_staff` ADD CONSTRAINT `user_staff_staff_id_employee_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `employee`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `work_experience` ADD CONSTRAINT `work_experience_staff_id_employee_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `employee`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `work_experience` ADD CONSTRAINT `work_experience_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `work_experience` ADD CONSTRAINT `work_experience_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `work_experience` ADD CONSTRAINT `work_experience_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `address` ADD CONSTRAINT `address_subcity_id_subcity_sc_id_fk` FOREIGN KEY (`subcity_id`) REFERENCES `subcity`(`sc_id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `city` ADD CONSTRAINT `city_region_id_region_id_fk` FOREIGN KEY (`region_id`) REFERENCES `region`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `subcity` ADD CONSTRAINT `subcity_city_id_city_id_fk` FOREIGN KEY (`city_id`) REFERENCES `city`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site` ADD CONSTRAINT `site_address_address_id_fk` FOREIGN KEY (`address`) REFERENCES `address`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `site` ADD CONSTRAINT `site_customer_id_customers_id_fk` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site` ADD CONSTRAINT `site_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site` ADD CONSTRAINT `site_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site` ADD CONSTRAINT `site_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `site_payment_adjustment` ADD CONSTRAINT `site_payment_adjustment_siteId_site_id_fk` FOREIGN KEY (`siteId`) REFERENCES `site`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `site_payment_adjustment` ADD CONSTRAINT `site_payment_adjustment_site_id_site_id_fk` FOREIGN KEY (`site_id`) REFERENCES `site`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site_payment_adjustment` ADD CONSTRAINT `site_payment_adjustment_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site_payment_adjustment` ADD CONSTRAINT `site_payment_adjustment_updated_by_user_id_fk` FOREIGN KEY (`updated_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `site_payment_adjustment` ADD CONSTRAINT `site_payment_adjustment_deleted_by_user_id_fk` FOREIGN KEY (`deleted_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint

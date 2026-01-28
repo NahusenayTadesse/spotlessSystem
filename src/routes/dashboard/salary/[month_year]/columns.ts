@@ -124,10 +124,10 @@ export const columns = [
 		cell: ({ row }) => {
 			const missingDays = Number(row.original.missingDays);
 			const totalPay = Number(row.original.totalPay);
-			const taxType = Number(row.original.taxType / 100);
+			const taxType = Number(row.original.totalPay) >= 10000 ? 30 : 20;
 
 			const penalityAmount = missingDays * (totalPay / 30);
-			const tax = totalPay * taxType;
+			const tax = (totalPay * taxType) / 100;
 			const total = totalPay - (penalityAmount + tax);
 
 			return total.toFixed(2);
