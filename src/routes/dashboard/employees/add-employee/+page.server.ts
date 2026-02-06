@@ -8,6 +8,7 @@ import { salaries, employee } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import { departments, empStatus, eduLevel } from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
+import { and, eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(add));
@@ -52,10 +53,40 @@ export const actions: Actions = {
 			hireDate,
 			govtId,
 			photo,
-			employmentStatus
+			employmentStatus,
+			newEmployeeVerified
 		} = form.data;
 
 		try {
+			// Trim the strings to remove leading/trailing whitespace
+			if (!newEmployeeVerified) {
+				const sanitizedName = name?.replace(/\s+/g, ' ').trim();
+				const sanitizedFatherName = fatherName?.replace(/\s+/g, ' ').trim();
+				const sanitizedGrandFatherName = grandFatherName?.replace(/\s+/g, ' ').trim();
+
+				const existingEmployee = await db
+					.select({ id: employee.id })
+					.from(employee)
+					.where(
+						and(
+							eq(employee.name, sanitizedName),
+							eq(employee.fatherName, sanitizedFatherName),
+							eq(employee.grandFatherName, sanitizedGrandFatherName)
+						)
+					)
+					.limit(1);
+
+				if (existingEmployee.length > 0) {
+					setError(form, 'name', 'Employee with this Name already exists');
+					setError(form, 'fatherName', 'Employee with this Name already exists');
+					setError(form, 'grandFatherName', 'Employee with this Name already exists');
+					return message(form, {
+						type: 'error',
+						text: 'Employee with this name already exists',
+						existingId: existingEmployee[0].id
+					});
+				}
+			}
 			const photoName = await saveUploadedFile(photo);
 
 			const govId = await saveUploadedFile(govtId);

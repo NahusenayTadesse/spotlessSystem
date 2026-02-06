@@ -79,7 +79,9 @@ export const add = z.object({
 		.nullable()
 		.optional(),
 
-	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other']).default('single')
+	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other']).default('single'),
+
+	newEmployeeVerified: z.boolean().default(false)
 });
 
 // Type inference for TypeScript use

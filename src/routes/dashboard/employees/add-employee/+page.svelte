@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snapshot } from '@sveltejs/kit';
-	import { Plus } from '@lucide/svelte';
+	import { ExternalLink, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { add } from './schema';
@@ -66,7 +66,6 @@
 <FormCard title="Add New Employee" className="lg:w-full!">
 	<!-- EmployeeAddForm.svelte -->
 
-	{$form.govtId ? 'Hello' : 'nothing'}
 	<form
 		use:enhance
 		action="?/add"
@@ -78,6 +77,24 @@
 		<!-- 1. PERSONAL INFO -->
 		<section class={sectionStyle}>
 			<h4>Personal Information</h4>
+
+			{#if $message?.existingId}
+				<Button
+					class="w-48"
+					target="_blank"
+					href="/dashboard/employees/single/{$message.existingId}"
+				>
+					<ExternalLink /> View Existing Profile</Button
+				>
+				<Input
+					label="Verify Employee's Identity"
+					name="newEmployeeVerified"
+					{form}
+					{errors}
+					type="checkboxSingle"
+					placeholder="This is Employee is new and register them."
+				/>
+			{/if}
 
 			<div class={rowStyle}>
 				<Input
