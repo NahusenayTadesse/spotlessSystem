@@ -171,6 +171,17 @@ export const formatEthiopianYearMonth = (
 	return formatter.format(date);
 };
 
+export const formatEthiopianYear = (date: Date): string => {
+	// Use day = 1 since only year/month matters
+
+	const formatter = new Intl.DateTimeFormat('am-ET', {
+		year: 'numeric',
+		calendar: 'ethiopic'
+	});
+
+	return formatter.format(date);
+};
+
 export function formatETB(amount: number, useAmharic: boolean = false): string {
 	// 'am-ET' for Amharic/Ethiopic script (ብር)
 	// 'en-ET' for English/Latin script (Br)

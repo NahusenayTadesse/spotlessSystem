@@ -44,12 +44,18 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.email })
 	},
+	{
+		accessorKey: 'tinNo',
+		header: 'Tin Number',
+		sortable: true,
+		cell: ({ row }) => renderComponent(Copy, { data: row.original.tinNo })
+	},
 
 	{
-		accessorKey: 'status',
+		accessorKey: 'sites',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Status',
+				name: 'Sites',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
@@ -86,6 +92,19 @@ export const columns = [
 		cell: (info) => {
 			const n = info.getValue(); // number of days
 			return formatEthiopianDate(new Date(n));
+		}
+	},
+	{
+		accessorKey: 'daysSinceJoined',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Days Since Added',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => {
+			const n = info.getValue(); // number of days
+			return `${n} ${n === 1 ? 'day' : 'days'}`;
 		}
 	},
 

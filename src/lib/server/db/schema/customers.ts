@@ -1,6 +1,6 @@
 // customers-appointments.ts - Handles customers, appointments, and statuses (suggested new category for operations/client management)
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, int, date, decimal, year } from 'drizzle-orm/mysql-core';
+import { mysqlTable, varchar, int, date, decimal, year, mysqlEnum } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 
 import { transactions } from './finance';
@@ -13,6 +13,7 @@ export const customers = mysqlTable('customers', {
 	phone: varchar('phone', { length: 20 }).notNull(),
 	email: varchar('email', { length: 100 }).notNull(),
 	tinNo: varchar('tin_no', { length: 50 }).notNull(),
+	status: mysqlEnum('status', ['active', 'dead', 'pending', 'contracted']),
 	address: int('address').references(() => address.id, { onDelete: 'set null' }),
 	...secureFields
 });

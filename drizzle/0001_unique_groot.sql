@@ -1,0 +1,1 @@
+ALTER TABLE `customers` ADD `status` enum('active','dead','pending','contracted');

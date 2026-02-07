@@ -98,15 +98,6 @@
 
 			<div class={rowStyle}>
 				<Input
-					label="Employee ID"
-					name="idNo"
-					{form}
-					placeholder="Enter Employee ID"
-					{errors}
-					type="text"
-					required
-				/>
-				<Input
 					label="Name"
 					name="name"
 					{form}

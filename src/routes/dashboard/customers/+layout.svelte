@@ -9,7 +9,12 @@
 	<Button
 		href="/dashboard/customers"
 		variant={page.url.pathname === '/dashboard/customers' ? 'default' : 'outline'}
-		><Sheet /> All Customers</Button
+		><Sheet /> Uncontracted Customers</Button
+	>
+	<Button
+		href="/dashboard/customers/contracted"
+		variant={page.url.pathname === '/dashboard/customers/contracted' ? 'default' : 'outline'}
+		><Sheet /> Contracted Customers</Button
 	>
 	<Button
 		href="/dashboard/customers/add-customer"

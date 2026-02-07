@@ -5,7 +5,6 @@ import {
 	mysqlEnum,
 	varchar,
 	datetime,
-	timestamp,
 	int,
 	decimal,
 	date,
@@ -61,7 +60,7 @@ export const employee = mysqlTable(
 	'employee',
 	{
 		id: int('id').primaryKey().autoincrement(),
-		idNo: varchar('id_no', { length: 255 }).notNull(),
+		idNo: varchar('id_no', { length: 255 }),
 		name: varchar('name', { length: 50 }).notNull(),
 		fatherName: varchar('father_name', { length: 50 }).notNull(),
 		grandFatherName: varchar('grand_father_name', { length: 50 }).notNull(),
@@ -89,6 +88,7 @@ export const employee = mysqlTable(
 			'divorced',
 			'other'
 		]).default('single'),
+		siteId: int('site_id').references(() => site.id),
 		address: int('address').references(() => address.id),
 		taxType: int('tax_type').references(() => taxType.id),
 		leavesLeft: int('leaves_left').notNull().default(0),

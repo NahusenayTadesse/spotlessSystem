@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "da3ccf96-6e55-43ee-95fe-32de23fee4fe",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "77ada2e2-f117-4051-8567-aba42bab6feb",
+  "prevId": "da3ccf96-6e55-43ee-95fe-32de23fee4fe",
   "tables": {
     "customer_contacts": {
       "name": "customer_contacts",
@@ -1109,6 +1109,13 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('active','dead','pending','contracted')",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "address": {

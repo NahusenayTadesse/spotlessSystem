@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentSchema';
 export const add = z.object({
-	idNo: z.string().min(1, 'Employee ID is required').max(255),
 	name: z.string().min(2, 'Name is too short').max(50),
 	fatherName: z.string().min(2, 'Father name is too short').max(50),
 	grandFatherName: z.string().min(2, 'Grandfather name is too short').max(50),

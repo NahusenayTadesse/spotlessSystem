@@ -554,7 +554,7 @@ CREATE TABLE `educational_level` (
 --> statement-breakpoint
 CREATE TABLE `employee` (
 	`id` int AUTO_INCREMENT NOT NULL,
-	`id_no` varchar(255) NOT NULL,
+	`id_no` varchar(255),
 	`name` varchar(50) NOT NULL,
 	`father_name` varchar(50) NOT NULL,
 	`grand_father_name` varchar(50) NOT NULL,
@@ -572,6 +572,7 @@ CREATE TABLE `employee` (
 	`employment_status` int NOT NULL,
 	`educational_level` int,
 	`martial_status` enum('single','married','widowed','divorced','other') DEFAULT 'single',
+	`site_id` int,
 	`address` int,
 	`tax_type` int,
 	`leaves_left` int NOT NULL DEFAULT 0,
@@ -1055,6 +1056,7 @@ ALTER TABLE `deductions` ADD CONSTRAINT `deductions_deleted_by_user_id_fk` FOREI
 ALTER TABLE `employee` ADD CONSTRAINT `employee_department_id_department_id_fk` FOREIGN KEY (`department_id`) REFERENCES `department`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_employment_status_employment_statuses_id_fk` FOREIGN KEY (`employment_status`) REFERENCES `employment_statuses`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_educational_level_educational_level_id_fk` FOREIGN KEY (`educational_level`) REFERENCES `educational_level`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee` ADD CONSTRAINT `employee_site_id_site_id_fk` FOREIGN KEY (`site_id`) REFERENCES `site`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_address_address_id_fk` FOREIGN KEY (`address`) REFERENCES `address`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_tax_type_tax_type_id_fk` FOREIGN KEY (`tax_type`) REFERENCES `tax_type`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee` ADD CONSTRAINT `employee_created_by_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user`(`id`) ON DELETE set null ON UPDATE no action;--> statement-breakpoint
