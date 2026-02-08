@@ -58,7 +58,7 @@ export const actions: Actions = {
 			const [addressRes] = await tx
 				.insert(address)
 				.values({
-					subcityId: Number(subcity) || null, // Handle potential NaN
+					subcityId: Number(subcity), // Handle potential NaN
 					street,
 					kebele,
 					buildingNumber,

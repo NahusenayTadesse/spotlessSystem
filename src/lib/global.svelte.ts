@@ -142,56 +142,88 @@ export function generatePassword(
 	return password;
 }
 
-export const formatEthiopianDate = (date: Date | undefined): string => {
+export const formatEthiopianDate = (date: Date | null | undefined): string => {
+	// 1. Handle null, undefined, or empty values immediately
 	if (!date) return '';
 
-	const formatter = new Intl.DateTimeFormat('am-ET', {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-		calendar: 'ethiopic'
-	});
+	try {
+		// 2. Check if the date is actually valid (prevents "Invalid Date" errors)
+		if (isNaN(date.getTime())) {
+			return 'No Date Provided';
+		}
 
-	return formatter.format(date);
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			calendar: 'ethiopic'
+		});
+
+		return formatter.format(date);
+	} catch (error) {
+		// 3. Catch-all for browser compatibility issues or unexpected inputs
+		return 'Error Formatting Date';
+	}
 };
-
 export const formatEthiopianYearMonth = (
-	year: number,
-	month: number // 1–12
+	year: number | null | undefined,
+	month: number | null | undefined // 1–13 (Ethiopia has 13 months!)
 ): string => {
-	// Use day = 1 since only year/month matters
-	const date = new Date(year, month - 1, 1);
+	// 1. Basic validation: Ensure we have numbers
+	if (year === null || year === undefined || month === null || month === undefined) {
+		return '';
+	}
 
-	const formatter = new Intl.DateTimeFormat('am-ET', {
-		year: 'numeric',
-		month: 'long',
-		calendar: 'ethiopic'
-	});
+	try {
+		// Note: month - 1 because JS Date months are 0-indexed
+		const date = new Date(year, month - 1, 1);
 
-	return formatter.format(date);
+		if (isNaN(date.getTime())) return 'Invalid Date';
+
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			year: 'numeric',
+			month: 'long',
+			calendar: 'ethiopic'
+		});
+
+		return formatter.format(date);
+	} catch (e) {
+		return 'Formatting Error';
+	}
 };
 
-export const formatEthiopianYear = (date: Date): string => {
-	// Use day = 1 since only year/month matters
+export const formatEthiopianYear = (date: Date | null | undefined): string => {
+	if (!date || isNaN(date.getTime())) return '';
 
-	const formatter = new Intl.DateTimeFormat('am-ET', {
-		year: 'numeric',
-		calendar: 'ethiopic'
-	});
+	try {
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			year: 'numeric',
+			calendar: 'ethiopic'
+		});
 
-	return formatter.format(date);
+		return formatter.format(date);
+	} catch (e) {
+		return '';
+	}
 };
 
-export function formatETB(amount: number, useAmharic: boolean = false): string {
-	// 'am-ET' for Amharic/Ethiopic script (ብር)
-	// 'en-ET' for English/Latin script (Br)
-	const locale = useAmharic ? 'am-ET' : 'en-ET';
+export function formatETB(amount: number | null | undefined, useAmharic: boolean = false): string {
+	// Handle null/undefined/NaN amount
+	if (amount === null || amount === undefined || isNaN(amount)) {
+		return useAmharic ? 'ብር 0.00' : 'ETB 0.00';
+	}
 
-	return new Intl.NumberFormat(locale, {
-		style: 'currency',
-		currency: 'ETB',
-		// Optional: Controls whether to show "ETB", "Br", or "ብር"
-		currencyDisplay: 'symbol',
-		minimumFractionDigits: 2
-	}).format(amount);
+	try {
+		const locale = useAmharic ? 'am-ET' : 'en-ET';
+
+		return new Intl.NumberFormat(locale, {
+			style: 'currency',
+			currency: 'ETB',
+			currencyDisplay: 'symbol',
+			minimumFractionDigits: 2
+		}).format(amount);
+	} catch (e) {
+		// Fallback if Intl fails
+		return `${amount.toFixed(2)} ETB`;
+	}
 }

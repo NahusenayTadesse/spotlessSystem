@@ -27,7 +27,7 @@ export const columns = [
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
-				name: row.original.customerName,
+				name: row.original.name,
 				link: '/dashboard/customers'
 			});
 		}

@@ -13,106 +13,136 @@ import {
 import { eq, and, sql, count } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 import { superValidate } from 'sveltekit-superforms';
-import { type Actions } from '@sveltejs/kit';
+import { error, type Actions } from '@sveltejs/kit';
 import { fail, message } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
+import { subcities } from '$lib/server/fastData';
+
+import { editDetail, editAddress } from './schema';
+
 export const load: PageServerLoad = async ({ params, locals }) => {
-	try {
-		const { id } = params;
+	const { id } = params;
 
-		const form = await superValidate(zod4(editCustomer));
+	const detailForm = await superValidate(zod4(editDetail));
+	const addressForm = await superValidate(zod4(editAddress));
 
-		const customer = await db
-			.select({
-				id: customers.id,
-				name: customers.name,
-				phone: customers.phone,
-				email: customers.email,
-				tinNo: customers.tinNo,
-				sites: count(site.id),
-				joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
-				daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
-				addedBy: user.name,
-				addedById: user.id
-			})
-			.from(customers)
-			.leftJoin(user, eq(customers.createdBy, user.id))
-			.leftJoin(site, eq(customers.id, site.customerId))
-			.where(eq(customers.id, id))
-			.groupBy(
-				customers.id,
-				user.name,
-				site.id,
-				customers.createdAt,
-				customers.name,
-				customers.phone
-			)
-			.then((rows) => rows[0]);
+	const subcityList = await subcities();
 
-		const customerAddress = await db
-			.select({
-				subcity: subcity.name,
-				kebele: address.kebele,
-				street: address.street,
-				buildingNumber: address.buildingNumber,
-				floor: address.floor,
-				houseNumber: address.houseNumber
-			})
-			.from(address)
-			.leftJoin(customers, eq(customers.address, address.id))
-			.leftJoin(subcity, eq(address.subcityId, subcity.id))
-			.where(eq(customers.id, Number(id)))
-			.then((rows) => rows[0]);
+	const customer = await db
+		.select({
+			id: customers.id,
+			name: customers.name,
+			phone: customers.phone,
+			email: customers.email,
+			tinNo: customers.tinNo,
+			sites: count(site.id),
+			joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
+			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(customers)
+		.leftJoin(user, eq(customers.createdBy, user.id))
+		.leftJoin(site, eq(customers.id, site.customerId))
+		.where(eq(customers.id, Number(id)))
+		.groupBy(customers.id, user.name, site.id, customers.createdAt, customers.name, customers.phone)
+		.then((rows) => rows[0]);
 
-		return {
-      customer,
-			customerAddress
-			form
-		};
-	} catch (error) {
-		console.error('Error loading customer dashboard:', error);
-		return {
-			customer: null,
-			form: null,
-			allMethods: [],
-			reciepts: [],
-			error: 'Failed to load customer dashboard.'
-		};
+	if (!customer) {
+		error(404, 'Customer with this id not found');
 	}
+
+	const customerAddress = await db
+		.select({
+			id: address.id,
+			street: address.street,
+			subcity: subcity.name,
+			subcityId: subcity.id,
+			kebele: address.kebele,
+			buildingNumber: address.buildingNumber,
+			floor: address.floor,
+			houseNumber: address.houseNumber,
+			status: address.status
+		})
+		.from(address)
+		.leftJoin(customers, eq(customers.address, address.id))
+		.leftJoin(subcity, eq(address.subcityId, subcity.id))
+		.where(eq(customers.id, Number(id)))
+		.then((rows) => rows[0]);
+
+	return {
+		customer,
+		customerAddress,
+		detailForm,
+		addressForm,
+		subcityList
+	};
 };
 
 export const actions: Actions = {
-	editCustomer: async ({ request, locals, cookies }) => {
-		const form = await superValidate(request, zod4(editCustomer));
+	editDetail: async ({ request, locals, cookies, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(editDetail));
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form.' }, cookies);
-			return fail(400, { form });
+			return message(form, { type: 'error', text: 'Error: Please Check the form' });
 		}
-		const { firstName, lastName, gender, phone, customerId } = form.data;
+		const { name, phone, tinNo, email } = form.data;
 
 		try {
 			await db
 				.update(customers)
 				.set({
-					firstName,
-					lastName,
-					gender: gender === 'male' || gender === 'female' ? gender : undefined,
+					name,
 					phone,
+					tinNo,
+					email,
 					updatedBy: locals?.user?.id
 				})
-				.where(eq(customers.id, customerId));
+				.where(eq(customers.id, Number(id)));
 
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'Customer updated Successfully Added' }, cookies);
 			return message(form, { type: 'success', text: 'Customer updated Successfully Added' });
 		} catch (err) {
-			console.error('Error' + err);
-			setFlash({ type: 'error', message: 'Error: Something Went Wrong Try Again' }, cookies);
-
 			return message(form, { type: 'error', text: 'Error: Something Went Wrong Try Again' });
+		}
+	},
+	editAddress: async ({ request }) => {
+		const form = await superValidate(request, zod4(editAddress));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { id, street, subcity, kebele, buildingNumber, floor, houseNumber, status } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(address)
+					.set({
+						subcityId: subcity,
+						street,
+						kebele,
+						buildingNumber,
+						floor,
+						houseNumber,
+						status
+					})
+					.where(eq(address.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Address Details Updated Successfully!' });
+		} catch (err) {
+			console.error('Error updating Address details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},
 	delete: async ({ cookies, params }) => {

@@ -8,7 +8,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { ArrowLeft, Pencil, Save } from '@lucide/svelte';
+	import { ArrowLeft, MapPin, Pencil, Save, Sheet } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -21,153 +21,62 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import { toGregorian, toEthiopian } from 'ethiopian-calendar-new';
+	import Section from './section.svelte';
+	import EditDetail from './editDetail.svelte';
+	import EditAddress from './editAddress.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.customer?.name },
 		{ name: 'Phone', value: data.customer?.phone },
 		{ name: 'Email', value: data.customer?.email },
-
-		{ name: 'Subcity', value: data.customer?.subcity },
-		{ name: 'Street', value: data.customer?.street },
-		{ name: 'Kebele', value: data.customer?.kebele },
-		{ name: 'Building', value: data.customer?.buildingNumber },
-		{ name: 'Floor', value: data.customer?.floor },
-		{ name: 'House Number', value: data.customer?.houseNumber },
-		{ name: 'Added By', value: data.customer?.createdBy },
-		{ name: 'Added On', value: formatEthiopianDate(new Date(data?.customer?.createdAt)) }
+		{ name: 'Tin Number', value: data.customer?.tinNo },
+		{ name: 'Number of Sites', value: data.customer?.sites },
+		{ name: 'Added By', value: data.customer?.addedBy },
+		{ name: 'Added On', value: formatEthiopianDate(new Date(data?.customer?.joinedOn)) }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
-		data.form,
-		{
-			validators: zod4Client(editCustomer),
-			resetForm: false
-		}
-	);
-
-	export const snapshot: Snapshot = { capture, restore };
-
-	$form.firstName = data.customer?.firstName;
-	$form.lastName = data.customer?.lastName;
-	$form.gender = data.customer?.gender;
-	$form.phone = data.customer?.phone;
+	let customerAddress = $derived([
+		{ name: 'Subcity', value: data.customerAddress?.subcity },
+		{ name: 'Street', value: data.customerAddress?.street },
+		{ name: 'Kebele', value: data.customerAddress?.kebele },
+		{ name: 'Building', value: data.customerAddress?.buildingNumber },
+		{ name: 'Floor', value: data.customerAddress?.floor },
+		{ name: 'House Number', value: data.customerAddress?.houseNumber }
+	]);
 
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
-
-	let edit = $state(false);
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <svelte:head>
 	<title>Customer Details</title>
 </svelte:head>
 
-{#snippet fe(
-	label = '',
-	name = '',
-	type = '',
-	placeholder = '',
-	required = false,
-	min = '',
-	max = ''
-)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name}>{label}</Label>
-		<Input
-			{type}
-			{name}
-			{placeholder}
-			{required}
-			{min}
-			{max}
-			bind:value={$form[name]}
-			aria-invalid={$errors[name] ? 'true' : undefined}
-		/>
-		{#if $errors[name]}
-			<span class="text-red-500">{$errors[name]}</span>
-		{/if}
-	</div>
-{/snippet}
+<SingleView title="Customer Details" class="w-full!">
+	<div class="mt-4 grid w-full grid-cols-1 items-start justify-start gap-2 pl-4 lg:grid-cols-2">
+		<Section title="Customer Details" IconComp={Sheet} style="identityIcon">
+			{#snippet editDialog()}
+				<EditDetail
+					data={data?.detailForm}
+					name={data?.customer?.name}
+					phone={data?.customer?.phone}
+					email={data?.customer?.email}
+					tinNo={data?.customer?.tinNo}
+				/>
+			{/snippet}
+			<SingleTable {singleTable} />
+		</Section>
 
-{#snippet selects(name, items)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
-
-		<SelectComp {name} bind:value={$form[name]} {items} />
-		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-	</div>
-{/snippet}
-
-{#if data?.customer}
-	<SingleView title="Customer Details">
-		<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-			<Button onclick={() => (edit = !edit)}>
-				{#if !edit}
-					<Pencil class="h-4 w-4" />
-					Edit
-				{:else}
-					<ArrowLeft class="h-4 w-4" />
-
-					Back
-				{/if}
-			</Button>
-			<Delete redirect="/dashboard/customers" />
-		</div>
-		{#if edit === false}
-			<div class="w-full p-4"><SingleTable {singleTable} /></div>
-		{:else}
-			<form
-				action="?/editCustomer"
-				use:enhance
-				method="post"
-				id="edit"
-				class="flex w-full flex-col gap-4 p-4"
-			>
-				<Errors allErrors={$allErrors} />
-
-				{@render fe('Customer First Name', 'firstName', 'text', 'Edit Customer First Name', true)}
-				{@render fe('Customer Last Name', 'lastName', 'text', 'Edit Customer Last Name')}
-				{@render fe('Customer Phone', 'phone', 'tel;', 'Edit Customer Phone', true)}
-				<input type="hidden" value={data.customer?.id} name="customerId" />
-				{@render selects('gender', gender)}
-				<Button type="submit" class="mt-4" form="edit">
-					{#if $delayed}
-						<LoadingBtn name="Saving" />
-					{:else}
-						<Save class="h-4 w-4" />
-
-						Save Changes
-					{/if}
-				</Button>
-			</form>
-		{/if}
-	</SingleView>
-	<!-- {#if data.reciepts?.length}
-		<div
-			class="mt-4 flex w-full flex-col items-center justify-center
-   rounded-md bg-white shadow-lg lg:w-full dark:bg-black dark:shadow-md dark:shadow-gray-900"
-		>
-			<div
-				class="from-dark flex w-full flex-col items-center justify-center rounded-lg bg-gradient-to-r to-black px-8 py-6 text-white"
-			>
-				<h1 class="text-center">Booking Fee Paids</h1>
-			</div>
-
-			<div class="flex flex-col mt-4 w-full">
-		<DataTable data={data.reciepts} {columns} {search}  />
-
-	 </div>
-		</div>
-	{/if} -->
-{:else}
-	<Empty title="customer" />
-{/if}
+		<Section title="Customer Address" IconComp={MapPin} style="addressIcon">
+			{#snippet editDialog()}
+				{#key data?.customerAddress}
+					<EditAddress
+						data={data?.addressForm}
+						address={data?.customerAddress}
+						subcityList={data?.subcityList}
+					/>
+				{/key}
+			{/snippet}
+			<SingleTable singleTable={customerAddress} />
+		</Section>
+	</div></SingleView
+>
