@@ -28,3 +28,20 @@ export const editAddress = z.object({
 	status: z.boolean('Status is required')
 });
 export type EditAddress = z.infer<typeof editAddress>;
+
+export const addContact = z.object({
+	contactType: z.string('Contact Type is Required'),
+	contactDetail: z.string('Contact Detail is required'),
+	status: z.boolean('Status is Required').default(true)
+});
+export type AddContact = z.infer<typeof addContact>;
+
+export const editContact = z.object({
+	id: z.number('Schedule not found'),
+	contactType: z.string('Contact Type is Required'),
+	contactDetail: z.string('Contact Detail is required'),
+
+	status: z.boolean('Status is Required').default(true)
+});
+
+export type EditContact = z.infer<typeof editContact>;

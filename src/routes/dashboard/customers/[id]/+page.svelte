@@ -8,7 +8,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { ArrowLeft, MapPin, Pencil, Save, Sheet } from '@lucide/svelte';
+	import { ArrowLeft, MapPin, Pencil, Phone, Save, Sheet } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -24,6 +24,7 @@
 	import Section from './section.svelte';
 	import EditDetail from './editDetail.svelte';
 	import EditAddress from './editAddress.svelte';
+	import Contacts from './contacts.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.customer?.name },
@@ -52,8 +53,10 @@
 </svelte:head>
 
 <SingleView title="Customer Details" class="w-full!">
-	<div class="mt-4 grid w-full grid-cols-1 items-start justify-start gap-2 pl-4 lg:grid-cols-2">
-		<Section title="Customer Details" IconComp={Sheet} style="identityIcon">
+	<div
+		class="mt-4 grid w-full grid-cols-1 items-start justify-start gap-2 px-4 py-4 lg:grid-cols-2"
+	>
+		<Section title="Customer Details" IconComp={Sheet} style="identityIcon" class="h-full!">
 			{#snippet editDialog()}
 				<EditDetail
 					data={data?.detailForm}
@@ -66,7 +69,7 @@
 			<SingleTable {singleTable} />
 		</Section>
 
-		<Section title="Customer Address" IconComp={MapPin} style="addressIcon">
+		<Section title="Customer Address" IconComp={MapPin} style="addressIcon" class="h-full!">
 			{#snippet editDialog()}
 				{#key data?.customerAddress}
 					<EditAddress
@@ -77,6 +80,14 @@
 				{/key}
 			{/snippet}
 			<SingleTable singleTable={customerAddress} />
+		</Section>
+		<Section
+			title="Contact Information"
+			class="lg:col-span-2"
+			IconComp={Phone}
+			style="identityIcon"
+		>
+			<Contacts data={data?.contacts} form={data?.editContactForm} addForm={data?.addContactForm} />
 		</Section>
 	</div></SingleView
 >

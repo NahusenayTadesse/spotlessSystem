@@ -98,3 +98,14 @@ export const customerContacts = mysqlTable('customer_contacts', {
 	contactDetail: varchar('contact_detail', { length: 255 }).notNull(),
 	...secureFields
 });
+
+export const commisionAgents = mysqlTable('commission_registers', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 200 }).notNull(),
+	phone: varchar('phone', { length: 20 }).notNull(),
+	email: varchar('email', { length: 100 }).notNull(),
+	feedback: varchar('feedback', { length: 255 }).notNull(),
+	tinNo: varchar('tin_no', { length: 50 }).notNull(),
+	address: int('address').references(() => address.id, { onDelete: 'set null' }),
+	...secureFields
+});

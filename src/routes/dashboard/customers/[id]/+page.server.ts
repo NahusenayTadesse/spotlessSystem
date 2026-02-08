@@ -8,7 +8,8 @@ import {
 	site,
 	user,
 	address,
-	subcity
+	subcity,
+	customerContacts
 } from '$lib/server/db/schema';
 import { eq, and, sql, count } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
@@ -19,13 +20,15 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 import { subcities } from '$lib/server/fastData';
 
-import { editDetail, editAddress } from './schema';
+import { editDetail, editAddress, addContact, editContact } from './schema';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
 
 	const detailForm = await superValidate(zod4(editDetail));
 	const addressForm = await superValidate(zod4(editAddress));
+	const addContactForm = await superValidate(zod4(addContact));
+	const editContactForm = await superValidate(zod4(editContact));
 
 	const subcityList = await subcities();
 
@@ -71,12 +74,28 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(eq(customers.id, Number(id)))
 		.then((rows) => rows[0]);
 
+	let contacts = await db
+		.select({
+			id: customerContacts.id,
+			contactType: customerContacts.contactType,
+			contactDetail: customerContacts.contactDetail,
+			status: customerContacts.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(customerContacts)
+		.leftJoin(user, eq(customerContacts.createdBy, user.id))
+		.where(eq(customerContacts.customerId, Number(id)));
+
 	return {
 		customer,
 		customerAddress,
 		detailForm,
 		addressForm,
-		subcityList
+		subcityList,
+		addContactForm,
+		editContactForm,
+		contacts
 	};
 };
 
@@ -165,6 +184,71 @@ export const actions: Actions = {
 			console.error('Error deleting customer:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return fail(400);
+		}
+	},
+	addContact: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addContact));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { contactDetail, contactType, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx.insert(customerContacts).values({
+					customerId: Number(id),
+					contactDetail,
+					contactType,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Contact Details Created Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Creating Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	editContact: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editContact));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, contactDetail, contactType, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(customerContacts)
+					.set({
+						contactDetail,
+						contactType,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(customerContacts.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Contact Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Updated Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	}
 };
