@@ -54,7 +54,7 @@
 
 <SingleView title="Customer Details" class="w-full!">
 	<div
-		class="mt-4 grid w-full grid-cols-1 items-start justify-start gap-2 px-4 py-4 lg:grid-cols-2"
+		class="mt-4 grid w-full grid-cols-1 items-start justify-start gap-4 px-4 py-4 lg:grid-cols-2"
 	>
 		<Section title="Customer Details" IconComp={Sheet} style="identityIcon" class="h-full!">
 			{#snippet editDialog()}

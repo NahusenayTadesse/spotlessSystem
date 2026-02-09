@@ -30,6 +30,7 @@
 					id: row.original.id,
 					name: row.original.name,
 					rate: row.original.rate,
+					threshold: row.original.threshold,
 					action: '?/edit',
 					taxType: data?.taxTypes,
 					data: data?.editForm,
@@ -46,7 +47,24 @@
 					name: 'Rate',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true
+			sortable: true,
+			cell: ({ row }) => {
+				const value = Number(row.original.rate);
+				return value.toLocaleString();
+			}
+		},
+		{
+			accessorKey: 'threshold',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Threshold',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				const value = Number(row.original.threshold);
+				return isNaN(value) ? 'N/A' : formatETB(value, true);
+			}
 		},
 
 		{
@@ -70,6 +88,7 @@
 					id: row.original.id,
 					name: row.original.name,
 					rate: row.original.rate,
+					threshold: row.original.threshold,
 					action: '?/edit',
 					data: data?.editForm,
 					icon: true,
@@ -87,6 +106,7 @@
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
 
 	import { toast } from 'svelte-sonner';
+	import { formatETB } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -111,6 +131,15 @@
 			type="text"
 			name="name"
 			placeholder="Enter tax type name"
+			required={true}
+		/>
+		<InputComp
+			{form}
+			{errors}
+			label="Threshold"
+			type="text"
+			name="threshold"
+			placeholder="Enter tax type threshold"
 			required={true}
 		/>
 		<InputComp

@@ -6,6 +6,7 @@ import { secureFields } from './secureFields';
 import { transactions } from './finance';
 import { address } from './locations';
 import { services } from './services';
+import { employee } from './staff';
 
 export const customers = mysqlTable('customers', {
 	id: int('id').primaryKey().autoincrement(),
@@ -24,13 +25,11 @@ export const customerContracts = mysqlTable('customer_contracts', {
 		.notNull()
 		.references(() => customers.id, { onDelete: 'cascade' }),
 	contractType: varchar('contract_type', { length: 50 }).notNull(),
-	servicesId: int('services_id').references(() => customerServices.id, { onDelete: 'cascade' }),
 	contractAmount: decimal('contract_amount', { precision: 10, scale: 2 }).notNull(),
 	contractYear: year('contract_year').notNull(),
 	contractDate: date('contract_date').notNull(),
-	transactionId: int('transaction_id')
-		.notNull()
-		.references(() => transactions.id, { onDelete: 'cascade' }),
+	contractFile: varchar('contract_file', { length: 255 }).notNull(),
+	signingOfficer: int('signing_officer').references(() => employee.id, { onDelete: 'set null' }),
 	...secureFields
 });
 
@@ -105,6 +104,7 @@ export const commisionAgents = mysqlTable('commission_registers', {
 	phone: varchar('phone', { length: 20 }).notNull(),
 	email: varchar('email', { length: 100 }).notNull(),
 	feedback: varchar('feedback', { length: 255 }).notNull(),
+	contactedBy: int('contacted_by').references(() => employee.id, { onDelete: 'set null' }),
 	tinNo: varchar('tin_no', { length: 50 }).notNull(),
 	address: int('address').references(() => address.id, { onDelete: 'set null' }),
 	...secureFields

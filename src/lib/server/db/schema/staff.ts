@@ -90,7 +90,6 @@ export const employee = mysqlTable(
 		]).default('single'),
 		siteId: int('site_id').references(() => site.id),
 		address: int('address').references(() => address.id),
-		taxType: int('tax_type').references(() => taxType.id),
 		leavesLeft: int('leaves_left').notNull().default(0),
 
 		...secureFields
@@ -133,6 +132,15 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 	...secureFields
 });
 export const taxType = mysqlTable('tax_type', {
+	id: int('id').autoincrement().primaryKey(),
+	name: varchar('name', { length: 255 }).notNull(),
+	threshold: decimal('threshold', { precision: 12, scale: 2 }),
+	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
+	deduction: decimal('deduction', { precision: 12, scale: 2 }).notNull(),
+	...lesserFields
+});
+
+export const penality = mysqlTable('penality', {
 	id: int('id').autoincrement().primaryKey(),
 	name: varchar('name', { length: 255 }).notNull(),
 	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
@@ -238,6 +246,16 @@ export const salaries = mysqlTable('salaries', {
 	staffId: int('staff_id')
 		.notNull()
 		.references(() => employee.id, { onDelete: 'cascade' }),
+	transportationAllowance: decimal('transportation_allowance', { precision: 10, scale: 2 })
+		.notNull()
+		.default('0'),
+	housingAllowance: decimal('housing_allowance', { precision: 10, scale: 2 })
+		.notNull()
+		.default('0'),
+	nonTaxAllowance: decimal('non_tax_allowance', { precision: 10, scale: 2 }).notNull().default('0'),
+	positionAllowance: decimal('position_allowance', { precision: 10, scale: 2 })
+		.notNull()
+		.default('0'),
 	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
 	startDate: date('start_date').notNull(),
 	endDate: date('end_date'),
@@ -258,9 +276,19 @@ export const overTime = mysqlTable('over_time', {
 	staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
 	reason: varchar('reason', { length: 255 }),
 	amountPerHour: decimal('amount_per_hour', { precision: 10, scale: 2 }).notNull(),
+	overTimeTypeId: int('over_time_type_id').references(() => overTimeType.id, {
+		onDelete: 'set null'
+	}),
 	hours: decimal('hours', { precision: 10, scale: 2 }).notNull(),
 	total: decimal('total', { precision: 10, scale: 2 }).notNull(),
 	date: date('date').notNull(),
+	...secureFields
+});
+
+export const overTimeType = mysqlTable('over_time_type', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 255 }).notNull(),
+	rate: decimal('rate', { precision: 10, scale: 2 }).notNull(),
 	...secureFields
 });
 

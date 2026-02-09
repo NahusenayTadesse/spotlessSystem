@@ -7,14 +7,17 @@
 	import { page } from '$app/state';
 	import Papa from 'papaparse';
 
-	// Svelte 5 Props
-	const { fileName = page.url.pathname.split('/').pop() || 'export', tableId, data } = $props();
+	const {
+		fileName = page.url.pathname.split('/').pop() || 'export',
+		tableId,
+		data
+	}: { fileName: string; tableId: string; data: any } = $props();
 
 	function generatedPdf() {
 		const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
 
 		autoTable(doc, {
-			html: tableId, // Uses the ID (e.g., "#my-table")
+			html: tableId,
 			styles: {
 				font: 'helvetica',
 				fontSize: 10,
@@ -40,7 +43,6 @@
 	function exportTableToCSV() {
 		let csvData;
 
-		// If tableId is provided, parse the DOM table
 		if (tableId) {
 			const tableElement = document.querySelector(tableId) as HTMLTableElement;
 
@@ -49,21 +51,17 @@
 				return;
 			}
 
-			// Convert HTML table rows to a 2D array
 			const rows = Array.from(tableElement.querySelectorAll('tr'));
 			csvData = rows.map((row) => {
 				const cells = Array.from(row.querySelectorAll('th, td'));
 				return cells.map((cell) => (cell as HTMLElement).innerText.trim());
 			});
 		} else {
-			// Fallback to the JSON data prop if no tableId is provided
 			csvData = data;
 		}
 
-		// Convert to CSV string
 		const csv = Papa.unparse(csvData);
 
-		// Download logic
 		const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement('a');

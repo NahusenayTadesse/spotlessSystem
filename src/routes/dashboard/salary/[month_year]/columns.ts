@@ -64,16 +64,90 @@ export const columns = [
 	// },
 
 	// 5. Basic Salary
+	//
+
 	{
-		accessorKey: 'totalPay',
+		accessorKey: 'overTime',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Salary',
+				name: 'Over Time',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.totalPay);
+			return formatETB(row.original.overTime);
+		}
+	},
+
+	{
+		accessorKey: 'nonTaxable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Non-Taxable',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.nonTaxable);
+		}
+	},
+
+	{
+		accessorKey: 'transport',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Transport Allowance',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.transport);
+		}
+	},
+
+	{
+		accessorKey: 'positionAllowance',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Position Allowance',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.positionAllowance);
+		}
+	},
+
+	{
+		accessorKey: 'housingAllowance',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Housing Allowance',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.housingAllowance);
+		}
+	},
+
+	{
+		accessorKey: 'gross',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Gross Salary',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			const gross =
+				Number(row.original.basicSalary) +
+				Number(row.original.positionAllowance) +
+				Number(row.original.housingAllowance) +
+				Number(row.original.transport) +
+				Number(row.original.overTime) +
+				Number(row.original.nonTaxable);
+			return formatETB(gross);
 		}
 	},
 
@@ -96,7 +170,7 @@ export const columns = [
 		accessorKey: 'missingDays',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Missing Days',
+				name: 'Absent',
 				onclick: column.getToggleSortingHandler()
 			})
 	},
@@ -134,23 +208,6 @@ export const columns = [
 		}
 	},
 
-	// 7. Net Amount
-	// {
-	// 	accessorKey: 'netAmount',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'Net Pay',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-	// 	sortable: true,
-	// 	cell: (info) => {
-	// 		const amount = info.getValue();
-	// 		return amount ? 'ETB ' + amount : 'UNPROCESSED';
-	// 	}
-	// },
-
-	// 8. Payment Status
-
 	{
 		accessorKey: 'account',
 		header: ({ column }) =>
@@ -170,7 +227,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
-		cell: (info) => info.getValue() || 'UNPROCESSED' // Default to UNPROCESSED if payroll entry is missing
+		cell: (info) => info.getValue() || 'Account Not Found' // Default to UNPROCESSED if payroll entry is missing
 	},
 
 	// 9. Payment Date
@@ -179,34 +236,5 @@ export const columns = [
 		header: 'Payment Date',
 		cell: (info) => formatEthiopianDate(info.getValue()) || formatEthiopianDate(new Date()),
 		sortable: true
-	},
-	{
-		accessorKey: 'status',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Status',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-
-		cell: (info) => {
-			const status = info.getValue() ? info.getValue() : 'unpaid';
-			return renderComponent(Statuses, {
-				status: status
-			});
-		}
-	},
-	{
-		accessorKey: 'actions',
-		header: 'Actions',
-		cell: ({ row }) => {
-			// Check if a payroll entry exists (by checking 'id')
-
-			return renderComponent(DataTableActions, {
-				id: row.original.id,
-				name: row.original.name
-				// You might need more props here
-			});
-		}
 	}
 ];

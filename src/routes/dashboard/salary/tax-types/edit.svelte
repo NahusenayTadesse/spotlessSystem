@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { SquarePen, Plus } from '@lucide/svelte';
+	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import type { Edit } from './schema';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
@@ -17,7 +17,7 @@
 		id,
 		name,
 		rate,
-
+		threshold,
 		icon = false,
 		status = true
 	}: {
@@ -28,6 +28,7 @@
 		icon: boolean;
 		rate: string;
 		status: boolean;
+		threshold: string;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -40,6 +41,7 @@
 	$form.name = name;
 	$form.rate = rate;
 	$form.status = status;
+	$form.threshold = threshold;
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -85,6 +87,15 @@
 						<InputComp
 							{form}
 							{errors}
+							label="Threshold"
+							type="text"
+							name="threshold"
+							placeholder="Enter tax type threshold"
+							required={true}
+						/>
+						<InputComp
+							{form}
+							{errors}
 							label="Rate"
 							type="text"
 							name="rate"
@@ -108,7 +119,7 @@
 							{#if $delayed}
 								<LoadingBtn name="Saving Changes" />
 							{:else}
-								<Plus class="h-4 w-4" />
+								<Save class="h-4 w-4" />
 
 								Save Changes
 							{/if}

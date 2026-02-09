@@ -45,3 +45,23 @@ export const editContact = z.object({
 });
 
 export type EditContact = z.infer<typeof editContact>;
+
+export const addContract = z.object({
+	contractType: z.string('Contact Type is Required'),
+	service: z.number('Service is Required'),
+	contractAmount: z.number('Contract Amount is Required'),
+	contractYear: z.number('Contract Year is Required'),
+	contactDetail: z.string('Contact Detail is required'),
+	status: z.boolean('Status is Required').default(true)
+});
+export type AddContract = z.infer<typeof addContract>;
+
+export const editContract = z.object({
+	id: z.number('Schedule not found'),
+	contactType: z.string('Contact Type is Required'),
+	contactDetail: z.string('Contact Detail is required'),
+
+	status: z.boolean('Status is Required').default(true)
+});
+
+export type EditContract = z.infer<typeof editContract>;
