@@ -14,7 +14,6 @@ import {
 import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
 import type { PageServerLoad } from '../$types';
-import { House } from '@lucide/svelte';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { month_year } = params;
@@ -24,71 +23,86 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const month = m;
 	const year = y;
 
+	// 1. Create subqueries for your one-to-many relationships
+	const otSub = db
+		.select({
+			staffId: overTime.staffId,
+			total: sql<number>`COALESCE(SUM(${overTime.total}), 0)`.as('total_ot')
+		})
+		.from(overTime)
+		.groupBy(overTime.staffId)
+		.as('ot_sub');
+
+	const bonusSub = db
+		.select({
+			staffId: bonuses.staffId,
+			total: sql<number>`COALESCE(SUM(${bonuses.amount}), 0)`.as('total_bonus')
+		})
+		.from(bonuses)
+		.groupBy(bonuses.staffId)
+		.as('bonus_sub');
+
+	const commissionSub = db
+		.select({
+			staffId: commission.staffId,
+			total: sql<number>`COALESCE(SUM(${commission.amount}), 0)`.as('total_comm')
+		})
+		.from(commission)
+		.groupBy(commission.staffId)
+		.as('comm_sub');
+
+	const deductionSub = db
+		.select({
+			staffId: deductions.staffId,
+			total: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`.as('total_deduct')
+		})
+		.from(deductions)
+		.groupBy(deductions.staffId)
+		.as('deduct_sub');
+
+	// 2. Main Query
 	const payrollData = await db
 		.select({
 			id: employee.id,
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
 			department: department.name,
-
 			basicSalary: salaries.amount,
-			positionAllowance: sql<number>`COALESCE(SUM(${salaries.positionAllowance}), 0)`,
-			housingAllowance: sql<number>`COALESCE(SUM(${salaries.housingAllowance}), 0)`,
-			transport: sql<number>`COALESCE(SUM(${salaries.transportationAllowance}), 0)`,
-			nonTaxable: sql<number>`COALESCE(SUM(${salaries.nonTaxAllowance}), 0)`,
+			positionAllowance: salaries.positionAllowance,
+			housingAllowance: salaries.housingAllowance,
+			transport: salaries.transportationAllowance,
+			nonTaxable: salaries.nonTaxAllowance,
 			paymentMethod: paymentMethods.name,
 			account: staffAccounts.accountDetail,
-			missingDays: count(missingDays.id),
 			bank: paymentMethods.name,
-			overTime: sql<number>`COALESCE(SUM(${overTime.total}), 0)`,
-			bonus: sql<number>`COALESCE(SUM(${bonuses.amount}), 0)`,
-			commision: sql<number>`COALESCE(SUM(${commission.amount}), 0)`,
-			deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
-			gross: sql<number>`COALESCE(SUM(${salaries.amount}), 0) +
-        COALESCE(SUM(${overTime.total}), 0) +
-        COALESCE(SUM(${bonuses.amount}), 0) +
-        COALESCE(SUM(${commission.amount}), 0) +
-        ${salaries.amount} + ${salaries.nonTaxAllowance} +
-        ${salaries.housingAllowance} + ${salaries.transportationAllowance} +
-        ${salaries.positionAllowance}
+			overTime: otSub.total,
+			bonus: bonusSub.total,
+			commision: commissionSub.total,
+			deductions: deductionSub.total,
+			gross: sql<number>`
+            COALESCE(${salaries.amount}, 0) +
+            COALESCE(${otSub.total}, 0) +
+            COALESCE(${bonusSub.total}, 0) +
+            COALESCE(${commissionSub.total}, 0) +
+            COALESCE(${salaries.nonTaxAllowance}, 0) +
+            COALESCE(${salaries.housingAllowance}, 0) +
+            COALESCE(${salaries.transportationAllowance}, 0) +
+            COALESCE(${salaries.positionAllowance}, 0)
         `
 		})
 		.from(employee)
+		.leftJoin(department, eq(department.id, employee.departmentId))
+		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(
 			staffAccounts,
 			and(eq(staffAccounts.staffId, employee.id), eq(staffAccounts.isActive, true))
 		)
-		.leftJoin(
-			missingDays,
-			and(eq(missingDays.staffId, employee.id), eq(missingDays.deductable, true))
-		)
 		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
-		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
-		.leftJoin(department, eq(department.id, employee.departmentId))
-
-		// --- ADDED JOINS BELOW ---
-		.leftJoin(overTime, eq(overTime.staffId, employee.id))
-		.leftJoin(bonuses, eq(bonuses.staffId, employee.id))
-		.leftJoin(commission, eq(commission.staffId, employee.id))
-		.leftJoin(deductions, eq(deductions.staffId, employee.id))
-		// -------------------------
-
-		.where(eq(employee.isActive, true))
-		.groupBy(
-			employee.id,
-			department.id,
-			salaries.id,
-			staffAccounts.id,
-			paymentMethods.id,
-			salaries.amount,
-			salaries.nonTaxAllowance,
-			salaries.housingAllowance,
-			salaries.transportationAllowance,
-			salaries.positionAllowance,
-			salaries.nonTaxAllowance,
-			salaries.housingAllowance,
-			salaries.transportationAllowance,
-			salaries.positionAllowance
-		);
+		// Join the subqueries instead of the raw tables
+		.leftJoin(otSub, eq(otSub.staffId, employee.id))
+		.leftJoin(bonusSub, eq(bonusSub.staffId, employee.id))
+		.leftJoin(commissionSub, eq(commissionSub.staffId, employee.id))
+		.leftJoin(deductionSub, eq(deductionSub.staffId, employee.id))
+		.where(eq(employee.isActive, true));
 
 	return {
 		payrollData,

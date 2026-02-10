@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { columns } from './columns';
+	import { columns } from './columns.svelte';
 
 	let { data } = $props();
 

@@ -166,9 +166,34 @@ export async function taxTypes() {
 	const taxTypes = await db
 		.select({
 			value: taxType.id,
-			name: taxType.name
+			name: taxType.name,
+			rate: taxType.rate,
+			threshold: taxType.threshold,
+			deduction: taxType.deduction
 		})
-		.from(taxType);
-
+		.from(taxType)
+		.where(eq(taxType.status, true));
 	return taxTypes;
 }
+
+interface TaxBracket {
+	value: number;
+	name: string;
+	rate: number;
+	threshold: number; // or string, depending on your DB driver
+	deduction: number;
+}
+
+export const calculateTax = (amount: number, taxTypes): number => {
+	// 1. Sort brackets by threshold ascending to ensure we hit the lowest valid bracket first
+	const sortedBrackets = [...taxTypes()].sort((a, b) => Number(a.threshold) - Number(b.threshold));
+
+	// 2. Find the first bracket where amount <= threshold
+	const bracket = sortedBrackets.find((b) => amount <= Number(b.threshold));
+
+	if (!bracket) {
+		return 0;
+	}
+
+	return bracket.rate * amount - bracket.deduction;
+};

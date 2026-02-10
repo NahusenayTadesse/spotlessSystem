@@ -4,10 +4,37 @@ import DataTableActions from './data-table-actions.svelte'; // Assuming a new ac
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import { formatEthiopianDate, formatETB } from '$lib/global.svelte';
+import { getTaxTypes } from './data.remote';
 
-// NOTE: You must ensure your backend query includes 'name' and 'position'
-// from the staff table to display them here!
-// e.g., staffName: staff.name, staffPosition: staff.category
+interface TaxBracket {
+	value: number;
+	name: string;
+	rate: number;
+	threshold: number; // or string, depending on your DB driver
+	deduction: number;
+}
+
+const calculateTax = (amount: number, taxTypes: TaxBracket[]): number => {
+	// 1. Sort brackets by threshold ascending to ensure we hit the lowest valid bracket first
+	const sortedBrackets = [...taxTypes].sort((a, b) => Number(a.threshold) - Number(b.threshold));
+
+	// 2. Find the first bracket where amount <= threshold
+	const bracket = sortedBrackets.find((b) => amount <= Number(b.threshold));
+
+	if (!bracket) {
+		return 0;
+	}
+
+	return bracket.rate * amount - bracket.deduction;
+};
+
+async function tax() {
+	const types = await getTaxTypes();
+	const taxableIncome = Number(Number(row.origional.gross) - Number(row.original.nonTaxable));
+	const tax = calculateTax(taxableIncome, types);
+
+	return formatETB(tax, true);
+}
 
 export const columns = [
 	// 1. Row Index
@@ -140,14 +167,20 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			const gross =
-				Number(row.original.basicSalary) +
-				Number(row.original.positionAllowance) +
-				Number(row.original.housingAllowance) +
-				Number(row.original.transport) +
-				Number(row.original.overTime) +
-				Number(row.original.nonTaxable);
-			return formatETB(gross);
+			return formatETB(row.origional.gross);
+		}
+	},
+
+	{
+		accessorKey: 'taxable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Gross Salary',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(Number(row.origional.gross) - Number(row.original.nonTaxable));
 		}
 	},
 
@@ -162,7 +195,7 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return ((Number(row.original.basicSalary) * Number(row.original.taxType)) / 100).toFixed(2);
+			return tax();
 		}
 	},
 
