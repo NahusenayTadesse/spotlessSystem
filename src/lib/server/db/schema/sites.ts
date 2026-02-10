@@ -17,8 +17,8 @@ export const site = mysqlTable('site', {
 		.notNull()
 		.references(() => customers.id),
 	endDate: date('end_date').notNull(),
-	includeVat: boolean().notNull().default(false),
-	siteCommission: boolean().notNull().default(false),
+	includeVat: boolean('include_vat').notNull().default(false),
+	siteCommission: boolean('site_commission').notNull().default(false),
 	...secureFields
 });
 

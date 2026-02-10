@@ -376,7 +376,7 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const { tinNo, martialStatus, bloodType, religion } = form.data;
+		const { tinNo, martialStatus, bloodType } = form.data;
 
 		try {
 			if (!id) {
@@ -393,7 +393,6 @@ export const actions: Actions = {
 						tinNo,
 						martialStatus,
 						bloodType,
-						religion,
 						updatedBy: locals?.user?.id
 					})
 					.where(eq(employee.id, Number(id)));

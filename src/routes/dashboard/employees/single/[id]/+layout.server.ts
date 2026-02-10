@@ -38,7 +38,6 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			grandFatherName: employee.grandFatherName,
 			gender: employee.gender,
 			nationality: employee.nationality,
-			religion: employee.religion,
 			bloodType: employee.bloodType,
 			tinNo: employee.tinNo,
 			department: department.name,

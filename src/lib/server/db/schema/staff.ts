@@ -66,7 +66,6 @@ export const employee = mysqlTable(
 		grandFatherName: varchar('grand_father_name', { length: 50 }).notNull(),
 		gender: mysqlEnum('gender', ['male', 'female']).notNull().default('male'),
 		nationality: varchar('nationality', { length: 50 }).notNull().default('Ethiopia'),
-		religion: varchar('religion', { length: 50 }).notNull().default('Christianity'),
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
 		tinNo: varchar('tin_no', { length: 10 }).notNull(),
 		departmentId: int('department_id')

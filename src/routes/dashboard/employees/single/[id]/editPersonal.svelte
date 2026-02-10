@@ -21,13 +21,11 @@
 		data,
 		tinNo,
 		martialStatus,
-		religion,
 		bloodType
 	}: {
 		data: SuperValidated<Infer<EditEmployment>>;
 		tinNo: string;
 		martialStatus: string;
-		religion: string;
 		bloodType?: string;
 	} = $props();
 
@@ -47,7 +45,6 @@
 
 	$form.tinNo = tinNo;
 	$form.martialStatus = martialStatus;
-	$form.religion = religion;
 	$form.bloodType = bloodType || '';
 </script>
 
@@ -79,7 +76,6 @@
 			required={false}
 			items={bloodTypes}
 		/>
-		<InputComp label="Religion" name="religion" type="text" {form} {errors} required />
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">

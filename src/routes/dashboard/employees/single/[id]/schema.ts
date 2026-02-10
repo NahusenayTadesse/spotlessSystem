@@ -90,8 +90,7 @@ export type EditEmployment = z.infer<typeof editEmployment>;
 export const editPersonal = z.object({
 	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
 	tinNo: z.string('Tin Number is required').min(10).max(10),
-	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other']),
-	religion: z.string('Religion is required').min(2).max(255)
+	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other'])
 });
 export type EditPersonal = z.infer<typeof editPersonal>;
 

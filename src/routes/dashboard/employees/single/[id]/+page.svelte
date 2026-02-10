@@ -38,7 +38,6 @@
 	let personalDetails = $derived([
 		{ name: 'Tin Number', value: data?.staffMember?.tinNo },
 		{ name: 'Marital Status', value: data?.staffMember?.maritalStatus },
-		{ name: 'Religion', value: data?.staffMember?.religion },
 		{ name: 'Blood Type', value: data?.staffMember?.bloodType }
 	]);
 
@@ -248,9 +247,8 @@
 					<EditPersonal
 						data={data?.personalForm}
 						tinNo={data?.staffMember.tinNo}
-						bloodType={data?.staffMember.bloodType}
-						martialStatus={data?.staffMember.maritalStatus}
-						religion={data?.staffMember.religion}
+						bloodType={data?.staffMember?.bloodType}
+						martialStatus={data?.staffMember?.maritalStatus}
 					/>
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />

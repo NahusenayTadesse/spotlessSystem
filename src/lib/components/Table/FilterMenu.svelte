@@ -89,7 +89,7 @@
 	<Tooltip.Root>
 		<Tooltip.Trigger class={buttonVariants({ variant: 'outline' })}>
 			{#snippet child(props)}
-				<Button onclick={() => (open = !open)} {...props}>
+				<Button onclick={() => (open = !open)} class="w-32" {...props}>
 					<Icon />Filters {activeFilterCount > 0 ? `${activeFilterCount} active` : ''}
 				</Button>
 			{/snippet}
