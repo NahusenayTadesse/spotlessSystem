@@ -150,7 +150,9 @@
 										class="capitalize transition-all duration-200 hover:border-primary/50 focus:ring-primary"
 									>
 										{#if selectedFilters[filterKey] === ''}
-											<span class="text-muted-foreground">All {pluralize(filterKey)}</span>
+											<span class="text-muted-foreground"
+												>All {pluralize(filterKey).replace(/([a-z])([A-Z])/g, '$1 $2')}</span
+											>
 										{:else}
 											<span class="font-medium">{selectedFilters[filterKey]}</span>
 										{/if}

@@ -41,6 +41,8 @@ export const initColumns = async () => {
 };
 export const columns = [
 	// 1. Row Index
+	//
+
 	{
 		id: 'index',
 		header: '#',
@@ -83,7 +85,20 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'overTime',
+		accessorKey: 'basicSalary',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Basic Salary',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.basicSalary);
+		}
+	},
+
+	{
+		accessorKey: 'overtime',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Over Time',
@@ -91,20 +106,7 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.overTime);
-		}
-	},
-
-	{
-		accessorKey: 'nonTaxable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Non-Taxable',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return formatETB(row.original.nonTaxable);
+			return formatETB(row.original.overtime);
 		}
 	},
 
@@ -117,7 +119,7 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.transport, true);
+			return formatETB(row.original.transportAllowance, true);
 		}
 	},
 
@@ -148,6 +150,19 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'nonTaxable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Non-Taxable',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.nonTaxable, true);
+		}
+	},
+
+	{
 		accessorKey: 'gross',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -161,25 +176,15 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'taxable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Taxable Salary',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return formatETB(Number(row.original.gross) - Number(row.original.nonTaxable), true);
-		}
-	},
-
-	{
-		accessorKey: 'absentDays',
+		accessorKey: 'absent',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Absent',
 				onclick: column.getToggleSortingHandler()
-			})
+			}),
+		cell: ({ row }) => {
+			return row.original.absent ? row.original.absent : 0;
+		}
 	},
 	{
 		id: 'penality',
@@ -190,17 +195,45 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			const missingDays = Number(row.original.absentDays);
-			const totalPay = Number(row.original.basicSalary);
+			// const missingDays = Number(row.original.absentDays);
+			// const totalPay = Number(row.original.basicSalary);
 
-			const amount = missingDays * (totalPay / 30);
+			// const amount = missingDays * (totalPay / 30);
 
-			return formatETB(amount, true);
+			return formatETB(row.original.attendancePenality, true);
 		}
 	},
 
+	// {
+	// 	id: 'tax',
+	// 	accessorKey: '',
+	// 	header: ({ column }) =>
+	// 		renderComponent(DataTableSort, {
+	// 			name: 'Tax',
+	// 			onclick: column.getToggleSortingHandler()
+	// 		}),
+	// 	cell: ({ row }) => {
+	// 		const taxableIncome = Number(Number(row.original.gross) - Number(row.original.nonTaxable));
+	// 		const tax = calculateTax(taxableIncome, types);
+
+	// 		return formatETB(tax, true);
+	// 	}
+	// },
+
 	{
-		id: 'tax',
+		accessorKey: 'taxable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Taxable Salary',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.taxable, true);
+		}
+	},
+	{
+		id: 'taxAmount',
 		accessorKey: '',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -208,10 +241,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			const taxableIncome = Number(Number(row.original.gross) - Number(row.original.nonTaxable));
-			const tax = calculateTax(taxableIncome, types);
-
-			return formatETB(tax, true);
+			return formatETB(row.original.taxAmount, true);
 		}
 	},
 
@@ -219,20 +249,20 @@ export const columns = [
 		accessorKey: '',
 		header: 'Net Pay',
 		cell: ({ row }) => {
-			const missingDays = Number(row.original.absentDays);
-			const salary = Number(row.original.basicSalary);
+			// const missingDays = Number(row.original.absentDays);
+			// const salary = Number(row.original.basicSalary);
 
-			const amount = missingDays * (salary / 30);
+			// const amount = missingDays * (salary / 30);
 
-			const totalPay = Number(row.original.gross);
+			// const totalPay = Number(row.original.gross);
 
-			const taxableIncome = Number(Number(row.original.gross) - Number(row.original.nonTaxable));
-			const tax = calculateTax(taxableIncome, types);
+			// const taxableIncome = Number(Number(row.original.gross) - Number(row.original.nonTaxable));
+			// const tax = calculateTax(taxableIncome, types);
 
-			const penalityAmount = missingDays * (totalPay / 30);
-			const total = totalPay - (penalityAmount + Number(tax));
+			// const penalityAmount = missingDays * (totalPay / 30);
+			// const total = totalPay - (penalityAmount + Number(tax));
 
-			return formatETB(total, true);
+			return formatETB(row.original.netPay, true);
 		}
 	},
 

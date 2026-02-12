@@ -51,6 +51,7 @@ export const addContract = z.object({
 	service: z.number('Service is Required'),
 	contractAmount: z.number('Contract Amount is Required'),
 	contractYear: z.number('Contract Year is Required'),
+	contractDate: z.string('Contract Date is Required'),
 	contactDetail: z.string('Contact Detail is required'),
 	status: z.boolean('Status is Required').default(true)
 });

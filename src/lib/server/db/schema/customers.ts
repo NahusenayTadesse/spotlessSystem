@@ -30,6 +30,7 @@ export const customerContracts = mysqlTable('customer_contracts', {
 	contractDate: date('contract_date').notNull(),
 	contractFile: varchar('contract_file', { length: 255 }).notNull(),
 	signingOfficer: int('signing_officer').references(() => employee.id, { onDelete: 'set null' }),
+
 	...secureFields
 });
 

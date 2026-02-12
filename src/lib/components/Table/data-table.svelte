@@ -6,6 +6,7 @@
 		type ColumnFilter,
 		ColumnFiltering,
 		getSortedRowModel,
+		type RowSelectionState,
 		getFilteredRowModel,
 		type PaginationState,
 		type SortingState,
@@ -55,6 +56,7 @@
 	let globalFilter = $state<GlobalFilterColumn>();
 
 	let columnVisibility = $state<VisibilityState>({});
+	let rowSelection = $state<RowSelectionState>({});
 
 	const table = createSvelteTable({
 		get data() {
@@ -77,6 +79,9 @@
 
 			get globalFilter() {
 				return globalFilter;
+			},
+			get rowSelection() {
+				return rowSelection;
 			}
 		},
 		onPaginationChange: (updater) => {
@@ -105,6 +110,13 @@
 				columnVisibility = updater(columnVisibility);
 			} else {
 				columnVisibility = updater;
+			}
+		},
+		onRowSelectionChange: (updater) => {
+			if (typeof updater === 'function') {
+				rowSelection = updater(rowSelection);
+			} else {
+				rowSelection = updater;
 			}
 		},
 
@@ -232,7 +244,7 @@
 											colspan={header.colSpan}
 											class="{index === 1
 												? 'sticky left-0 z-10 bg-background'
-												: ''} p-0 pr-2 text-start"
+												: ''} p-0 px-2 text-start"
 										>
 											{#if !header.isPlaceholder}
 												<FlexRender

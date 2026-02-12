@@ -13,12 +13,9 @@ if (!fs.existsSync(FILES_DIR)) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ params, request, locals }) {
-
-
-        if (!locals.user) {
-                throw redirect(302, '/login');
-            }
-    
+	if (!locals.user) {
+		throw redirect(302, '/login');
+	}
 
 	const file_path = path.normalize(path.join(FILES_DIR, params.name));
 
@@ -37,7 +34,7 @@ export async function GET({ params, request, locals }) {
 		ETag: etag,
 		'Content-Type': mimes.lookup(file_path),
 		'Content-Length': stats.size,
-		'Cache-Control': 'max-age=60',
+		'Cache-Control': 'max-age=600',
 		'Last-Modified': stats.mtime.toUTCString()
 	};
 
@@ -70,6 +67,6 @@ const mimes = {
 	/** @param {string} string */
 	lookup(string) {
 		const ext = string.toLowerCase().split('.').at(-1);
-		return (ext && this[/** @type {keyof typeof mimes} */ (ext)]) ?? 'application/octet-stream';
+		return (ext && this[/** @type {keyof typeof mimes} */ ext]) ?? 'application/octet-stream';
 	}
 };

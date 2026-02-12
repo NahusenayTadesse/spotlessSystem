@@ -9,6 +9,7 @@
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { isMobile } from '$lib/global.svelte';
+	import { goto } from '$app/navigation';
 
 	let {
 		id = null,
@@ -55,7 +56,7 @@
 		class={cn(
 			buttonVariants({
 				variant: 'outline',
-				class: 'w-[280px] justify-start text-start font-normal'
+				class: 'w-70 justify-start text-start font-normal'
 			}),
 			!value && 'text-muted-foreground'
 		)}
@@ -84,11 +85,14 @@
 		<Button
 			disabled={!value.start || !value.end}
 			class="absolute right-2 bottom-2"
-			href={id === null
-				? `${link}/${value.start}-${value.end}`
-				: `${link}/ranges/${value.start}-${value.end}-${id}`}
 			onclick={() => {
 				open = false;
+
+				goto(
+					id === null
+						? `${link}/${value.start}-${value.end}`
+						: `${link}/ranges/${value.start}-${value.end}-${id}`
+				);
 			}}
 		>
 			<SlidersHorizontal /> Filter
