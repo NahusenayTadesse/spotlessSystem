@@ -32,4 +32,4 @@ export const payrollSchema = z.object({
 	)
 });
 
-export type PayrollSchema = typeof payrollSchema;
+export type EmployeeFormType = z.infer<typeof payrollSchema>['employees'][number];

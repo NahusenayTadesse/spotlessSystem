@@ -207,6 +207,24 @@ export const formatEthiopianYear = (date: Date | null | undefined): string => {
 	}
 };
 
+export const getEthiopianYearInt = (date: Date | null | undefined): number | null => {
+	if (!date || isNaN(date.getTime())) return null;
+
+	try {
+		const formatter = new Intl.DateTimeFormat('en-u-ca-ethiopic', {
+			year: 'numeric'
+		});
+
+		// Formats to something like "2018 ERA1" or "2018"
+		const formatted = formatter.format(date);
+
+		// Extract only the digits
+		const yearMatch = formatted.match(/\d+/);
+		return yearMatch ? parseInt(yearMatch[0], 10) : null;
+	} catch (e) {
+		return null;
+	}
+};
 export function formatETB(amount: number | null | undefined, useAmharic: boolean = false): string {
 	// Handle null/undefined/NaN amount
 	if (amount === null || amount === undefined || isNaN(amount)) {

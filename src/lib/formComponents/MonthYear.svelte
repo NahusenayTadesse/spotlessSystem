@@ -1,27 +1,32 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
+	import {
+		formatEthiopianYear,
+		formatEthiopianYearMonth,
+		getEthiopianYearInt
+	} from '$lib/global.svelte';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@lucide/svelte';
 
-	type Props = { value?: string }; // "March-2025"
-	let { value = $bindable('') }: Props = $props();
+	let { value = $bindable('') } = $props();
 
 	let isOpen = $state(false);
 
 	/* ---------- derived state ---------- */
 	const months = [
-		'October',
-		'November',
-		'December',
-		'January',
-		'February',
-		'March',
-		'April',
-		'May',
-		'June',
-		'July',
-		'August',
-		'September'
+		'መስከረም', // 1
+		'ጥቅምት', // 2
+		'ህዳር', // 3
+		'ታህሳስ', // 4
+		'ጥር', // 5
+		'የካቲት', // 6
+		'መጋቢት', // 7
+		'ሚያዝያ', // 8
+		'ግንቦት', // 9
+		'ሰኔ', // 10
+		'ሐምሌ', // 11
+		'ነሐሴ', // 12
+		'ጳጉሜ' // 13
 	];
 
 	function getEthiopianMonthAmharic(num: number): string {
@@ -45,7 +50,17 @@
 	}
 	const monthsShort = months.map((m) => m.slice(0, 3));
 
-	let selectedYear = $derived(value ? parseInt(value.split('_')[1]) : new Date().getFullYear());
+	// let selectedYear = $derived(
+	// 	value
+	// 		? getEthiopianYearInt(new Date(parseInt(value.split('_')[1])))
+	// 		: getEthiopianYearInt(new Date())
+	// );
+	// let selectedMonth = $derived(value ? value.split('_')[0] : '');
+	//
+	//
+	let selectedYear = $state(getEthiopianYearInt(new Date()));
+
+	// 2. Update your derived logic for selectedMonth
 	let selectedMonth = $derived(value ? value.split('_')[0] : '');
 
 	let displayValue = $derived(value || 'Select month and year');
@@ -124,14 +139,19 @@
 		return formatter.format(date);
 	};
 
-	const formatted = $derived(formatEthiopian(selectedYear, selectedMonth));
+	// const formatted = $derived(
+	// 	selectedYear
+	// 		? formatEthiopian(Number(selectedYear), selectedMonth)
+	// 		: formatEthiopianYearMonth(new Date().getFullYear(), new Date().getMonth() + 1)
+	// );
 
-	const previousYear = () => (selectedYear -= 1);
-	const nextYear = () => (selectedYear += 1);
+	const formatted = $derived(value ? `${selectedMonth} ${selectedYear}` : 'Select month and year');
+	const previousYear = () => (selectedYear ? (selectedYear -= 1) : 0);
+	const nextYear = () => (selectedYear ? (selectedYear += 1) : 0);
 </script>
 
 <Popover bind:open={isOpen}>
-	<PopoverTrigger>
+	<PopoverTrigger class="w-full">
 		<Button variant="outline" class="w-full justify-start text-left font-normal">
 			<!-- {displayValue.replaceAll('_', ' ')} -->
 			{formatted}
@@ -142,7 +162,7 @@
 		<div class="flex flex-col gap-4 p-4">
 			<!-- month grid -->
 			<div>
-				<h3 class="mb-3 text-center text-sm font-semibold">{getEthiopianYear(selectedYear)}</h3>
+				<h3 class="mb-3 text-center text-sm font-semibold">{selectedYear}</h3>
 				<div class="grid grid-cols-3 gap-2">
 					{#each months as month, i}
 						<Button
@@ -151,7 +171,7 @@
 							class="h-8"
 							onclick={() => selectMonth(month)}
 						>
-							{getEthiopianMonth(month)}
+							{month}
 						</Button>
 					{/each}
 				</div>
@@ -162,7 +182,7 @@
 				<Button variant="ghost" size="sm" onclick={previousYear}>
 					<ChevronLeftIcon class="size-4" />
 				</Button>
-				<span class="text-sm font-medium">{getEthiopianYear(selectedYear)}</span>
+				<span class="text-sm font-medium">{selectedYear}</span>
 				<Button variant="ghost" size="sm" onclick={nextYear}>
 					<ChevronRightIcon class="size-4" />
 				</Button>
