@@ -113,14 +113,8 @@ export const payrollRuns = mysqlTable(
 	'payroll_runs',
 	{
 		id: int('id').autoincrement().primaryKey(),
-		payPeriodStart: date('pay_period_start').notNull(),
-		payPeriodEnd: date('pay_period_end').notNull(),
-		paymentDate: date('payment_date').notNull(),
 		month: varchar('month', { length: 50 }).notNull(),
 		year: year('year').notNull(),
-		status: mysqlEnum('status', ['pending', 'processing', 'completed', 'failed'])
-			.notNull()
-			.default('pending'),
 		totalNet: decimal('total_net', { precision: 10, scale: 2 }),
 		totalDeductions: decimal('total_deductions', { precision: 10, scale: 2 }),
 		totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
@@ -129,6 +123,18 @@ export const payrollRuns = mysqlTable(
 	(t) => [unique().on(t.month, t.year)]
 );
 
+export const payrollReceipts = mysqlTable('payroll_receipts', {
+	id: int('id').autoincrement().primaryKey(),
+	payrollRunId: int('payroll_run_id').references(() => payrollRuns.id),
+	payPeriodStart: date('pay_period_start').notNull(),
+	payPeriodEnd: date('pay_period_end').notNull(),
+	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+	paidDate: date('paid_date').notNull(),
+	numberOfEmployees: int('number_of_employees').notNull(),
+	recieptLink: varchar('reciept_link', { length: 255 }),
+	...secureFields
+});
+
 export const payrollEntries = mysqlTable(
 	'payroll_entries',
 	{
@@ -136,18 +142,18 @@ export const payrollEntries = mysqlTable(
 		payrollId: int('payroll_id').references(() => payrollRuns.id),
 		staffId: int('staff_id').references(() => employee.id),
 		month: mysqlEnum('month', [
-			'January',
-			'February',
-			'March',
-			'April',
-			'May',
-			'June',
-			'July',
-			'August',
-			'September',
-			'October',
-			'November',
-			'December'
+			'መስከረም', // Meskerem
+			'ጥቅምት', // Tikimt
+			'ህዳር', // Hidar
+			'ታህሳስ', // Tahsas
+			'ጥር', // Tir
+			'የካቲት', // Yekatit
+			'መጋቢት', // Megabit
+			'ሚያዝያ', // Miyazya
+			'ግንቦት', // Ginbot
+			'ሰኔ', // Sene
+			'ሐምሌ', // Hamle
+			'ነሐሴ' // Nehasse
 		]).notNull(),
 		year: year('year').notNull(),
 		payPeriodStart: date('pay_period_start').notNull(),
@@ -158,6 +164,11 @@ export const payrollEntries = mysqlTable(
 		commissionAmount: decimal('commission_amount', { precision: 10, scale: 2 }),
 		bonusAmount: decimal('bonus_amount', { precision: 10, scale: 2 }),
 		allowances: decimal('allowances', { precision: 10, scale: 2 }),
+		transportAllowance: decimal('transport_allowance', { precision: 10, scale: 2 }),
+		positionAllowance: decimal('position_allowance', { precision: 10, scale: 2 }),
+		housingAllowance: decimal('housing_allowance', { precision: 10, scale: 2 }),
+		nonTaxableAllowance: decimal('non_taxable_allowance', { precision: 10, scale: 2 }),
+		grossAmount: decimal('gross_amount', { precision: 10, scale: 2 }),
 		netAmount: decimal('net_amount', { precision: 10, scale: 2 }),
 		paidAmount: decimal('paid_amount', { precision: 10, scale: 2 }),
 		taxAmount: decimal('tax_amount', { precision: 10, scale: 2 }),

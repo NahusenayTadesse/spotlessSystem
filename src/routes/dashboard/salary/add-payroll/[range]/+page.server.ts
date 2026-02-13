@@ -16,11 +16,19 @@ import {
 	taxType
 } from '$lib/server/db/schema';
 import { and, count, desc, asc, eq, isNull, sql } from 'drizzle-orm';
-import type { PageServerLoad } from '../$types';
+
+import { payrollSchema } from './schema';
+import type { PageServerLoad, Actions } from '../$types';
+import { setFlash, redirect } from 'sveltekit-flash-message/server';
+import { superValidate, setError, message } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
 
 export const load: PageServerLoad = async ({ params }) => {
+	const form = await superValidate(zod4(payrollSchema));
+
 	const { range } = params as { range: string };
 	const [y1, m1, d1, y2, m2, d2] = range.split('-');
+
 	const start = `${y1}-${m1}-${d1}`;
 	const end = `${y2}-${m2}-${d2}`;
 
@@ -163,5 +171,41 @@ export const load: PageServerLoad = async ({ params }) => {
 			missingSub.missedCount
 		);
 
-	return { payrollData, start, end };
+	return { payrollData, start, end, form };
+};
+
+import { fail } from '@sveltejs/kit';
+
+export const actions = {
+	runPayroll: async ({ request }) => {
+		const formData = await request.formData();
+		const payrollDataRaw = formData.get('payrollData');
+
+		// 1. Validate that data exists
+		if (!payrollDataRaw) {
+			return fail(400, { error: 'No payroll data provided.' });
+		}
+
+		try {
+			// 2. Parse the JSON string back into an array
+			const employees = JSON.parse(payrollDataRaw);
+
+			if (employees.length === 0) {
+				return fail(400, { error: 'Employee list is empty.' });
+			}
+
+			// 3. Logic: Perform your database updates or API calls here
+			console.log(`Processing payroll for ${employees.length} employees...`);
+
+			// Example: await db.payroll.createMany({ data: employees });
+
+			return {
+				success: true,
+				message: `Successfully processed payroll for ${employees.length} employees.`
+			};
+		} catch (err) {
+			console.error('Payroll Error:', err);
+			return fail(500, { error: 'Failed to process payroll data. Invalid format.' });
+		}
+	}
 };
