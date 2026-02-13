@@ -13,11 +13,14 @@ import {
 	bonuses,
 	commission,
 	employmentStatuses,
-	taxType
+	taxType,
+	payrollRuns,
+	payrollReceipts,
+	payrollEntries
 } from '$lib/server/db/schema';
 import { and, count, desc, asc, eq, isNull, sql } from 'drizzle-orm';
 
-import { payrollSchema } from './schema';
+import { payrollSchema, type EmployeeFormType } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
 import { superValidate, setError, message } from 'sveltekit-superforms';
@@ -175,37 +178,134 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 import { fail } from '@sveltejs/kit';
+import { saveUploadedFile } from '$lib/server/upload';
+export const actions: Actions = {
+	runPayroll: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(payrollSchema));
 
-export const actions = {
-	runPayroll: async ({ request }) => {
-		const formData = await request.formData();
-		const payrollDataRaw = formData.get('payrollData');
+		const { employees, start, end, reciept, month } = form.data;
 
-		// 1. Validate that data exists
-		if (!payrollDataRaw) {
-			return fail(400, { error: 'No payroll data provided.' });
-		}
+		const [m, y] = month.split('_');
 
+		const monthName = m;
+		const year = y;
+
+		const calculateTotal = (employees: any[], key: keyof EmployeeFormType): number => {
+			// If employees hasn't been populated by the effect yet, return 0
+			if (!employees || !Array.isArray(employees)) return 0;
+
+			const total = employees.reduce((sum, emp) => {
+				const value = emp[key];
+				// Cast to number just in case they are stringified numbers from an input
+				const numValue = typeof value === 'string' ? parseFloat(value) : value;
+				return sum + (typeof numValue === 'number' && !isNaN(numValue) ? numValue : 0);
+			}, 0);
+
+			return Math.round(total * 100) / 100;
+		};
+
+		// 1. Check for the existing record
 		try {
-			// 2. Parse the JSON string back into an array
-			const employees = JSON.parse(payrollDataRaw);
+			const result = await db.transaction(async (tx) => {
+				// 1. Check or Create Payroll Run
+				let payrollId: number;
+				const existingPayroll = await tx
+					.select({ id: payrollRuns.id })
+					.from(payrollRuns)
+					.where(and(eq(payrollRuns.month, monthName), eq(payrollRuns.year, year)))
+					.then((rows) => rows[0]);
 
-			if (employees.length === 0) {
-				return fail(400, { error: 'Employee list is empty.' });
-			}
+				if (existingPayroll) {
+					payrollId = existingPayroll.id;
+				} else {
+					const [newPayroll] = await tx
+						.insert(payrollRuns)
+						.values({
+							month: monthName,
+							year: year,
+							totalGross: '0',
+							totalTax: '0',
+							totalPosition: '0',
+							totalPenalities: '0',
+							totalHousing: '0',
+							totalNet: '0',
+							totalDeductions: '0',
+							createdBy: locals?.user?.id
+						})
+						.$returningId();
+					payrollId = newPayroll.id;
+				}
 
-			// 3. Logic: Perform your database updates or API calls here
-			console.log(`Processing payroll for ${employees.length} employees...`);
+				await tx
+					.update(payrollRuns)
+					.set({
+						totalNet: sql`${payrollRuns.totalNet} + ${calculateTotal(employees, 'netPay')}`,
+						totalGross: sql`${payrollRuns.totalGross} + ${calculateTotal(employees, 'gross')}`,
+						totalTransport: sql`${payrollRuns.totalTransport} + ${calculateTotal(employees, 'transportAllowance')}`,
+						totalHousing: sql`${payrollRuns.totalHousing} + ${calculateTotal(employees, 'housingAllowance')}`,
+						totalPosition: sql`${payrollRuns.totalPosition} + ${calculateTotal(employees, 'positionAllowance')}`,
+						totalDeductions: sql`${payrollRuns.totalDeductions} + ${calculateTotal(employees, 'deductions')}`,
+						totalTax: sql`${payrollRuns.totalTax} + ${calculateTotal(employees, 'taxAmount')}`,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(payrollRuns.id, payrollId));
 
-			// Example: await db.payroll.createMany({ data: employees });
+				// 2. Handle Receipt Upload
+				const recieptLink = reciept ? await saveUploadedFile(reciept) : null;
 
-			return {
-				success: true,
-				message: `Successfully processed payroll for ${employees.length} employees.`
-			};
+				await tx.insert(payrollReceipts).values({
+					payrollRunId: payrollId,
+					numberOfEmployees: employees.length,
+					payPeriodStart: start,
+					payPeriodEnd: end,
+					amount: String(calculateTotal(employees, 'netPay')),
+					recieptLink,
+					createdBy: locals?.user?.id
+				});
+
+				// 3. Prepare and Insert Payroll Entries
+				const entryValues = employees.map((emp) => ({
+					payrollId: payrollId,
+					staffId: Number(emp.id),
+					month: monthName as any, // Cast to your Enum type
+					year: year,
+					payPeriodStart: start,
+					payPeriodEnd: end,
+					basicSalary: emp.basicSalary.toString(),
+					overtimeAmount: emp.overtime.toString(),
+					deductions: emp.deductions.toString(),
+					attendancePenality: emp.attendancePenality.toString(),
+					commissionAmount: emp.commission.toString(),
+					bonusAmount: emp.bonus.toString(),
+					housingAllowance: emp.housingAllowance.toString(),
+					transportAllowance: emp.transportAllowance.toString(),
+					positionAllowance: emp.positionAllowance.toString(),
+					nonTaxableAllowance: emp.nonTaxable.toString(),
+					grossAmount: emp.gross.toString(),
+					taxAmount: emp.taxAmount.toString(),
+					netAmount: emp.netPay.toString(),
+					paidAmount: emp.netPay.toString(),
+					status: 'pending' as const,
+					createdBy: locals?.user?.id
+				}));
+
+				// Using upsert logic in case you re-run payroll for the same period
+				await tx.insert(payrollEntries).values(entryValues);
+
+				return message(form, {
+					type: 'success',
+					text: `Successfully Paid ${employees.length} employees`
+				});
+			});
 		} catch (err) {
-			console.error('Payroll Error:', err);
-			return fail(500, { error: 'Failed to process payroll data. Invalid format.' });
+			console.error(err?.message);
+			return message(
+				form,
+				{ type: 'error', text: `Error: ${err?.message}` },
+				{
+					status: 500
+				}
+			);
 		}
 	}
 };

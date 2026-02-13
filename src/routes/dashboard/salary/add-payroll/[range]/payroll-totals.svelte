@@ -33,7 +33,7 @@
 	class="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card p-4 lg:max-w-6xl"
 >
 	<!-- Gross Pay -->
-	<div class="flex items-center gap-2 border-r border-border pr-4">
+	<div class="flex items-center gap-2 pr-4">
 		<div class="flex size-8 items-center justify-center rounded-full bg-emerald-500/20">
 			<DollarSignIcon class="size-4 text-emerald-600 dark:text-emerald-400" />
 		</div>
@@ -46,7 +46,7 @@
 	</div>
 
 	<!-- Overtime -->
-	<div class="flex items-center gap-2 border-r border-border pr-4">
+	<div class="flex items-center gap-2 pr-4">
 		<div class="flex size-8 items-center justify-center rounded-full bg-blue-500/20">
 			<ClockIcon class="size-4 text-blue-600 dark:text-blue-400" />
 		</div>
@@ -59,7 +59,7 @@
 	</div>
 
 	<!-- Tax -->
-	<div class="flex items-center gap-2 border-r border-border pr-4">
+	<div class="flex items-center gap-2 pr-4">
 		<div class="flex size-8 items-center justify-center rounded-full bg-orange-500/20">
 			<MinusCircleIcon class="size-4 text-orange-600 dark:text-orange-400" />
 		</div>
@@ -72,7 +72,7 @@
 	</div>
 
 	<!-- Penalty -->
-	<div class="flex items-center gap-2 border-r border-border pr-4">
+	<div class="flex items-center gap-2 pr-4">
 		<div class="flex size-8 items-center justify-center rounded-full bg-red-500/20">
 			<AlertTriangleIcon class="size-4 text-red-600 dark:text-red-400" />
 		</div>

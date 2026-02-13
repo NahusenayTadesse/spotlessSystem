@@ -115,9 +115,17 @@ export const payrollRuns = mysqlTable(
 		id: int('id').autoincrement().primaryKey(),
 		month: varchar('month', { length: 50 }).notNull(),
 		year: year('year').notNull(),
+		totalSalaries: decimal('total_salaries', { precision: 10, scale: 2 }),
+		totalOvertime: decimal('total_overtime', { precision: 10, scale: 2 }),
+		totalTransport: decimal('total_transport', { precision: 10, scale: 2 }),
+		totalHousing: decimal('total_housing', { precision: 10, scale: 2 }),
+		totalPosition: decimal('total_position', { precision: 10, scale: 2 }),
 		totalNet: decimal('total_net', { precision: 10, scale: 2 }),
 		totalDeductions: decimal('total_deductions', { precision: 10, scale: 2 }),
-		totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
+		totalPenalities: decimal('total_penalities', { precision: 10, scale: 2 }),
+		totalTax: decimal('total_tax', { precision: 10, scale: 2 }),
+		totalGross: decimal('total_gross', { precision: 10, scale: 2 }),
+
 		...secureFields
 	},
 	(t) => [unique().on(t.month, t.year)]
@@ -171,6 +179,7 @@ export const payrollEntries = mysqlTable(
 		grossAmount: decimal('gross_amount', { precision: 10, scale: 2 }),
 		netAmount: decimal('net_amount', { precision: 10, scale: 2 }),
 		paidAmount: decimal('paid_amount', { precision: 10, scale: 2 }),
+		attendancePenality: decimal('attendance_penality', { precision: 10, scale: 2 }),
 		taxAmount: decimal('tax_amount', { precision: 10, scale: 2 }),
 		status: mysqlEnum('status', ['pending', 'approved', 'paid']).default('pending').notNull(),
 		paymentMethodId: int('payment_method_id').references(() => paymentMethods.id),

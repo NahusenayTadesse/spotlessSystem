@@ -9,7 +9,8 @@ import {
 	overTime,
 	deductions,
 	bonuses,
-	commission
+	commission,
+	payrollEntries
 } from '$lib/server/db/schema';
 import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -24,41 +25,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const year = y;
 
 	// 1. Create subqueries for your one-to-many relationships
-	const otSub = db
-		.select({
-			staffId: overTime.staffId,
-			total: sql<number>`COALESCE(SUM(${overTime.total}), 0)`.as('total_ot')
-		})
-		.from(overTime)
-		.groupBy(overTime.staffId)
-		.as('ot_sub');
-
-	const bonusSub = db
-		.select({
-			staffId: bonuses.staffId,
-			total: sql<number>`COALESCE(SUM(${bonuses.amount}), 0)`.as('total_bonus')
-		})
-		.from(bonuses)
-		.groupBy(bonuses.staffId)
-		.as('bonus_sub');
-
-	const commissionSub = db
-		.select({
-			staffId: commission.staffId,
-			total: sql<number>`COALESCE(SUM(${commission.amount}), 0)`.as('total_comm')
-		})
-		.from(commission)
-		.groupBy(commission.staffId)
-		.as('comm_sub');
-
-	const deductionSub = db
-		.select({
-			staffId: deductions.staffId,
-			total: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`.as('total_deduct')
-		})
-		.from(deductions)
-		.groupBy(deductions.staffId)
-		.as('deduct_sub');
 
 	// 2. Main Query
 	const payrollData = await db
@@ -66,44 +32,30 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			id: employee.id,
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
 			department: department.name,
-			basicSalary: salaries.amount,
-			positionAllowance: salaries.positionAllowance,
-			housingAllowance: salaries.housingAllowance,
-			transport: salaries.transportationAllowance,
-			nonTaxable: salaries.nonTaxAllowance,
+			basicSalary: payrollEntries.basicSalary,
+			positionAllowance: payrollEntries.positionAllowance,
+			housingAllowance: payrollEntries.housingAllowance,
+			transport: payrollEntries.transportAllowance,
+			nonTaxable: payrollEntries.nonTaxableAllowance,
 			paymentMethod: paymentMethods.name,
 			account: staffAccounts.accountDetail,
 			bank: paymentMethods.name,
-			overTime: otSub.total,
-			bonus: bonusSub.total,
-			commision: commissionSub.total,
-			deductions: deductionSub.total,
-			gross: sql<number>`
-            COALESCE(${salaries.amount}, 0) +
-            COALESCE(${otSub.total}, 0) +
-            COALESCE(${bonusSub.total}, 0) +
-            COALESCE(${commissionSub.total}, 0) +
-            COALESCE(${salaries.nonTaxAllowance}, 0) +
-            COALESCE(${salaries.housingAllowance}, 0) +
-            COALESCE(${salaries.transportationAllowance}, 0) +
-            COALESCE(${salaries.positionAllowance}, 0)
-        `
+			overTime: payrollEntries.overtimeAmount,
+			bonus: payrollEntries.bonusAmount,
+			commision: payrollEntries.commissionAmount,
+			deductions: payrollEntries.deductions,
+			gross: payrollEntries.grossAmount
 		})
-		.from(employee)
+		.from(payrollEntries)
+		.leftJoin(employee, eq(payrollEntries.staffId, employee.id))
 		.leftJoin(department, eq(department.id, employee.departmentId))
-		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(
 			staffAccounts,
 			and(eq(staffAccounts.staffId, employee.id), eq(staffAccounts.isActive, true))
 		)
-		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
-		// Join the subqueries instead of the raw tables
-		.leftJoin(otSub, eq(otSub.staffId, employee.id))
-		.leftJoin(bonusSub, eq(bonusSub.staffId, employee.id))
-		.leftJoin(commissionSub, eq(commissionSub.staffId, employee.id))
-		.leftJoin(deductionSub, eq(deductionSub.staffId, employee.id))
-		.where(eq(employee.isActive, true));
 
+		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
+		.where(and(eq(payrollEntries.month, month), eq(payrollEntries.year, Number(year))));
 	return {
 		payrollData,
 		month,

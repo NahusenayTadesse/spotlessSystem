@@ -1,17 +1,15 @@
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import DataTableActions from './data-table-actions.svelte'; // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-import Statuses from '$lib/components/Table/statuses.svelte';
-import { formatEthiopianDate, formatETB } from '$lib/global.svelte';
+import { formatETB } from '$lib/global.svelte';
 import { getTaxTypes } from './data.remote';
 
 interface TaxBracket {
-	value: number;
-	name: string;
-	rate: number;
-	threshold: number; // or string, depending on your DB driver
-	deduction: number;
+	value: number | null;
+	name: string | null;
+	rate: number | null | string;
+	threshold: number | string | null; // or string, depending on your DB driver
+	deduction: number | null | string;
 }
 
 const calculateTax = (amount: number, taxTypes: TaxBracket[]): number => {
@@ -25,19 +23,26 @@ const calculateTax = (amount: number, taxTypes: TaxBracket[]): number => {
 		return 0;
 	}
 
-	return bracket.rate * amount - bracket.deduction;
+	return Number(bracket.rate) * amount - Number(bracket.deduction);
 };
 
-async function tax() {
-	const types = await getTaxTypes();
-	const taxableIncome = Number(Number(row.origional.gross) - Number(row.original.nonTaxable));
-	const tax = calculateTax(taxableIncome, types);
+// async function tax(row) {
+// 	const types = await getTaxTypes();
+// 	const taxableIncome = Number(Number(row.origional.gross) - Number(row.original.nonTaxable));
+// 	const tax = calculateTax(taxableIncome, types);
 
-	return formatETB(tax, true);
-}
-
+// 	return formatETB(tax, true);
+// }
+//
+//
+let types: TaxBracket[] = [];
+export const initColumns = async () => {
+	types = await getTaxTypes();
+};
 export const columns = [
 	// 1. Row Index
+	//
+
 	{
 		id: 'index',
 		header: '#',
@@ -79,22 +84,21 @@ export const columns = [
 		sortable: true
 	},
 
-	// --- Payroll Specific Fields ---
-
-	// 4. Pay Period
-	// {
-	// 	accessorKey: 'payPeriod',
-	// 	header: 'Pay Period',
-	// 	// Show 'N/A' if the payroll entry is null
-	// 	cell: (info) => info.getValue() || '— N/A —',
-	// 	sortable: false // Usually not sortable
-	// },
-
-	// 5. Basic Salary
-	//
+	{
+		accessorKey: 'basicSalary',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Basic Salary',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.basicSalary);
+		}
+	},
 
 	{
-		accessorKey: 'overTime',
+		accessorKey: 'overtime',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Over Time',
@@ -102,20 +106,7 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.overTime);
-		}
-	},
-
-	{
-		accessorKey: 'nonTaxable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Non-Taxable',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return formatETB(row.original.nonTaxable);
+			return formatETB(row.original.overtime);
 		}
 	},
 
@@ -128,7 +119,7 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.transport);
+			return formatETB(row.original.transportAllowance, true);
 		}
 	},
 
@@ -141,7 +132,7 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.positionAllowance);
+			return formatETB(row.original.positionAllowance, true);
 		}
 	},
 
@@ -154,7 +145,20 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.original.housingAllowance);
+			return formatETB(row.original.housingAllowance, true);
+		}
+	},
+
+	{
+		accessorKey: 'nonTaxable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Non-Taxable',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.nonTaxable, true);
 		}
 	},
 
@@ -167,45 +171,20 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: ({ row }) => {
-			return formatETB(row.origional.gross);
+			return formatETB(row.original.gross, true);
 		}
 	},
 
 	{
-		accessorKey: 'taxable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Gross Salary',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return formatETB(Number(row.origional.gross) - Number(row.original.nonTaxable));
-		}
-	},
-
-	// 6. Deductions
-	{
-		id: 'tax',
-		accessorKey: '',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Tax',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return tax();
-		}
-	},
-
-	{
-		accessorKey: 'missingDays',
+		accessorKey: 'absent',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Absent',
 				onclick: column.getToggleSortingHandler()
-			})
+			}),
+		cell: ({ row }) => {
+			return row.original.absent ? row.original.absent : 0;
+		}
 	},
 	{
 		id: 'penality',
@@ -216,28 +195,74 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			const missingDays = Number(row.original.missingDays);
-			const totalPay = Number(row.original.totalPay);
+			// const missingDays = Number(row.original.absentDays);
+			// const totalPay = Number(row.original.basicSalary);
 
-			const amount = missingDays * (totalPay / 30);
+			// const amount = missingDays * (totalPay / 30);
 
-			return amount.toFixed(2);
+			return formatETB(row.original.attendancePenality, true);
+		}
+	},
+
+	// {
+	// 	id: 'tax',
+	// 	accessorKey: '',
+	// 	header: ({ column }) =>
+	// 		renderComponent(DataTableSort, {
+	// 			name: 'Tax',
+	// 			onclick: column.getToggleSortingHandler()
+	// 		}),
+	// 	cell: ({ row }) => {
+	// 		const taxableIncome = Number(Number(row.original.gross) - Number(row.original.nonTaxable));
+	// 		const tax = calculateTax(taxableIncome, types);
+
+	// 		return formatETB(tax, true);
+	// 	}
+	// },
+
+	{
+		accessorKey: 'taxable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Taxable Salary',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.taxable, true);
+		}
+	},
+	{
+		id: 'taxAmount',
+		accessorKey: '',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Tax',
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			return formatETB(row.original.taxAmount, true);
 		}
 	},
 
 	{
 		accessorKey: '',
-		header: 'Payable Amount',
+		header: 'Net Pay',
 		cell: ({ row }) => {
-			const missingDays = Number(row.original.missingDays);
-			const totalPay = Number(row.original.totalPay);
-			const taxType = Number(row.original.totalPay) >= 10000 ? 30 : 20;
+			// const missingDays = Number(row.original.absentDays);
+			// const salary = Number(row.original.basicSalary);
 
-			const penalityAmount = missingDays * (totalPay / 30);
-			const tax = (totalPay * taxType) / 100;
-			const total = totalPay - (penalityAmount + tax);
+			// const amount = missingDays * (salary / 30);
 
-			return total.toFixed(2);
+			// const totalPay = Number(row.original.gross);
+
+			// const taxableIncome = Number(Number(row.original.gross) - Number(row.original.nonTaxable));
+			// const tax = calculateTax(taxableIncome, types);
+
+			// const penalityAmount = missingDays * (totalPay / 30);
+			// const total = totalPay - (penalityAmount + Number(tax));
+
+			return formatETB(row.original.netPay, true);
 		}
 	},
 
@@ -261,13 +286,5 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: (info) => info.getValue() || 'Account Not Found' // Default to UNPROCESSED if payroll entry is missing
-	},
-
-	// 9. Payment Date
-	{
-		accessorKey: 'paymentDate',
-		header: 'Payment Date',
-		cell: (info) => formatEthiopianDate(info.getValue()) || formatEthiopianDate(new Date()),
-		sortable: true
 	}
 ];

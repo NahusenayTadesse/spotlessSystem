@@ -10,13 +10,16 @@
 	import { Button } from '$lib/components/ui/button';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 
-	let month = $state(
-		new Date(new Date().setMonth(new Date().getMonth() + 1)).toLocaleDateString(undefined, {
-			month: 'long'
-		}) +
-			'_' +
-			new Date().getFullYear()
-	);
+	// let month = $state(
+	// 	new Date(new Date().setMonth(new Date().getMonth() + 1)).toLocaleDateString(undefined, {
+	// 		month: 'long'
+	// 	}) +
+	// 		'_' +
+	// 		new Date().getFullYear()
+	// );
+	//
+
+	let month = $state('');
 
 	let link = $derived(`${month}`);
 
@@ -86,21 +89,34 @@
 {:then payrollData}
 	{#if data?.payrollData.length === 0}
 		<div class="flex h-96 w-5xl flex-col items-center justify-center">
-			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
-				<Frown class="h-12 w-16  animate-bounce" />
-				No salaries or staff data added yet for {data.month}
-				{getEthiopianYear(data.year)}
-			</p>
-			<!-- <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button> -->
+			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
+			<div class="flex items-center gap-2">
+				<label class="sr-only" for="month-select">Month</label>
+				<MonthYear bind:value={month} />
+			</div>
+
+			<Button
+				href={`/dashboard/salary/${link}`}
+				aria-label="Go to selected month and year"
+				class="flex items-center gap-2"
+			>
+				Go
+				<ArrowRight class="h-4 w-4" />
+			</Button>
 		</div>
+		<Frown class="h-12 w-16  animate-bounce" />
+		No salaries added yet for {data.month}
+		{data.year}
+
+		<!-- <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button> -->
 	{:else}
 		<div
 			class="mx-auto max-w-4xl gap-4 rounded-lg bg-white/80 p-4 shadow-sm backdrop-blur-sm lg:flex lg:items-center lg:justify-between dark:bg-gray-800/80"
 		>
 			<div class="flex-1">
 				<h1 class="text-lg font-semibold text-gray-900 lg:text-2xl dark:text-gray-100">
-					Salaries — {getEthiopianMonth(data?.month)}
-					{getEthiopianYear(data.year)}
+					Salaries — {data?.month}
+					{data.year}
 				</h1>
 				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
 					Total Employees: <span class="font-medium text-gray-800 dark:text-gray-100"
