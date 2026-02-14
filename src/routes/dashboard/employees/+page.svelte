@@ -45,7 +45,7 @@
 				'families'
 			]}
 		/>
-		<DataTable data={filteredList} {columns} />
+		<DataTable data={filteredList} class="w-300!" {columns} />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

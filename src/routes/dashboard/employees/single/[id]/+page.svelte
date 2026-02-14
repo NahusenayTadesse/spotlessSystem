@@ -3,6 +3,7 @@
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import { Button } from '$lib/components/ui/button/index';
+	import { page } from '$app/state';
 
 	import {
 		BriefcaseBusiness,
@@ -18,7 +19,8 @@
 		FileX,
 		CalendarDays,
 		Phone,
-		Banknote
+		Banknote,
+		IdCardLanyard
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -141,6 +143,10 @@
 					statusList={data.statusList}
 				/>
 			{/if}
+
+			<Button href="/dashboard/employees/single/{page.params.id}/id-maker">
+				<IdCardLanyard /> ID Maker</Button
+			>
 		</div>
 		<div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
 			<Section title="Identity" IconComp={IdCard} style="identityIcon">
