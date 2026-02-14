@@ -12,7 +12,8 @@ import {
 	commission,
 	payrollEntries,
 	payrollReceipts,
-	payrollRuns
+	payrollRuns,
+	user
 } from '$lib/server/db/schema';
 import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -57,9 +58,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(and(eq(payrollEntries.month, month), eq(payrollEntries.year, Number(year))));
 
 	const payrollReciept = await db
-		.select()
+		.select({
+			id: payrollReceipts.id,
+			payPeriodStart: payrollReceipts.payPeriodStart,
+			payPeriodEnd: payrollReceipts.payPeriodEnd,
+			amount: payrollReceipts.amount,
+			paidDate: payrollReceipts.paidDate,
+			numberOfEmployees: payrollReceipts.numberOfEmployees,
+			recieptLink: payrollReceipts.recieptLink,
+			uploadedBy: user.name,
+			uploadedById: user.id
+		})
 		.from(payrollReceipts)
 		.leftJoin(payrollRuns, eq(payrollReceipts.payrollRunId, payrollRuns.id))
+		.leftJoin(user, eq(payrollReceipts.createdBy, user.id))
 		.where(and(eq(payrollRuns.month, month), eq(payrollRuns.year, Number(year))));
 
 	return {

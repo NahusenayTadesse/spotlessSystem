@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { add } from './schema';
 import { db } from '$lib/server/db';
-import { salaries, employee } from '$lib/server/db/schema/';
+import { salaries, employee, staffContacts } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import { departments, empStatus, eduLevel } from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
@@ -54,6 +54,10 @@ export const actions: Actions = {
 			departmentId,
 			educationalLevel,
 			salary,
+			positionAllowance,
+			transportAllowance,
+			housingAllowance,
+			nonTaxAllowance,
 			hireDate,
 			govtId,
 			photo,
@@ -136,6 +140,24 @@ export const actions: Actions = {
 				// Insert salary
 				await tx.insert(salaries).values({
 					amount: salary,
+					positionAllowance,
+					transportAllowance,
+					housingAllowance,
+					nonTaxAllowance,
+					staffId: staffMember.id,
+					createdBy: locals.user?.id
+				});
+
+				await tx.insert(staffContacts).values({
+					contactType: 'Phone',
+					contactDetail: phone,
+					staffId: staffMember.id,
+					createdBy: locals.user?.id
+				});
+
+				await tx.insert(staffContacts).values({
+					contactType: 'Email',
+					contactDetail: email,
 					staffId: staffMember.id,
 					createdBy: locals.user?.id
 				});

@@ -218,13 +218,13 @@
 					placeholder="Upload a FIDA or A recent ID of Employee"
 				/>
 				<Input
-					label="Contract"
-					name="contract"
+					label="Photo"
+					name="photo"
 					{form}
 					{errors}
 					type="file"
 					required
-					placeholder="Upload the contract in a PDF format Max 10MB"
+					placeholder="Upload a recent photo of Employee 4 X 4 with good Quality, Max 10MB"
 				/>
 			</div>
 		</section>
@@ -275,19 +275,45 @@
 				/>
 				<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
 				<Input
-					label="Photo"
-					name="photo"
+					label="Tranport Allowance (ETB)"
+					name="transportAllowance"
 					{form}
 					{errors}
-					type="file"
+					type="number"
 					required
-					placeholder="Upload a recent photo of Employee 4 X 4 with good Quality, Max 10MB"
+				/>
+			</div>
+			<div class={rowStyle}>
+				<Input
+					label="Housing Allowance (ETB)"
+					name="housingAllowance"
+					{form}
+					{errors}
+					type="number"
+					required
+				/>
+				<Input
+					label="Non Tax Allowance (ETB)"
+					name="nonTaxAllowance"
+					{form}
+					{errors}
+					type="number"
+					required
+				/>
+
+				<Input
+					label="Positional Allowance (ETB)"
+					name="positionAllowance"
+					{form}
+					{errors}
+					type="number"
+					required
 				/>
 			</div>
 		</section>
 
 		<!-- 4. PAYROLL -->
-		<section class={sectionStyle}>
+		<!-- <section class={sectionStyle}>
 			<h4>Payroll Settings</h4>
 			<div class={rowStyle}>
 				<Input
@@ -320,7 +346,7 @@
 					required
 				/>
 			</div>
-		</section>
+		</section> -->
 
 		<!-- 5. SUBMIT -->
 		<section class={sectionStyle}>

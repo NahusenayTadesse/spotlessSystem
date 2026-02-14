@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { columns } from './columns.svelte';
+	import { columns, reciepts } from './columns.svelte';
 
 	let { data } = $props();
 
@@ -157,7 +157,7 @@
 				</div>
 
 				<Button
-					href={`/dashboard/salary/${link}`}
+					onclick={() => goto(`/dashboard/salary/${link}`)}
 					aria-label="Go to selected month and year"
 					class="flex items-center gap-2"
 				>
@@ -168,6 +168,17 @@
 		</div>
 		<PayrollTotals {totals} />
 		<br />
+
+		<div class="mb-4 flex flex-col">
+			<h4>Bank Statements</h4>
+			<DataTable
+				data={data?.payrollReciept}
+				class="w-6xl!"
+				columns={reciepts}
+				fileName="Bank Statements"
+			/>
+		</div>
+
 		<Filter
 			data={data?.payrollData}
 			bind:filteredList

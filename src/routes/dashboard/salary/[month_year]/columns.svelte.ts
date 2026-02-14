@@ -1,7 +1,7 @@
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-import { formatETB } from '$lib/global.svelte';
+import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import { getTaxTypes } from './data.remote';
 
 interface TaxBracket {
@@ -252,5 +252,109 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: (info) => info.getValue() || 'Account Not Found' // Default to UNPROCESSED if payroll entry is missing
+	}
+];
+
+export const reciepts = [
+	// 1. Row Index
+	//
+
+	{
+		id: 'index',
+		header: '#',
+		cell: (info) => {
+			const rowIndex = info.table.getRowModel().rows.findIndex((row) => row.id === info.row.id);
+			return rowIndex + 1;
+		},
+		enableSorting: false
+	},
+	// 2. Staff Name (Assumes staffName is included in the SELECT)
+	{
+		accessorKey: 'numberOfEmployees',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'No of Employees',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => info.getValue() + ' Employees'
+	},
+	{
+		accessorKey: 'amount',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Amount',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => formatETB(info.getValue(), true)
+	},
+	{
+		accessorKey: 'paidDate',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Amount',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => formatEthiopianDate(info.getValue())
+	},
+	{
+		accessorKey: 'payPeriodStart',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Start Date',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => formatEthiopianDate(info.getValue())
+	},
+	{
+		accessorKey: 'payPeriodEnd',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'End Date',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => formatEthiopianDate(info.getValue())
+	},
+	{
+		accessorKey: 'recieptLink',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Bank Statement',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		// Using DataTableLinks to view staff profile
+		cell: ({ row }) => {
+			// Use staffId for the link, but ensure staffName is selected in the query
+			return renderComponent(DataTableLinks, {
+				id: row.original.recieptLink,
+				name: 'View Bank Statement', // Fallback for safety
+				link: '/dashboard/files',
+				target: '_blank'
+			});
+		}
+	},
+	{
+		accessorKey: 'uploadedBy',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Paying Officer',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		// Using DataTableLinks to view staff profile
+		cell: ({ row }) => {
+			// Use staffId for the link, but ensure staffName is selected in the query
+			return renderComponent(DataTableLinks, {
+				id: row.original.uploadedById,
+				name: row.original.uploadedBy, // Fallback for safety
+				link: '/dashboard/admin-panel/user',
+				target: '_blank'
+			});
+		}
 	}
 ];

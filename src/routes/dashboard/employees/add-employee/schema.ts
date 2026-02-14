@@ -44,9 +44,21 @@ export const add = z.object({
 		}
 	),
 
-	pensionType: z.coerce.number('Pension ').min(0, 'Pension cannot be negative'),
-	taxType: z.coerce.number('Tax ').min(0, 'Tax type cannot be negative'),
-	salary: z.coerce.number('Salary ').min(0, 'Salary cannot be negative'),
+	// pensionType: z.coerce.number('Pension ').min(0, 'Pension cannot be negative'),
+	// taxType: z.coerce.number('Tax ').min(0, 'Tax type cannot be negative'),
+	salary: z.coerce.number('Salary is required ').min(0, 'Salary cannot be negative'),
+	positionAllowance: z.coerce
+		.number('Positional Allowance is required')
+		.min(0, 'Positional Allowance cannot be negative'),
+	nonTaxAllowance: z.coerce
+		.number('Non Taxable Allowance ')
+		.min(0, 'Non Taxable cannot be negative'),
+	transportAllowance: z.coerce
+		.number('Transport Allowance is required ')
+		.min(0, 'Transport Allowance cannot be negative'),
+	housingAllowance: z.coerce
+		.number('Housing Allowance is required ')
+		.min(0, 'Housing Allowance cannot be negative'),
 	photo: z
 		.instanceof(File, {
 			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'

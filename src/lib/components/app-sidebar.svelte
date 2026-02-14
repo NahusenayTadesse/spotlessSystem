@@ -64,6 +64,8 @@
 			url: '/dashboard/salary',
 			icon: Banknote,
 			items: [
+				{ title: 'Paid Salaries', url: '/dashboard/salary', icon: Banknote },
+				{ title: 'UnPaid Salaries', url: '/dashboard/salary/add-payroll', icon: BanknoteArrowUp },
 				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
 				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
 			]

@@ -14,6 +14,9 @@
 		confirmed: { icon: BadgeCheck, colour: 'bg-green-400' },
 		paid: { icon: BadgeCheck, colour: 'bg-green-400' },
 
+		complete: { icon: BadgeCheck, colour: 'bg-green-400' },
+		incomplete: { icon: OctagonMinus, colour: 'bg-red-500' },
+
 		/* cancelled / unpaid */
 		cancelled: { icon: OctagonMinus, colour: 'bg-red-500' },
 		unpaid: { icon: OctagonMinus, colour: 'bg-red-500' },

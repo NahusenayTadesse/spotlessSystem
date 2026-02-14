@@ -5,9 +5,13 @@ import {
 	employmentStatuses,
 	educationalLevel,
 	employeeTermination,
-	missingDays
+	missingDays,
+	site,
+	employeeGuarantor,
+	staffAccounts,
+	staffFamilies
 } from '$lib/server/db/schema';
-import { eq, and, sql, isNull, count } from 'drizzle-orm';
+import { eq, and, sql, isNull, count, countDistinct } from 'drizzle-orm';
 import { edit } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { superValidate, message } from 'sveltekit-superforms';
@@ -20,21 +24,39 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Handling potential nulls for both name parts
 			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
 			department: department.name,
+			site: site.name,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
-			missingDays: count(missingDays.id),
+			absent: countDistinct(missingDays.id),
+			guarantor: countDistinct(employeeGuarantor.id),
+			accounts: countDistinct(staffAccounts.id),
+			families: countDistinct(staffFamilies.id),
 			active: employee.isActive,
 			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`,
 			joined: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`
 		})
 		.from(employee)
+		.leftJoin(site, eq(site.id, employee.siteId))
 		.leftJoin(department, eq(department.id, employee.departmentId))
 		.leftJoin(missingDays, eq(missingDays.staffId, employee.id))
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
 		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel))
 		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
+		.leftJoin(staffAccounts, eq(staffAccounts.staffId, employee.id))
+		.leftJoin(employeeGuarantor, eq(employeeGuarantor.staffId, employee.id))
+		.leftJoin(staffFamilies, eq(staffFamilies.staffId, employee.id))
 		.where(eq(employee.isActive, true))
-		.groupBy(employee.id);
+		.groupBy(
+			employee.id,
+			employee.name,
+			employee.fatherName,
+			department.name,
+			site.name,
+			educationalLevel.name,
+			employmentStatuses.name,
+			employee.isActive,
+			employee.hireDate
+		);
 
 	staffList = staffList.map((r) => ({ ...r, years: Number(r.years) }));
 

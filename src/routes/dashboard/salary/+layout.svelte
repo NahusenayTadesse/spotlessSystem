@@ -9,12 +9,14 @@
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button
 		href="/dashboard/salary"
-		variant={page.url.pathname === '/dashboard/salary' ? 'default' : 'outline'}
-		><Sheet /> Paid Salary History</Button
+		variant={page.url.pathname.startsWith('/dashboard/salary') &&
+		!page.url.pathname.includes('/dashboard/salary/add-payroll')
+			? 'default'
+			: 'outline'}><Sheet /> Paid Salary History</Button
 	>
 	<Button
 		href="/dashboard/salary/add-payroll"
-		variant={page.url.pathname === '/dashboard/salary/add-payroll' ? 'default' : 'outline'}
+		variant={page.url.pathname.includes('/dashboard/salary/add-payroll') ? 'default' : 'outline'}
 		><Sheet /> Unpaid Salaries</Button
 	>
 </div>

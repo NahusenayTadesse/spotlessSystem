@@ -1,5 +1,6 @@
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+import Stasuses from '$lib/components/Table/statuses.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { superValidate } from 'sveltekit-superforms';
@@ -58,7 +59,7 @@ export const columns = [
 		sortable: true
 	},
 	{
-		accessorKey: 'missingDays',
+		accessorKey: 'absent',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Missing Days',
@@ -71,7 +72,7 @@ export const columns = [
 				data: form,
 				id: row.original.id,
 				name: row.original.name,
-				count: row.original.missingDays
+				count: row.original.absent
 			});
 		}
 	},
@@ -105,6 +106,24 @@ export const columns = [
 			}),
 		sortable: true,
 		filterVariant: 'range'
+	},
+
+	{
+		accessorKey: 'missingInformation',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Missing information',
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			// You can pass whatever you need from `row.original` to the component
+			return renderComponent(Stasuses, {
+				status:
+					row.original.guarantor > 0 && row.original.families > 0 && row.original.accounts > 0
+						? 'Complete'
+						: 'Incomplete'
+			});
+		}
 	},
 
 	{
