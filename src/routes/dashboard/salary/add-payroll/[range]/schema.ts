@@ -5,6 +5,7 @@ export const payrollSchema = z.object({
 	month: z.string('Month is required'),
 	start: z.string(),
 	end: z.string(),
+	paymentDate: z.string('Payment Date is required'),
 
 	employees: z.array(
 		z.object({
@@ -17,7 +18,7 @@ export const payrollSchema = z.object({
 			transportAllowance: z.coerce.number().default(0),
 			nonTaxable: z.coerce.number().default(0),
 			account: z.string().nullable(),
-			bank: z.string().nullable(),
+			paymentMethodId: z.coerce.number().nullable(),
 			employmentStatus: z.string().nullable(),
 			overtime: z.coerce.number().default(0),
 			bonus: z.coerce.number().default(0),

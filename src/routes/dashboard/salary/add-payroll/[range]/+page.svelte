@@ -50,23 +50,24 @@
 				(emp): EmployeeFormType => ({
 					...emp,
 					// Ensure numeric fields from LEFT JOINs aren't null
+					id: emp.id,
 					positionAllowance: emp.positionAllowance ?? 0,
 					housingAllowance: emp.housingAllowance ?? 0,
 					transportAllowance: emp.transportAllowance ?? 0,
 					nonTaxable: emp.nonTaxable ?? 0,
 					overtime: emp.overtime ?? 0,
 					bonus: emp.bonus ?? 0,
+					paymentMethodId: emp.paymentMethodId ?? null,
 					absent: emp.absent ?? 0,
 					attendancePenality: emp.attendancePenality ?? 0,
 					commission: emp.commission ?? 0,
 					deductions: emp.deductions ?? 0,
 					gross: emp.gross ?? 0,
 					taxable: emp.taxable ?? 0,
-					taxAmount: emp.taxAmount ?? 0,
+					taxAmount: Number(emp.taxAmount) ?? 0,
 					netPay: emp.netPay ?? 0,
 					// Ensure strings aren't null if the schema doesn't allow it
 					account: emp.account ?? '',
-					bank: emp.bank ?? '',
 					employmentStatus: emp.employmentStatus ?? ''
 				})
 			);
@@ -120,12 +121,13 @@
 			<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
 		</div>
 	{:else}
-		{formatEthiopianYearMonth(2026, 4)}
+		{$form?.employees[2]?.paymentMethodId}
 		<DialogComp
 			title="Finalise Payroll for Filtered Employees {filteredList?.length}"
 			variant="default"
 			IconComp={BanknoteArrowUp}
 		>
+			<Errors allErrors={$allErrors} />
 			<div class="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
 				<h3 class="mb-3 text-xs font-semibold tracking-wider text-slate-500 uppercase">
 					Payroll Summary
@@ -171,6 +173,7 @@
 				<MonthYear bind:value={$form.month} />
 
 				<InputComp label="" type="hidden" name="employees" {form} {errors} />
+				<InputComp label="Payment Date" type="date" name="paymentDate" {form} {errors} />
 				<InputComp
 					label="Upload Bank Statement"
 					type="file"

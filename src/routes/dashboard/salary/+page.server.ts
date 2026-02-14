@@ -2,7 +2,7 @@ function prevMonthLabel(): string {
 	const d = new Date();
 	d.setMonth(d.getMonth()); // roll back one month
 
-	const month = new Date().getMonth(); // "April"
+	const month = new Date().getMonth() + 2; // "April"
 	const year = d.getFullYear(); // 2025
 
 	return formatEthiopianYearMonth(year, month).replace(' ', '_');

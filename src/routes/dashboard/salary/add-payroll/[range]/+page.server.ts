@@ -130,6 +130,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			nonTaxable: salaries.nonTaxAllowance,
 			account: staffAccounts.accountDetail,
 			bank: paymentMethods.name,
+			paymentMethodId: paymentMethods.id,
 			employmentStatus: employmentStatuses.name,
 			overtime: otSub.total,
 			bonus: bonusSub.total,
@@ -183,7 +184,7 @@ export const actions: Actions = {
 	runPayroll: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(payrollSchema));
 
-		const { employees, start, end, reciept, month } = form.data;
+		const { employees, start, end, reciept, month, paymentDate } = form.data;
 
 		const [m, y] = month.split('_');
 
@@ -212,7 +213,7 @@ export const actions: Actions = {
 				const existingPayroll = await tx
 					.select({ id: payrollRuns.id })
 					.from(payrollRuns)
-					.where(and(eq(payrollRuns.month, monthName), eq(payrollRuns.year, year)))
+					.where(and(eq(payrollRuns.month, monthName), eq(payrollRuns.year, Number(year))))
 					.then((rows) => rows[0]);
 
 				if (existingPayroll) {
@@ -258,6 +259,7 @@ export const actions: Actions = {
 					numberOfEmployees: employees.length,
 					payPeriodStart: start,
 					payPeriodEnd: end,
+					paidDate: paymentDate,
 					amount: String(calculateTotal(employees, 'netPay')),
 					recieptLink,
 					createdBy: locals?.user?.id
@@ -267,26 +269,45 @@ export const actions: Actions = {
 				const entryValues = employees.map((emp) => ({
 					payrollId: payrollId,
 					staffId: Number(emp.id),
-					month: monthName as any, // Cast to your Enum type
-					year: year,
+					month: monthName.trim() as
+						| 'መስከረም'
+						| 'ጥቅምት'
+						| 'ህዳር'
+						| 'ታህሳስ'
+						| 'ጥር'
+						| 'የካቲት'
+						| 'መጋቢት'
+						| 'ሚያዝያ'
+						| 'ግንቦት'
+						| 'ሰኔ'
+						| 'ሐምሌ'
+						| 'ነሐሴ',
+					year: Number(year),
 					payPeriodStart: start,
 					payPeriodEnd: end,
 					basicSalary: emp.basicSalary.toString(),
 					overtimeAmount: emp.overtime.toString(),
-					deductions: emp.deductions.toString(),
-					attendancePenality: emp.attendancePenality.toString(),
+					deductions: emp.deductions.toString(), // Matches schema key
 					commissionAmount: emp.commission.toString(),
 					bonusAmount: emp.bonus.toString(),
-					housingAllowance: emp.housingAllowance.toString(),
+					allowances: '0',
 					transportAllowance: emp.transportAllowance.toString(),
 					positionAllowance: emp.positionAllowance.toString(),
+					housingAllowance: emp.housingAllowance.toString(),
 					nonTaxableAllowance: emp.nonTaxable.toString(),
 					grossAmount: emp.gross.toString(),
-					taxAmount: emp.taxAmount.toString(),
 					netAmount: emp.netPay.toString(),
-					paidAmount: emp.netPay.toString(),
-					status: 'pending' as const,
-					createdBy: locals?.user?.id
+					paidAmount: emp.netPay.toString(), // Added to ensure the record shows what was paid
+					attendancePenality: emp.attendancePenality.toString(),
+					taxAmount: emp.taxAmount.toString(),
+					status: 'paid' as const,
+					paymentMethodId: emp.paymentMethodId ? Number(emp.paymentMethodId) : null,
+					createdBy: locals?.user?.id,
+					recieptLink,
+					notes: 'Salary Paid',
+					paymentDate
+
+					// notes and receiptLink will default to null/default automatically
 				}));
 
 				// Using upsert logic in case you re-run payroll for the same period

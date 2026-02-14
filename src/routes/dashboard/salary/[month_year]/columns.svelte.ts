@@ -176,17 +176,6 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'absent',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Absent',
-				onclick: column.getToggleSortingHandler()
-			}),
-		cell: ({ row }) => {
-			return row.original.absent ? row.original.absent : 0;
-		}
-	},
-	{
 		id: 'penality',
 		accessorKey: '',
 		header: ({ column }) =>
@@ -221,18 +210,6 @@ export const columns = [
 	// },
 
 	{
-		accessorKey: 'taxable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Taxable Salary',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return formatETB(row.original.taxable, true);
-		}
-	},
-	{
 		id: 'taxAmount',
 		accessorKey: '',
 		header: ({ column }) =>
@@ -264,17 +241,6 @@ export const columns = [
 
 			return formatETB(row.original.netPay, true);
 		}
-	},
-
-	{
-		accessorKey: 'account',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Bank Account',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: (info) => info.getValue() || 'No Account Found' // Default to UNPROCESSED if payroll entry is missing
 	},
 
 	{

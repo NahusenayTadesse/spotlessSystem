@@ -77,7 +77,32 @@
 	};
 
 	import Filter from '$lib/components/Table/FilterMenu.svelte';
+	import { goto } from '$app/navigation';
 	let filteredList = $derived(data?.payrollData);
+
+	const calculateTotal = (employees: any[], key: keyof EmployeeFormType): number => {
+		// If employees hasn't been populated by the effect yet, return 0
+		if (!employees || !Array.isArray(employees)) return 0;
+
+		const total = employees.reduce((sum, emp) => {
+			const value = emp[key];
+			// Cast to number just in case they are stringified numbers from an input
+			const numValue = typeof value === 'string' ? parseFloat(value) : value;
+			return sum + (typeof numValue === 'number' && !isNaN(numValue) ? numValue : 0);
+		}, 0);
+
+		return Math.round(total * 100) / 100;
+	};
+
+	let totals = $derived({
+		gross: calculateTotal(filteredList, 'gross'),
+		tax: calculateTotal(filteredList, 'taxAmount'),
+		penalty: calculateTotal(filteredList, 'attendancePenality'),
+		netPay: calculateTotal(filteredList, 'netPay'),
+		overtime: calculateTotal(filteredList, 'overtime')
+	});
+
+	import PayrollTotals from '../add-payroll/[range]/payroll-totals.svelte';
 </script>
 
 <svelte:head>
@@ -96,7 +121,7 @@
 			</div>
 
 			<Button
-				href={`/dashboard/salary/${link}`}
+				onclick={() => goto(`/dashboard/salary/${link}`)}
 				aria-label="Go to selected month and year"
 				class="flex items-center gap-2"
 			>
@@ -141,12 +166,23 @@
 				</Button>
 			</div>
 		</div>
-
+		<PayrollTotals {totals} />
+		<br />
 		<Filter
 			data={data?.payrollData}
 			bind:filteredList
-			filterKeys={['missingDays', 'bank', 'department', 'status']}
+			filterKeys={[
+				'bank',
+				'department',
+				'taxAmount',
+				'overtime',
+				'basicSalary',
+				'housingAllowance',
+				'transportAllowance',
+				'positionAllowance'
+			]}
 		/>
+		<br />
 
 		<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
 	{/if}

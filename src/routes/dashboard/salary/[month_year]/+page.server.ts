@@ -10,7 +10,9 @@ import {
 	deductions,
 	bonuses,
 	commission,
-	payrollEntries
+	payrollEntries,
+	payrollReceipts,
+	payrollRuns
 } from '$lib/server/db/schema';
 import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -35,29 +37,34 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			basicSalary: payrollEntries.basicSalary,
 			positionAllowance: payrollEntries.positionAllowance,
 			housingAllowance: payrollEntries.housingAllowance,
-			transport: payrollEntries.transportAllowance,
+			transportAllowance: payrollEntries.transportAllowance,
 			nonTaxable: payrollEntries.nonTaxableAllowance,
 			paymentMethod: paymentMethods.name,
-			account: staffAccounts.accountDetail,
+			attendancePenality: payrollEntries.attendancePenality,
 			bank: paymentMethods.name,
 			overTime: payrollEntries.overtimeAmount,
 			bonus: payrollEntries.bonusAmount,
+			taxAmount: payrollEntries.taxAmount,
 			commision: payrollEntries.commissionAmount,
 			deductions: payrollEntries.deductions,
-			gross: payrollEntries.grossAmount
+			gross: payrollEntries.grossAmount,
+			netPay: payrollEntries.netAmount
 		})
 		.from(payrollEntries)
 		.leftJoin(employee, eq(payrollEntries.staffId, employee.id))
 		.leftJoin(department, eq(department.id, employee.departmentId))
-		.leftJoin(
-			staffAccounts,
-			and(eq(staffAccounts.staffId, employee.id), eq(staffAccounts.isActive, true))
-		)
-
-		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
+		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
 		.where(and(eq(payrollEntries.month, month), eq(payrollEntries.year, Number(year))));
+
+	const payrollReciept = await db
+		.select()
+		.from(payrollReceipts)
+		.leftJoin(payrollRuns, eq(payrollReceipts.payrollRunId, payrollRuns.id))
+		.where(and(eq(payrollRuns.month, month), eq(payrollRuns.year, Number(year))));
+
 	return {
 		payrollData,
+		payrollReciept,
 		month,
 		year
 	};
