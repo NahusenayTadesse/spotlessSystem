@@ -3,46 +3,40 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { addLeavePayrollSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
-import {
-	salaries,
-	paymentMethods,
-	overTime,
-	deductions,
-	bonuses,
-	employee,
-	missingDays
-} from '$lib/server/db/schema';
+import { paymentMethods, employee, payrollEntries } from '$lib/server/db/schema';
 import { eq, isNull, sql, and, count } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
 	const form = await superValidate(zod4(schema));
 
-	const salaryDetail = await db
+	const payrollData = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(${employee.name}, ' ', COALESCE(${employee.fatherName}, '')))`,
-
-			// sum of all deductions for the staff
-			deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
-
-			// sum of all commissions from commissionProduct AND commissionService
-
-			// base salary (assumed single row per staff)
-			baseSalary: salaries.amount,
-			missingDays: count(missingDays.id),
-			overtime: overTime.total,
-			bonus: bonuses.amount
+			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
+			month: payrollEntries.month,
+			year: payrollEntries.year,
+			basicSalary: payrollEntries.basicSalary,
+			positionAllowance: payrollEntries.positionAllowance,
+			housingAllowance: payrollEntries.housingAllowance,
+			transportAllowance: payrollEntries.transportAllowance,
+			nonTaxable: payrollEntries.nonTaxableAllowance,
+			paymentMethod: paymentMethods.name,
+			attendancePenality: payrollEntries.attendancePenality,
+			bank: paymentMethods.name,
+			overTime: payrollEntries.overtimeAmount,
+			bonus: payrollEntries.bonusAmount,
+			taxAmount: payrollEntries.taxAmount,
+			commision: payrollEntries.commissionAmount,
+			deductions: payrollEntries.deductions,
+			gross: payrollEntries.grossAmount,
+			netPay: payrollEntries.netAmount,
+			recieptLink: payrollEntries.recieptLink
 		})
-		.from(employee)
-		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
-		.leftJoin(deductions, eq(deductions.staffId, employee.id))
-		.leftJoin(missingDays, eq(missingDays.staffId, employee.id))
-		.leftJoin(overTime, eq(overTime.staffId, employee.id))
-		.leftJoin(bonuses, eq(bonuses.staffId, employee.id))
-		.where(eq(employee.id, Number(id)))
-		.groupBy(employee.id, salaries.amount)
-		.then((rows) => rows[0]);
+		.from(payrollEntries)
+		.leftJoin(employee, eq(payrollEntries.staffId, employee.id))
+		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
+		.where(eq(payrollEntries.staffId, Number(id)));
 
 	const allMethods = await db
 		.select({
@@ -54,7 +48,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(paymentMethods.isActive, true));
 
 	return {
-		salaryDetail,
+		payrollData,
 		allMethods,
 		form,
 		id

@@ -58,7 +58,7 @@ export const columns = [
 		accessorKey: 'name',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Staff Name',
+				name: 'Employee Name',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
