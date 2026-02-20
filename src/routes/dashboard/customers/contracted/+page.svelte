@@ -30,7 +30,7 @@
 
    <DataTable data={data.customersList} {columns} />
  </div> -->
-		<DataTable data={data.customerList} {columns} />
+		<DataTable data={data.customerList} {columns} class="w-6xl!" />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

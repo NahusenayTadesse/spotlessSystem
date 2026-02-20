@@ -2,6 +2,7 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableActions from './data-table-actions.svelte';
+import Statuses from '$lib/components/Table/statuses.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
@@ -53,7 +54,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
-		cell: ({ row }) => renderComponent(Copy, { data: row.original.tinNo })
+		cell: ({ row }) => renderComponent(Statuses, { status: row.original.status })
 	},
 
 	{

@@ -20,7 +20,7 @@
 		<div class="flex h-96 w-5xl items-center justify-center">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 				<Frown class="h-12 w-16  animate-bounce" />
-				No cusotmers added Yet for this date
+				No Uncontracted Customers
 			</p>
 		</div>
 	{:else}

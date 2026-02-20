@@ -39,14 +39,10 @@ export const load: PageServerLoad = async () => {
 			.leftJoin(site, eq(customers.id, site.customerId))
 			.where(eq(customers.status, 'contracted'))
 			.groupBy(
-				customers.id,
-				user.name,
-				site.id,
-				customers.createdAt,
-				customers.name,
-				customers.phone
+				customers.id, // The primary key handles the "uniqueness"
+				user.id, // Included because it's from a joined table
+				user.name // Included to satisfy SQL strict mode
 			);
-
 		return {
 			customerList,
 			form

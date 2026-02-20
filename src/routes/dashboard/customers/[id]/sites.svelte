@@ -4,7 +4,7 @@
 	import Copy from '$lib/Copy.svelte';
 	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 	import Statuses from '$lib/components/Table/statuses.svelte';
-	import Edit from './editContacts.svelte';
+	import Edit from './editSites.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -17,7 +17,7 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import type { Item } from '$lib/global.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
-	import type { EditContract, AddContract } from './schema';
+	import type { EditSites, AddSites, EditAddress } from './schema';
 	const isActives = [
 		{ value: true, name: 'Active' },
 		{ value: false, name: 'Inactive' }
@@ -27,12 +27,14 @@
 		data,
 		form: editForm,
 		addForm,
-		serviceList
+		subcityList,
+		addressForm
 	}: {
 		data: any;
-		form: SuperValidated<Infer<EditContract>>;
-		addForm: SuperValidated<Infer<AddContract>>;
-		serviceList: Item[];
+		form: SuperValidated<Infer<EditSites>>;
+		addForm: SuperValidated<Infer<AddSites>>;
+		addressForm: SuperValidated<Infer<EditAddress>>;
+		subcityList: Item[];
 	} = $props();
 	export const columns = [
 		{
@@ -45,7 +47,7 @@
 			enableSorting: false
 		},
 		{
-			accessorKey: 'contactType',
+			accessorKey: 'name',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
 					name: 'Contact Type',
@@ -56,8 +58,10 @@
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
 					id: row.original?.id,
-					contactType: row.original?.contactType,
-					contactDetail: row.original?.contactDetail,
+					name: row.original?.name,
+					phone: row.original?.phone,
+					startDate: row.original?.startDate,
+					endDate: row.original?.endDate,
 					status: row.original?.status,
 					data: editForm,
 					icon: false
@@ -66,7 +70,7 @@
 		},
 
 		{
-			accessorKey: 'contactDetail',
+			accessorKey: 'phone',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
 					name: 'Contact Detail',
@@ -74,17 +78,52 @@
 				}),
 			sortable: true
 		},
+
+		{
+			accessorKey: 'startDate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Start Date',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: (info) => formatEthiopianDate(info.getValue())
+		},
+
+		{
+			accessorKey: 'endDate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'End Date',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: (info) => formatEthiopianDate(info.getValue())
+		},
+
+		{
+			accessorKey: '',
+			header: 'Address',
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(Address, {
+					street: row?.original?.address?.street,
+					buildingNumber: row?.original?.address?.buildingNumber,
+					floor: row?.original?.address?.floor,
+					subcity: row?.original?.address?.subcity,
+					kebele: row?.original?.address?.kebele,
+					houseNumber: row?.original?.address?.houseNumber
+				});
+			}
+		},
 		{
 			accessorKey: 'status',
 			header: 'Status',
 			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
-					status: row.original.status ? 'Active' : 'InActive',
-					name: row.original.addedBy,
-					link: '/dashboard/admin-panel/users',
-
-					target: '_blank'
+					status: row.original.status ? 'Active' : 'InActive'
 				});
 			}
 		},
@@ -112,11 +151,26 @@
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
 					id: row.original?.id,
-					contactType: row.original?.contactType,
-					contactDetail: row.original?.contactDetail,
+					name: row.original?.name,
+					phone: row.original?.phone,
+					startDate: row.original?.startDate,
+					endDate: row.original?.endDate,
 					status: row.original?.status,
 					data: editForm,
 					icon: true
+				});
+			}
+		},
+		{
+			accessorKey: '',
+			header: 'Edit Address',
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(AddressEdit, {
+					address: row.original?.address,
+					subcityList: subcityList,
+					data: addressForm
 				});
 			}
 		}
@@ -126,6 +180,8 @@
 		resetForm: false
 	});
 	import { toast } from 'svelte-sonner';
+	import Address from '$lib/components/Table/address.svelte';
+	import AddressEdit from './editAddress.svelte';
 
 	$effect(() => {
 		if ($message) {
@@ -138,9 +194,9 @@
 	});
 </script>
 
-<DialogComp variant="default" title="Add Contact" IconComp={Plus}>
+<DialogComp variant="default" title="Add Site" IconComp={Plus}>
 	<form
-		action="?/addContact"
+		action="?/addSite"
 		use:enhance
 		method="post"
 		id="edit"
@@ -148,33 +204,26 @@
 		enctype="multipart/form-data"
 	>
 		<Errors allErrors={$allErrors} />
-		<InputComp label="Contract Type" name="contractType" type="text" {form} {errors} required />
 		<InputComp
-			label="Service"
-			name="service"
-			type="checkbox"
+			label="Name"
+			name="name"
+			type="text"
 			{form}
 			{errors}
+			placeholder="Enter Site Name"
 			required
-			items={serviceList}
 		/>
 		<InputComp
-			label="Contact Detail"
-			name="contactDetail"
-			type={$form?.contactType === 'phone'
-				? 'tel'
-				: $form?.contactType === 'email'
-					? 'email'
-					: 'text'}
+			label="Phone"
+			name="phone"
+			type="tel"
 			{form}
 			{errors}
+			placeholder="Enter Site Phone Number"
 			required
-			placeholder={`Enter ${
-				$form?.contactType
-					? $form.contactType.charAt(0).toUpperCase() + $form.contactType.slice(1)
-					: ''
-			}`}
 		/>
+		<InputComp label="Start Date" name="startDate" type="date" {form} {errors} required />
+		<InputComp label="End Date" name="endDate" type="date" {form} {errors} required />
 
 		<InputComp
 			label="Status"
@@ -186,13 +235,47 @@
 			items={isActives}
 		/>
 
+		<InputComp
+			label="Subcity"
+			name="subcity"
+			type="combo"
+			{form}
+			{errors}
+			required
+			items={subcityList}
+		/>
+		<InputComp label="Street" name="street" type="text" {form} {errors} required />
+		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />
+		<InputComp
+			label="Building Name or Number"
+			name="buildingNumber"
+			type="text"
+			{form}
+			{errors}
+			required
+		/>
+		<InputComp label="Floor" name="floor" type="number" {form} {errors} required />
+		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} required />
+		<InputComp
+			label="Status"
+			name="status"
+			type="select"
+			{form}
+			{errors}
+			required
+			items={[
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'Inactive' }
+			]}
+		/>
+
 		<Button type="submit" class="mt-4" form="edit">
 			{#if $delayed}
-				<LoadingBtn name="Adding Contact" />
+				<LoadingBtn name="Adding Site" />
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Add Contact
+				Add Site
 			{/if}
 		</Button>
 	</form>

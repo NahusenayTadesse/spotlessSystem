@@ -20,12 +20,14 @@
 		/* cancelled / unpaid */
 		cancelled: { icon: OctagonMinus, colour: 'bg-red-500' },
 		unpaid: { icon: OctagonMinus, colour: 'bg-red-500' },
+		dead: { icon: OctagonMinus, colour: 'bg-red-500' },
 
 		/* pending */
 		pending: { icon: Loader, colour: 'bg-yellow-500' },
 
 		/* active */
 		active: { icon: BadgeCheck, colour: 'bg-green-400' },
+		contracted: { icon: BadgeCheck, colour: 'bg-green-400' },
 		inactive: { icon: OctagonMinus, colour: 'bg-red-500' },
 
 		yes: { icon: BadgeCheck, colour: 'bg-green-400' },

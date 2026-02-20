@@ -9,18 +9,28 @@ import {
 	user,
 	address,
 	subcity,
-	customerContacts
+	customerContacts,
+	customerContracts
 } from '$lib/server/db/schema';
-import { eq, and, sql, count } from 'drizzle-orm';
+import { eq, desc, sql, count } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 import { superValidate } from 'sveltekit-superforms';
 import { error, type Actions } from '@sveltejs/kit';
 import { fail, message } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-import { subcities } from '$lib/server/fastData';
+import { subcities, service } from '$lib/server/fastData';
 
-import { editDetail, editAddress, addContact, editContact } from './schema';
+import {
+	editDetail,
+	editAddress,
+	addContact,
+	editContact,
+	addContract,
+	editContract,
+	addSites,
+	editSites
+} from './schema';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
@@ -29,8 +39,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const addressForm = await superValidate(zod4(editAddress));
 	const addContactForm = await superValidate(zod4(addContact));
 	const editContactForm = await superValidate(zod4(editContact));
+	const addContractForm = await superValidate(zod4(addContract));
+	const editContractForm = await superValidate(zod4(editContract));
+	const editSiteForm = await superValidate(zod4(editSites));
+	const addSiteForm = await superValidate(zod4(addSites));
 
 	const subcityList = await subcities();
+	const serviceList = await service();
 
 	const customer = await db
 		.select({
@@ -39,6 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			phone: customers.phone,
 			email: customers.email,
 			tinNo: customers.tinNo,
+			status: customers.status,
 			sites: count(site.id),
 			joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
 			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
@@ -87,6 +103,48 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(user, eq(customerContacts.createdBy, user.id))
 		.where(eq(customerContacts.customerId, Number(id)));
 
+	let contracts = await db
+		.select({
+			id: customerContracts.id,
+			contractType: customerContracts.contractType,
+			contactAmount: customerContracts.contractAmount,
+			status: customerContracts.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(customerContracts)
+		.leftJoin(user, eq(customerContracts.createdBy, user.id))
+		.where(eq(customerContracts.customerId, Number(id)))
+		.orderBy(desc(customerContracts.contractDate));
+
+	let sites = await db
+		.select({
+			id: site.id,
+			name: site.name,
+			phone: site.phone,
+			startDate: site.startDate,
+			endDate: site.endDate,
+			address: {
+				id: address.id,
+				street: address.street,
+				subcity: subcity.name,
+				subcityId: subcity.id,
+				kebele: address.kebele,
+				buildingNumber: address.buildingNumber,
+				floor: address.floor,
+				houseNumber: address.houseNumber,
+				status: address.status
+			},
+			status: site.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(site)
+		.leftJoin(user, eq(site.createdBy, user.id))
+		.leftJoin(address, eq(address.id, site.address))
+		.leftJoin(subcity, eq(subcity.id, address.subcityId))
+		.where(eq(site.customerId, Number(id)));
+
 	return {
 		customer,
 		customerAddress,
@@ -95,7 +153,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		subcityList,
 		addContactForm,
 		editContactForm,
-		contacts
+		addContractForm,
+		editContractForm,
+		contacts,
+		contracts,
+		serviceList,
+		sites,
+		editSiteForm,
+		addSiteForm
 	};
 };
 
@@ -108,7 +173,7 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: 'Error: Please Check the form' });
 		}
-		const { name, phone, tinNo, email } = form.data;
+		const { name, phone, tinNo, email, status } = form.data;
 
 		try {
 			await db
@@ -118,6 +183,7 @@ export const actions: Actions = {
 					phone,
 					tinNo,
 					email,
+					status,
 					updatedBy: locals?.user?.id
 				})
 				.where(eq(customers.id, Number(id)));
@@ -248,6 +314,102 @@ export const actions: Actions = {
 			return message(form, {
 				type: 'error',
 				text: `Updated Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+
+	editSite: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editSites));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, name, phone, startDate, endDate, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(site)
+					.set({
+						name,
+						phone,
+						startDate: new Date(startDate),
+						endDate: new Date(endDate),
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(site.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Site Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Updated failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	addSite: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(addSites));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const {
+			name,
+			phone,
+			startDate,
+			endDate,
+			status,
+			street,
+			subcity,
+			kebele,
+			buildingNumber,
+			floor,
+			houseNumber
+		} = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				const [addressRes] = await tx
+					.insert(address)
+					.values({
+						subcityId: Number(subcity), // Handle potential NaN
+						street,
+						kebele,
+						buildingNumber,
+						floor,
+						houseNumber,
+						status: true
+					})
+					.$returningId();
+				await tx.insert(site).values({
+					name,
+					phone,
+					customerId: Number(id),
+					startDate: new Date(startDate).toISOString(),
+					endDate: new Date(endDate).toISOString(),
+					isActive: status,
+					address: addressRes.id,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Site Added Successfully!'
+				});
+			});
+		} catch (err) {
+			console.error(err?.message);
+			return message(form, {
+				type: 'error',
+				text: `Adding Site failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 			});
 		}
 	}

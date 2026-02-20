@@ -14,14 +14,13 @@ export const add = z.object({
 		.max(15, 'Phone number is too long'),
 	email: z.email().optional(),
 	nationality: z.string().max(50).default('Ethiopia'),
-	religion: z.string('Religion').max(50).default('Christianity'),
 
 	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).nullable().optional(),
 	// Ethiopian TIN is exactly 10 digits
 	tinNo: z.string().regex(/^\d{10}$/, 'TIN must be exactly 10 digits'),
 
 	departmentId: z.number().int().positive('Please select a department'),
-
+	site: z.number().int().positive('Please select a site'),
 	birthDate: z.coerce.string('Birth date is required').refine(
 		(value) => {
 			const birth = new Date(value);
@@ -40,7 +39,7 @@ export const add = z.object({
 			return age >= 18;
 		},
 		{
-			message: 'You must be at least 18 years old'
+			message: 'New Employee must be at least 18 years old'
 		}
 	),
 
@@ -92,7 +91,14 @@ export const add = z.object({
 
 	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other']).default('single'),
 
-	newEmployeeVerified: z.boolean().default(false)
+	newEmployeeVerified: z.boolean().default(false),
+
+	subcity: z.number('Subsity is required'),
+	street: z.string('Street is required'),
+	kebele: z.string('Kebele is required'),
+	buildingNumber: z.string().optional(),
+	floor: z.coerce.number().optional(),
+	houseNumber: z.string('House Number is Required')
 });
 
 // Type inference for TypeScript use

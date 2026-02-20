@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { customers, site, user } from '$lib/server/db/schema';
-import { eq, and, sql, count } from 'drizzle-orm';
+import { eq, and, sql, count, ne } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 
 export const load: PageServerLoad = async () => {
@@ -17,7 +17,9 @@ export const load: PageServerLoad = async () => {
 		})
 		.from(customers)
 		.leftJoin(user, eq(customers.createdBy, user.id))
-		.leftJoin(site, eq(customers.id, site.customerId));
+		.leftJoin(site, eq(customers.id, site.customerId))
+		.where(ne(customers.status, 'contracted'))
+		.groupBy(customers.id, customers.createdBy);
 
 	return {
 		customerList

@@ -56,7 +56,7 @@
 	}));
 
 	const sectionStyle = `flex flex-col gap-4 my-4`;
-	const rowStyle = `flex lg:flex-row flex-col justify-center mt-4  gap-4`;
+	const rowStyle = `grid grid-cols-3 mt-4  gap-4`;
 </script>
 
 <svelte:head>
@@ -115,9 +115,7 @@
 					type="text"
 					required
 				/>
-			</div>
 
-			<div class={rowStyle}>
 				<Input
 					label="Grandfather Name"
 					name="grandFatherName"
@@ -146,26 +144,8 @@
 					type="tel"
 					required
 				/>
-			</div>
-
-			<div class={rowStyle}>
 				<Input label="Email" name="email" placeholder="Enter Email" {form} {errors} type="email" />
 				<Input label="Nationality" name="nationality" {form} {errors} type="text" />
-				<Input
-					label="Religion"
-					name="religion"
-					{form}
-					{errors}
-					type="select"
-					items={[
-						{ value: 'Christian', name: 'Christian' },
-						{ value: 'Muslim', name: 'Muslim' },
-						{ value: 'Other', name: 'Other' }
-					]}
-				/>
-			</div>
-
-			<div class={rowStyle}>
 				<Input
 					label="Blood Type"
 					name="bloodType"
@@ -191,6 +171,44 @@
 					{errors}
 					type="select"
 					items={maritalStatuses}
+				/>
+			</div>
+
+			<h4>Address</h4>
+
+			<div class={rowStyle}>
+				<Input
+					label="Subcity"
+					name="subcity"
+					type="combo"
+					{form}
+					{errors}
+					required
+					items={data?.subcityList}
+				/>
+				<Input label="Street" name="street" type="text" {form} {errors} required />
+				<Input label="Kebele" name="kebele" type="text" {form} {errors} required />
+				<Input
+					label="Building Name or Number"
+					name="buildingNumber"
+					type="text"
+					{form}
+					{errors}
+					required
+				/>
+				<Input label="Floor" name="floor" type="number" {form} {errors} required />
+				<Input label="House Number" name="houseNumber" type="text" {form} {errors} required />
+				<Input
+					label="Status"
+					name="status"
+					type="select"
+					{form}
+					{errors}
+					required
+					items={[
+						{ value: true, name: 'Active' },
+						{ value: false, name: 'Inactive' }
+					]}
 				/>
 			</div>
 		</section>
@@ -249,6 +267,15 @@
 					{errors}
 					type="select"
 					items={data?.empStatusList}
+					required
+				/>
+				<Input
+					label="Site"
+					name="site"
+					{form}
+					{errors}
+					type="select"
+					items={data?.siteList}
 					required
 				/>
 				<Input

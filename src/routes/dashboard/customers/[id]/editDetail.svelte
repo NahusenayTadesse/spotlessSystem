@@ -17,13 +17,15 @@
 		name,
 		phone,
 		email,
-		tinNo
+		tinNo,
+		status
 	}: {
 		data: SuperValidated<Infer<EditDetail>>;
 		name?: string;
 		phone?: string;
 		email?: string;
 		tinNo?: string;
+		status?: string;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -46,6 +48,7 @@
 	$form.email = email;
 	$form.tinNo = tinNo;
 	$form.phone = phone;
+	$form.status = status;
 </script>
 
 <DialogComp title="Edit" variant="default" IconComp={SquarePen}>
@@ -69,6 +72,15 @@
 			placeholder="Enter Customer Name"
 		/>
 		<InputComp
+			label="Phone"
+			name="phone"
+			type="tel"
+			{form}
+			{errors}
+			required={true}
+			placeholder="Enter Customer Phone"
+		/>
+		<InputComp
 			label="Email"
 			name="email"
 			type="email"
@@ -77,14 +89,21 @@
 			required={false}
 			placeholder="Enter Customer Email"
 		/>
+
 		<InputComp
-			label="Phone"
-			name="phone"
-			type="tel"
+			label="Status"
+			name="status"
+			type="select"
 			{form}
 			{errors}
 			required={true}
 			placeholder="Enter Customer Phone"
+			items={[
+				{ value: 'pending', name: 'Pending' },
+				{ value: 'active', name: 'Active' },
+				{ value: 'dead', name: 'Dead' },
+				{ value: 'contracted', name: 'Contracted' }
+			]}
 		/>
 
 		<InputComp
