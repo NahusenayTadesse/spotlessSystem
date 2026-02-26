@@ -37,6 +37,15 @@
 				{ title: 'Add Customer', url: '/dashboard/customers/add-customer', icon: Plus }
 			]
 		},
+		{
+			title: 'Sites',
+			url: '/dashboard/sites',
+			icon: Building2,
+			items: [
+				{ title: 'All Sites', url: '/dashboard/sites', icon: List },
+				{ title: 'Add Site', url: '/dashboard/sites/add-site', icon: Plus }
+			]
+		},
 
 		{
 			title: 'Supplies',
