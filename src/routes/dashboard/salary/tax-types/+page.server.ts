@@ -17,6 +17,7 @@ export const load: PageServerLoad = async () => {
 			id: taxType.id,
 			name: taxType.name,
 			rate: taxType.rate,
+			deduction: taxType.deduction,
 			threshold: taxType.threshold,
 			status: taxType.status
 		})
@@ -37,11 +38,12 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: 'Please check the form for Errors' });
 		}
 
-		const { name, rate, threshold, status } = form.data;
+		const { name, rate, threshold, deduction, status } = form.data;
 
 		try {
 			await db.insert(taxType).values({
 				name,
+				deduction,
 				rate,
 				threshold,
 				status: status
@@ -65,10 +67,13 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const { id, name, rate, threshold, status } = form.data;
+		const { id, name, rate, threshold, status, deduction } = form.data;
 
 		try {
-			await db.update(taxType).set({ name, rate, threshold, status }).where(eq(taxType.id, id));
+			await db
+				.update(taxType)
+				.set({ name, rate, threshold, status, deduction })
+				.where(eq(taxType.id, id));
 			return message(form, { type: 'success', text: 'Tax type Successfully Updated' });
 		} catch (err: any) {
 			if (err.code === 'ER_DUP_ENTRY') return;

@@ -237,7 +237,7 @@ export const columns = [
 		accessorKey: '',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Tax',
+				name: 'Salary Tax',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {

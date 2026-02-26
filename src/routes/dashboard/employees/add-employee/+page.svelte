@@ -57,6 +57,14 @@
 
 	const sectionStyle = `flex flex-col gap-4 my-4`;
 	const rowStyle = `grid grid-cols-3 mt-4  gap-4`;
+
+	const total = $derived(
+		$form.positionAllowance +
+			$form.nonTaxAllowance +
+			$form.housingAllowance +
+			$form.transportAllowance +
+			$form.salary
+	);
 </script>
 
 <svelte:head>
@@ -300,7 +308,7 @@
 					type="select"
 					items={data?.eduLevelList}
 				/>
-				<Input label="Salary (ETB)" name="salary" {form} {errors} type="number" required />
+				<Input label="Basic Salary (ETB)" name="salary" {form} {errors} type="number" required />
 				<Input
 					label="Tranport Allowance (ETB)"
 					name="transportAllowance"
@@ -337,6 +345,8 @@
 					required
 				/>
 			</div>
+
+			{total}
 		</section>
 
 		<!-- 4. PAYROLL -->

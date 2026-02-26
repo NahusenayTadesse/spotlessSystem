@@ -64,7 +64,7 @@
 			<MinusCircleIcon class="size-4 text-orange-600 dark:text-orange-400" />
 		</div>
 		<div>
-			<p class="text-xs text-muted-foreground">Tax</p>
+			<p class="text-xs text-muted-foreground">Total Salary Tax</p>
 			<p class="font-semibold text-orange-600 dark:text-orange-400">
 				-{formatETB(totals.tax, true)}
 			</p>

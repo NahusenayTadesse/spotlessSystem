@@ -18,6 +18,7 @@
 		name,
 		rate,
 		threshold,
+		deduction,
 		icon = false,
 		status = true
 	}: {
@@ -27,6 +28,7 @@
 		name: string;
 		icon: boolean;
 		rate: string;
+		deduction: string;
 		status: boolean;
 		threshold: string;
 	} = $props();
@@ -39,9 +41,9 @@
 
 	$form.id = id;
 	$form.name = name;
-	$form.rate = rate;
-	$form.status = status;
-	$form.threshold = threshold;
+	$form.rate = Number(rate);
+	$form.status = Number(status);
+	$form.threshold = Number(threshold);
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -87,19 +89,29 @@
 						<InputComp
 							{form}
 							{errors}
-							label="Threshold"
-							type="text"
-							name="threshold"
-							placeholder="Enter tax type threshold"
+							label="Rate"
+							type="number"
+							name="rate"
+							placeholder="Enter tax type rate"
 							required={true}
 						/>
 						<InputComp
 							{form}
 							{errors}
-							label="Rate"
-							type="text"
-							name="rate"
-							placeholder="Enter tax type rate"
+							label="Threshold"
+							type="number"
+							name="threshold"
+							placeholder="Enter tax type threshold"
+							required={true}
+						/>
+
+						<InputComp
+							{form}
+							{errors}
+							label="Deduction"
+							type="number"
+							name="deduction"
+							placeholder="Enter tax type deduction"
 							required={true}
 						/>
 

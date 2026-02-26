@@ -128,10 +128,7 @@ export const columns = [
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(Stasuses, {
-				status:
-					row.original.guarantor > 0 && row.original.families > 0 && row.original.accounts > 0
-						? 'Complete'
-						: 'Incomplete'
+				status: row.original.guarantor > 0 && row.original.accounts > 0 ? 'Complete' : 'Incomplete'
 			});
 		}
 	},

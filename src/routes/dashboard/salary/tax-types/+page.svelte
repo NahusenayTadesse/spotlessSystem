@@ -32,7 +32,7 @@
 					rate: row.original.rate,
 					threshold: row.original.threshold,
 					action: '?/edit',
-					taxType: data?.taxTypes,
+					deduction: row.original.deduction,
 					data: data?.editForm,
 					icon: false,
 					status: row.original.status
@@ -68,6 +68,20 @@
 		},
 
 		{
+			accessorKey: 'deduction',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Deduction',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				const value = Number(row.original.deduction);
+				return isNaN(value) ? 'N/A' : formatETB(value, true);
+			}
+		},
+
+		{
 			accessorKey: 'status',
 			header: 'Status',
 			sortable: true,
@@ -89,6 +103,7 @@
 					name: row.original.name,
 					rate: row.original.rate,
 					threshold: row.original.threshold,
+					deduction: row.original.deduction,
 					action: '?/edit',
 					data: data?.editForm,
 					icon: true,
@@ -136,19 +151,29 @@
 		<InputComp
 			{form}
 			{errors}
-			label="Threshold"
-			type="text"
-			name="threshold"
-			placeholder="Enter tax type threshold"
+			label="Rate"
+			type="number"
+			name="rate"
+			placeholder="Enter tax type rate"
 			required={true}
 		/>
 		<InputComp
 			{form}
 			{errors}
-			label="Rate"
-			type="text"
-			name="rate"
-			placeholder="Enter tax type rate"
+			label="Threshold"
+			type="number"
+			name="threshold"
+			placeholder="Enter tax type threshold"
+			required={true}
+		/>
+
+		<InputComp
+			{form}
+			{errors}
+			label="Deduction"
+			type="number"
+			name="deduction"
+			placeholder="Enter tax type deduction"
 			required={true}
 		/>
 
