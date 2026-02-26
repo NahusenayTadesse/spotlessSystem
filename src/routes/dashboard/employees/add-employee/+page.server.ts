@@ -73,7 +73,8 @@ export const actions: Actions = {
 			kebele,
 			buildingNumber,
 			floor,
-			houseNumber
+			houseNumber,
+			existingPensionCard
 		} = form.data;
 
 		// 1. Duplicate Check
@@ -128,6 +129,7 @@ export const actions: Actions = {
 					martialStatus,
 					educationalLevel,
 					bloodType,
+					existingPensionCard,
 					siteId: site,
 					hireDate: new Date(hireDate).toLocaleDateString('en-CA'),
 					createdBy: locals.user?.id,

@@ -17,7 +17,10 @@ export const add = z.object({
 
 	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).nullable().optional(),
 	// Ethiopian TIN is exactly 10 digits
-	tinNo: z.string().regex(/^\d{10}$/, 'TIN must be exactly 10 digits'),
+	tinNo: z
+		.string()
+		.regex(/^\d{10}$/, 'TIN must be exactly 10 digits')
+		.optional(),
 
 	departmentId: z.number().int().positive('Please select a department'),
 	site: z.number().int().positive('Please select a site'),
@@ -92,6 +95,7 @@ export const add = z.object({
 	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other']).default('single'),
 
 	newEmployeeVerified: z.boolean().default(false),
+	existingPensionCard: z.boolean().default(false),
 
 	subcity: z.number('Subsity is required'),
 	street: z.string('Street is required'),

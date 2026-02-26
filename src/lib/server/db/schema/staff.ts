@@ -67,7 +67,7 @@ export const employee = mysqlTable(
 		gender: mysqlEnum('gender', ['male', 'female']).notNull().default('male'),
 		nationality: varchar('nationality', { length: 50 }).notNull().default('Ethiopia'),
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-		tinNo: varchar('tin_no', { length: 10 }).notNull(),
+		tinNo: varchar('tin_no', { length: 10 }),
 		departmentId: int('department_id')
 			.notNull()
 			.references(() => department.id),
@@ -88,6 +88,7 @@ export const employee = mysqlTable(
 			'other'
 		]).default('single'),
 		siteId: int('site_id').references(() => site.id),
+		existingPensionCard: boolean().default(false),
 		address: int('address').references(() => address.id),
 		leavesLeft: int('leaves_left').notNull().default(0),
 
@@ -99,6 +100,16 @@ export const employee = mysqlTable(
 		index('grand_father_name_idx').on(table.grandFatherName)
 	]
 );
+
+export const officeWorkerCommission = mysqlTable('office_worker_commission', {
+	id: int('id').primaryKey().autoincrement(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => employee.id)
+		.unique(),
+	percentage: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+	...secureFields
+});
 
 export const employeeGuarantor = mysqlTable('employee_guarantor', {
 	id: int('id').autoincrement().primaryKey(),
@@ -258,6 +269,7 @@ export const salaries = mysqlTable('salaries', {
 	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
 	startDate: date('start_date').notNull(),
 	endDate: date('end_date'),
+
 	...secureFields
 });
 

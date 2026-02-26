@@ -232,7 +232,6 @@
 					{form}
 					{errors}
 					type="text"
-					required
 				/>
 				<Input
 					label="Government ID"
@@ -251,6 +250,19 @@
 					type="file"
 					required
 					placeholder="Upload a recent photo of Employee 4 X 4 with good Quality, Max 10MB"
+				/>
+
+				<Input
+					label="Pension Card"
+					name="existingPensionCard"
+					placeholder="Enter TIN"
+					{form}
+					{errors}
+					type="select"
+					items={[
+						{ value: false, name: 'No' },
+						{ value: true, name: 'Yes' }
+					]}
 				/>
 			</div>
 		</section>
@@ -349,43 +361,6 @@
 			{total}
 		</section>
 
-		<!-- 4. PAYROLL -->
-		<!-- <section class={sectionStyle}>
-			<h4>Payroll Settings</h4>
-			<div class={rowStyle}>
-				<Input
-					label="Pension (%)"
-					name="pensionType"
-					{form}
-					{errors}
-					type="select"
-					items={[
-						{ value: '1', name: 'Employee Pension Contribution (7%)' },
-						{ value: '1', name: 'Employer Pension Contribution (11%)' }
-					]}
-					required
-				/>
-				<Input
-					label="Tax Type (%)"
-					name="taxType"
-					{form}
-					{errors}
-					type="select"
-					items={[
-						{ value: '0', name: '0% (Up to 600 ETB)' },
-						{ value: '10', name: '10% (601 – 1,650 ETB)' },
-						{ value: '15', name: '15% (1,651 – 3,200 ETB)' },
-						{ value: '20', name: '20% (3,201 – 5,250 ETB)' },
-						{ value: '25', name: '25% (5,251 – 7,800 ETB)' },
-						{ value: '30', name: '30% (7,801 – 10,900 ETB)' },
-						{ value: '35', name: '35% (Above 10,900 ETB)' }
-					]}
-					required
-				/>
-			</div>
-		</section> -->
-
-		<!-- 5. SUBMIT -->
 		<section class={sectionStyle}>
 			<Errors allErrors={$allErrors} />
 			<Button type="submit" form="main">
