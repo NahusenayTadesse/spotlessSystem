@@ -8,7 +8,8 @@ import {
 	decimal,
 	date,
 	year,
-	unique
+	unique,
+	index
 } from 'drizzle-orm/mysql-core';
 import { employee } from './staff';
 import { secureFields } from './secureFields';
@@ -189,7 +190,12 @@ export const payrollEntries = mysqlTable(
 
 		...secureFields
 	},
-	(t) => [unique().on(t.staffId, t.payPeriodStart, t.payPeriodEnd)]
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('payroll_id_idx').on(table.payrollId),
+		index('period_idx').on(table.year, table.month),
+		index('payment_method_idx').on(table.paymentMethodId)
+	]
 );
 
 export const transactionRelations = relations(transactions, ({ many }) => ({

@@ -23,14 +23,18 @@ import { services } from './services';
 import { site } from './sites';
 import { address } from './locations';
 
-export const department = mysqlTable('department', {
-	id: int('id').autoincrement().primaryKey(),
-	name: varchar('name', { length: 32 }).notNull().unique(),
-	phone: varchar('phone', { length: 20 }),
-	location: varchar('location', { length: 255 }),
-	description: varchar('description', { length: 255 }),
-	...lesserFields
-});
+export const department = mysqlTable(
+	'department',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		name: varchar('name', { length: 32 }).notNull().unique(),
+		phone: varchar('phone', { length: 20 }),
+		location: varchar('location', { length: 255 }),
+		description: varchar('description', { length: 255 }),
+		...lesserFields
+	},
+	(table) => [index('name_idx').on(table.name)]
+);
 
 export const employmentStatuses = mysqlTable(
 	'employment_statuses',
@@ -38,14 +42,18 @@ export const employmentStatuses = mysqlTable(
 		id: int('id').autoincrement().primaryKey(),
 		name: varchar('name', { length: 32 }).notNull().unique(),
 		removeFromLists: boolean('remove_from_lists').notNull().default(false),
-		// 1. Change to nullable and remove the default 'false'
+		// 1. Keep it nullable.
+		// Logic: 'true' for the termination row, 'null' for everything else.
 		terminationStatus: boolean('termination_status'),
 		description: varchar('description', { length: 255 }),
 		...lesserFields
 	},
 	(table) => ({
-		// 2. Add a unique index on this column
-		terminationStatusIdx: uniqueIndex('termination_status_idx').on(table.terminationStatus)
+		nameIdx: index('name_idx').on(table.name),
+		// 2. The Unique Index ensures only one row can be 'true'.
+		// Since MySQL allows multiple NULLs in a unique index,
+		// all other rows should have this field set to NULL, not FALSE.
+		terminationStatusIdx: uniqueIndex('termination_status_unique_idx').on(table.terminationStatus)
 	})
 );
 
@@ -95,21 +103,27 @@ export const employee = mysqlTable(
 		...secureFields
 	},
 	(table) => [
+		index('id_no_idx').on(table.idNo),
 		index('first_name_idx').on(table.name),
 		index('last_name_idx').on(table.fatherName),
-		index('grand_father_name_idx').on(table.grandFatherName)
+		index('grand_father_name_idx').on(table.grandFatherName),
+		index('hire_date_idx').on(table.hireDate)
 	]
 );
 
-export const officeWorkerCommission = mysqlTable('office_worker_commission', {
-	id: int('id').primaryKey().autoincrement(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => employee.id)
-		.unique(),
-	percentage: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	...secureFields
-});
+export const officeWorkerCommission = mysqlTable(
+	'office_worker_commission',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		staffId: int('staff_id')
+			.notNull()
+			.references(() => employee.id)
+			.unique(),
+		percentage: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		...secureFields
+	},
+	(table) => [index('percentage_idx').on(table.percentage)]
+);
 
 export const employeeGuarantor = mysqlTable('employee_guarantor', {
 	id: int('id').autoincrement().primaryKey(),
@@ -141,21 +155,35 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 		.notNull(),
 	...secureFields
 });
-export const taxType = mysqlTable('tax_type', {
-	id: int('id').autoincrement().primaryKey(),
-	name: varchar('name', { length: 255 }).notNull(),
-	threshold: decimal('threshold', { precision: 12, scale: 2 }),
-	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
-	deduction: decimal('deduction', { precision: 12, scale: 2 }).notNull(),
-	...lesserFields
-});
+export const taxType = mysqlTable(
+	'tax_type',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		name: varchar('name', { length: 255 }).notNull(),
+		threshold: decimal('threshold', { precision: 12, scale: 2 }),
+		rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
+		deduction: decimal('deduction', { precision: 12, scale: 2 }).notNull(),
+		...lesserFields
+	},
+	(table) => [
+		index('name_idx').on(table.name),
+		index('threshold_idx').on(table.threshold),
+		index('rate_idx').on(table.rate),
+		index('deduction_idx').on(table.deduction),
+		index('status_idx').on(table.status)
+	]
+);
 
-export const penality = mysqlTable('penality', {
-	id: int('id').autoincrement().primaryKey(),
-	name: varchar('name', { length: 255 }).notNull(),
-	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
-	...lesserFields
-});
+export const penality = mysqlTable(
+	'penality',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		name: varchar('name', { length: 255 }).notNull(),
+		rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
+		...lesserFields
+	},
+	(table) => [index('name_idx').on(table.name), index('rate_idx').on(table.rate)]
+);
 
 export const pensionType = mysqlTable('pension_type', {
 	id: int('id').autoincrement().primaryKey(),
@@ -238,63 +266,100 @@ export const staffContacts = mysqlTable('staff_contacts', {
 	...secureFields
 });
 
-export const staffAccounts = mysqlTable('staff_accounts', {
-	id: int('id').primaryKey().autoincrement(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => employee.id, { onDelete: 'cascade' }),
-	paymentMethodId: int('payment_Method_id').references(() => paymentMethods.id, {
-		onDelete: 'set null'
-	}),
-	accountDetail: varchar('account_detail', { length: 255 }).notNull(),
-	primary: boolean('primary').default(false),
-	...secureFields
-});
+export const staffAccounts = mysqlTable(
+	'staff_accounts',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		staffId: int('staff_id')
+			.notNull()
+			.references(() => employee.id, { onDelete: 'cascade' }),
+		paymentMethodId: int('payment_Method_id').references(() => paymentMethods.id, {
+			onDelete: 'set null'
+		}),
+		accountDetail: varchar('account_detail', { length: 255 }).notNull(),
+		...secureFields
+	},
+	(table) => [
+		index('accountDetail_idx').on(table.accountDetail),
+		index('is_active_idx').on(table.isActive)
+	]
+);
 
-export const salaries = mysqlTable('salaries', {
-	id: int('id').primaryKey().autoincrement(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => employee.id, { onDelete: 'cascade' }),
-	transportationAllowance: decimal('transportation_allowance', { precision: 10, scale: 2 })
-		.notNull()
-		.default('0'),
-	housingAllowance: decimal('housing_allowance', { precision: 10, scale: 2 })
-		.notNull()
-		.default('0'),
-	nonTaxAllowance: decimal('non_tax_allowance', { precision: 10, scale: 2 }).notNull().default('0'),
-	positionAllowance: decimal('position_allowance', { precision: 10, scale: 2 })
-		.notNull()
-		.default('0'),
-	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	startDate: date('start_date').notNull(),
-	endDate: date('end_date'),
+export const salaries = mysqlTable(
+	'salaries',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		staffId: int('staff_id')
+			.notNull()
+			.references(() => employee.id, { onDelete: 'cascade' }),
+		transportationAllowance: decimal('transportation_allowance', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0'),
+		housingAllowance: decimal('housing_allowance', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0'),
+		nonTaxAllowance: decimal('non_tax_allowance', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0'),
+		positionAllowance: decimal('position_allowance', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0'),
+		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		startDate: date('start_date').notNull(),
+		endDate: date('end_date'),
 
-	...secureFields
-});
+		...secureFields
+	},
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('transportation_allowance_idx').on(table.transportationAllowance),
+		index('housing_allowance_idx').on(table.housingAllowance),
+		index('non_tax_allowance_idx').on(table.nonTaxAllowance),
+		index('position_allowance_idx').on(table.positionAllowance),
+		index('amount_idx').on(table.amount),
+		index('start_date_idx').on(table.startDate),
+		index('end_date_idx').on(table.endDate)
+	]
+);
 
-export const bonuses = mysqlTable('bonuses', {
-	id: int('id').primaryKey().autoincrement(),
-	staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
-	description: varchar('description', { length: 255 }),
-	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	bonusDate: date('bonus_date').notNull(),
-	...secureFields
-});
+export const bonuses = mysqlTable(
+	'bonuses',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
+		description: varchar('description', { length: 255 }),
+		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		bonusDate: date('bonus_date').notNull(),
+		...secureFields
+	},
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('amount_idx').on(table.amount),
+		index('bonus_date_idx').on(table.bonusDate)
+	]
+);
 
-export const overTime = mysqlTable('over_time', {
-	id: int('id').primaryKey().autoincrement(),
-	staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
-	reason: varchar('reason', { length: 255 }),
-	amountPerHour: decimal('amount_per_hour', { precision: 10, scale: 2 }).notNull(),
-	overTimeTypeId: int('over_time_type_id').references(() => overTimeType.id, {
-		onDelete: 'set null'
-	}),
-	hours: decimal('hours', { precision: 10, scale: 2 }).notNull(),
-	total: decimal('total', { precision: 10, scale: 2 }).notNull(),
-	date: date('date').notNull(),
-	...secureFields
-});
+export const overTime = mysqlTable(
+	'over_time',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
+		reason: varchar('reason', { length: 255 }),
+		amountPerHour: decimal('amount_per_hour', { precision: 10, scale: 2 }).notNull(),
+		overTimeTypeId: int('over_time_type_id').references(() => overTimeType.id, {
+			onDelete: 'set null'
+		}),
+		hours: decimal('hours', { precision: 10, scale: 2 }).notNull(),
+		total: decimal('total', { precision: 10, scale: 2 }).notNull(),
+		date: date('date').notNull(),
+		...secureFields
+	},
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('amount_idx').on(table.total),
+		index('date_idx').on(table.date)
+	]
+);
 
 export const overTimeType = mysqlTable('over_time_type', {
 	id: int('id').primaryKey().autoincrement(),
@@ -303,15 +368,23 @@ export const overTimeType = mysqlTable('over_time_type', {
 	...secureFields
 });
 
-export const commission = mysqlTable('commissions_services', {
-	id: int('id').primaryKey().autoincrement(),
+export const commission = mysqlTable(
+	'commissions_services',
+	{
+		id: int('id').primaryKey().autoincrement(),
 
-	staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
-	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	reason: varchar('reason', { length: 255 }),
-	commissionDate: date('commission_date').notNull(),
-	...secureFields
-});
+		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
+		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		reason: varchar('reason', { length: 255 }),
+		commissionDate: date('commission_date').notNull(),
+		...secureFields
+	},
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('amount_idx').on(table.amount),
+		index('commission_date_idx').on(table.commissionDate)
+	]
+);
 
 export const staffServices = mysqlTable('staff_services', {
 	id: int('id').autoincrement().primaryKey(),
@@ -324,18 +397,26 @@ export const staffServices = mysqlTable('staff_services', {
 	...secureFields
 });
 
-export const deductions = mysqlTable('deductions', {
-	id: int('id').autoincrement().primaryKey(),
-	staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
-	type: varchar('type', { length: 100 }).notNull(),
-	reason: varchar('reason', { length: 255 }).notNull(),
+export const deductions = mysqlTable(
+	'deductions',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
+		type: varchar('type', { length: 100 }).notNull(),
+		reason: varchar('reason', { length: 255 }).notNull(),
 
-	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	deductionDate: date('deduction_date').notNull(),
-	warningType: varchar('warning_type', { length: 100 }),
-	warningReason: varchar('warning_reason', { length: 255 }),
-	...secureFields
-});
+		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		deductionDate: date('deduction_date').notNull(),
+		warningType: varchar('warning_type', { length: 100 }),
+		warningReason: varchar('warning_reason', { length: 255 }),
+		...secureFields
+	},
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('amount_idx').on(table.amount),
+		index('bonus_date_idx').on(table.deductionDate)
+	]
+);
 
 export const staffSchedule = mysqlTable(
 	'staff_schedule',
@@ -353,11 +434,6 @@ export const staffSchedule = mysqlTable(
 		realDaysOnly: check('real_days_only', sql`${table.weekDay} >= 0 AND ${table.weekDay} <= 6`)
 	})
 );
-
-export const staffServicesRelations = relations(staffServices, ({ one }) => ({
-	staff: one(employee, { fields: [staffServices.staffId], references: [employee.id] }),
-	service: one(services, { fields: [staffServices.serviceId], references: [services.id] })
-}));
 
 export const staffScheduleRelations = relations(staffSchedule, ({ one }) => ({
 	staff: one(employee, {
@@ -412,15 +488,25 @@ export const staffQualificationRelations = relations(qualification, ({ one }) =>
 		references: [employee.id]
 	})
 }));
-export const missingDays = mysqlTable('missing_days', {
-	id: int('id').autoincrement().primaryKey(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => employee.id, { onDelete: 'cascade' }),
-	day: date('day').notNull(),
-	reason: varchar('reason', { length: 255 }).notNull(),
-	deductable: boolean('deductable').notNull().default(false),
-	deductableAmount: decimal('deductable_amount', { precision: 10, scale: 2 }),
-	approval: mysqlEnum('approval', ['pending', 'approved', 'rejected']).default('pending').notNull(),
-	...secureFields
-});
+export const missingDays = mysqlTable(
+	'missing_days',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		staffId: int('staff_id')
+			.notNull()
+			.references(() => employee.id, { onDelete: 'cascade' }),
+		day: date('day').notNull(),
+		reason: varchar('reason', { length: 255 }).notNull(),
+		deductable: boolean('deductable').notNull().default(false),
+		deductableAmount: decimal('deductable_amount', { precision: 10, scale: 2 }),
+		approval: mysqlEnum('approval', ['pending', 'approved', 'rejected'])
+			.default('pending')
+			.notNull(),
+		...secureFields
+	},
+	(table) => [
+		index('staff_id_idx').on(table.staffId),
+		index('day_idx').on(table.day),
+		index('deductable_idx').on(table.deductable)
+	]
+);

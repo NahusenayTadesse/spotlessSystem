@@ -1,7 +1,6 @@
 import { db } from '$lib/server/db';
 import {
 	paymentMethods,
-	transactionProducts,
 	transactions,
 	transactionServices,
 	transactionSupplies,
@@ -26,16 +25,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			date: sql<string>`DATE_FORMAT(${transactions.createdAt}, '%W %Y-%m-%d')`,
 			amount: transactions.amount,
 			paymentMethods: paymentMethods.name,
-			noOfProducts: sql<number>`COUNT(${transactionProducts.id})`,
-			noOfServices: sql<number>`COUNT(${transactionServices.id})`,
 			noOfSupplies: sql<number>`COUNT(${transactionSupplies.id})`,
 			recievedBy: user.name,
 			recievedById: user.id,
 			recieptLink: transactions.recieptLink
 		})
 		.from(transactions)
-		.leftJoin(transactionProducts, eq(transactionProducts.transactionId, transactions.id))
-		.leftJoin(transactionServices, eq(transactionServices.transactionId, transactions.id))
+
 		.leftJoin(transactionSupplies, eq(transactionSupplies.transactionId, transactions.id))
 		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
 		.leftJoin(user, eq(transactions.createdBy, user.id))

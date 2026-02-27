@@ -47,29 +47,25 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const subcityList = await subcities();
 	const serviceList = await service();
 
-	const customer = await db
+	const singleSite = await db
 		.select({
-			id: customers.id,
-			name: customers.name,
-			phone: customers.phone,
-			email: customers.email,
-			tinNo: customers.tinNo,
-			status: customers.status,
-			sites: count(site.id),
-			joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
-			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
+			id: site.id,
+			name: site.name,
+			customerName: customers.name,
+			phone: site.phone,
+			startedOn: sql<string>`DATE_FORMAT(${site.startDate}, '%Y-%m-%d')`,
 			addedBy: user.name,
-			addedById: user.id
+			addedById: user.id,
+			status: site.isActive
 		})
-		.from(customers)
-		.leftJoin(user, eq(customers.createdBy, user.id))
-		.leftJoin(site, eq(customers.id, site.customerId))
-		.where(eq(customers.id, Number(id)))
-		.groupBy(customers.id, user.name, site.id, customers.createdAt, customers.name, customers.phone)
+		.from(site)
+		.leftJoin(user, eq(site.createdBy, user.id))
+		.leftJoin(customers, eq(customers.id, site.customerId))
+		.where(eq(site.id, Number(id)))
 		.then((rows) => rows[0]);
 
-	if (!customer) {
-		error(404, 'Customer with this id not found');
+	if (!singleSite) {
+		error(404, 'Site with this id not found');
 	}
 
 	const customerAddress = await db
@@ -85,9 +81,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			status: address.status
 		})
 		.from(address)
-		.leftJoin(customers, eq(customers.address, address.id))
+		.leftJoin(site, eq(site.address, address.id))
 		.leftJoin(subcity, eq(address.subcityId, subcity.id))
-		.where(eq(customers.id, Number(id)))
+		.where(eq(site.id, Number(id)))
 		.then((rows) => rows[0]);
 
 	let contacts = await db
@@ -123,7 +119,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			name: site.name,
 			phone: site.phone,
 			startDate: site.startDate,
-			endDate: site.endDate,
 			address: {
 				id: address.id,
 				street: address.street,
@@ -146,7 +141,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(eq(site.customerId, Number(id)));
 
 	return {
-		customer,
+		customer: singleSite,
 		customerAddress,
 		detailForm,
 		addressForm,

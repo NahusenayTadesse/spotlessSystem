@@ -17,17 +17,13 @@
 	import EditDetail from './editDetail.svelte';
 	import EditAddress from './editAddress.svelte';
 	import Contacts from './contacts.svelte';
-	import Sites from './sites.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.customer?.name },
 		{ name: 'Phone', value: data.customer?.phone },
-		{ name: 'Email', value: data.customer?.email },
-		{ name: 'Status', value: data.customer?.status },
-		{ name: 'Tin Number', value: data.customer?.tinNo },
-		{ name: 'Number of Sites', value: data.customer?.sites },
+		{ name: 'Status', value: data.customer?.status ? 'Active' : 'Inactive' },
 		{ name: 'Added By', value: data.customer?.addedBy },
-		{ name: 'Added On', value: formatEthiopianDate(new Date(data?.customer?.joinedOn)) }
+		{ name: 'Added On', value: formatEthiopianDate(new Date(data?.customer?.startedOn)) }
 	]);
 
 	let customerAddress = $derived([
@@ -41,10 +37,10 @@
 </script>
 
 <svelte:head>
-	<title>Customer Details</title>
+	<title>Site Details</title>
 </svelte:head>
 
-<SingleView title="Customer Details" class="w-full!">
+<SingleView title="Site Details" class="w-full!">
 	<div
 		class="mt-4 grid w-full grid-cols-1 items-start justify-start gap-4 px-4 py-4 lg:grid-cols-2"
 	>
@@ -56,7 +52,6 @@
 						name={data?.customer?.name}
 						phone={data?.customer?.phone}
 						email={data?.customer?.email}
-						tinNo={data?.customer?.tinNo}
 						status={data?.customer?.status}
 					/>
 				{/snippet}
@@ -85,7 +80,7 @@
 			<Contacts data={data?.contacts} form={data?.editContactForm} addForm={data?.addContactForm} />
 		</Section>
 
-		<Section title="Sites" class="lg:col-span-2" IconComp={Building} style="identityIcon">
+		<!-- <Section title="Sites" class="lg:col-span-2" IconComp={Building} style="identityIcon">
 			{#key data?.sites}
 				<Sites
 					data={data?.sites}
@@ -95,7 +90,7 @@
 					addressForm={data?.addressForm}
 				/>
 			{/key}
-		</Section>
+		</Section> -->
 
 		<Section title="Contracts" class="lg:col-span-2" IconComp={Phone} style="identityIcon">
 			<Contacts

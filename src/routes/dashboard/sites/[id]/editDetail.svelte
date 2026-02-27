@@ -25,7 +25,7 @@
 		phone?: string;
 		email?: string;
 		tinNo?: string;
-		status?: string;
+		status?: boolean;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {

@@ -1,1 +1,0 @@
-ALTER TABLE `payroll_entries` ADD `attendance_penality` decimal(10,2);

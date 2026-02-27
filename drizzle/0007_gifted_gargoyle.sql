@@ -1,1 +1,0 @@
-ALTER TABLE `employee` ADD `existingPensionCard` boolean DEFAULT false;

@@ -21,7 +21,6 @@ export const site = mysqlTable('site', {
 	id: int('id').primaryKey().autoincrement(),
 	name: varchar('name', { length: 50 }).notNull(),
 	phone: varchar('phone', { length: 20 }).notNull(),
-	serviceId: int('service_id').references(() => services.id),
 	customerId: int('customer_id')
 		.notNull()
 		.references(() => customers.id),
@@ -29,9 +28,7 @@ export const site = mysqlTable('site', {
 		.notNull()
 		.references(() => address.id),
 	startDate: date('start_date').notNull(),
-	endDate: date('end_date').notNull(),
-	includeVat: boolean('include_vat').notNull().default(false),
-	siteCommission: boolean('site_commission').notNull().default(false),
+	officeCommission: boolean('office_commission').notNull().default(true),
 	...secureFields
 });
 
@@ -125,5 +122,15 @@ export const sitePenalties = mysqlTable('site_penalties', {
 	]).notNull(),
 	year: year('year').notNull(),
 
+	...secureFields
+});
+
+export const siteContacts = mysqlTable('site_contacts', {
+	id: int('id').primaryKey().autoincrement(),
+	siteId: int('site_id')
+		.notNull()
+		.references(() => site.id, { onDelete: 'cascade' }),
+	contactType: varchar('contact_type', { length: 50 }).notNull(),
+	contactDetail: varchar('contact_detail', { length: 255 }).notNull(),
 	...secureFields
 });

@@ -123,7 +123,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			name: site.name,
 			phone: site.phone,
 			startDate: site.startDate,
-			endDate: site.endDate,
 			address: {
 				id: address.id,
 				street: address.street,

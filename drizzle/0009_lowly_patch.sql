@@ -1,1 +1,0 @@
-ALTER TABLE `salaries` RENAME COLUMN `end_date ` TO `end_date`;

@@ -1,9 +1,200 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "da3ccf96-6e55-43ee-95fe-32de23fee4fe",
+  "id": "227f3f3e-2d04-48dd-a7b2-61e0bd635773",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "commission_registers": {
+      "name": "commission_registers",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "feedback": {
+          "name": "feedback",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contacted_by": {
+          "name": "contacted_by",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "tin_no": {
+          "name": "tin_no",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "address": {
+          "name": "address",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "commission_registers_contacted_by_employee_id_fk": {
+          "name": "commission_registers_contacted_by_employee_id_fk",
+          "tableFrom": "commission_registers",
+          "tableTo": "employee",
+          "columnsFrom": [
+            "contacted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "commission_registers_address_address_id_fk": {
+          "name": "commission_registers_address_address_id_fk",
+          "tableFrom": "commission_registers",
+          "tableTo": "address",
+          "columnsFrom": [
+            "address"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "commission_registers_created_by_user_id_fk": {
+          "name": "commission_registers_created_by_user_id_fk",
+          "tableFrom": "commission_registers",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "commission_registers_updated_by_user_id_fk": {
+          "name": "commission_registers_updated_by_user_id_fk",
+          "tableFrom": "commission_registers",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "commission_registers_deleted_by_user_id_fk": {
+          "name": "commission_registers_deleted_by_user_id_fk",
+          "tableFrom": "commission_registers",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "commission_registers_id": {
+          "name": "commission_registers_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "customer_contacts": {
       "name": "customer_contacts",
       "columns": {
@@ -178,13 +369,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "services_id": {
-          "name": "services_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "contract_amount": {
           "name": "contract_amount",
           "type": "decimal(10,2)",
@@ -206,11 +390,18 @@
           "notNull": true,
           "autoincrement": false
         },
-        "transaction_id": {
-          "name": "transaction_id",
-          "type": "int",
+        "contract_file": {
+          "name": "contract_file",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "signing_officer": {
+          "name": "signing_officer",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "is_active": {
@@ -281,30 +472,17 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "customer_contracts_services_id_customer_services_id_fk": {
-          "name": "customer_contracts_services_id_customer_services_id_fk",
+        "customer_contracts_signing_officer_employee_id_fk": {
+          "name": "customer_contracts_signing_officer_employee_id_fk",
           "tableFrom": "customer_contracts",
-          "tableTo": "customer_services",
+          "tableTo": "employee",
           "columnsFrom": [
-            "services_id"
+            "signing_officer"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "customer_contracts_transaction_id_transactions_id_fk": {
-          "name": "customer_contracts_transaction_id_transactions_id_fk",
-          "tableFrom": "customer_contracts",
-          "tableTo": "transactions",
-          "columnsFrom": [
-            "transaction_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "customer_contracts_created_by_user_id_fk": {
@@ -1111,6 +1289,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "status": {
+          "name": "status",
+          "type": "enum('active','dead','pending','contracted')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "address": {
           "name": "address",
           "type": "int",
@@ -1858,7 +2043,7 @@
         },
         "month": {
           "name": "month",
-          "type": "enum('January','February','March','April','May','June','July','August','September','October','November','December')",
+          "type": "enum('መስከረም','ጥቅምት','ህዳር','ታህሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1926,6 +2111,41 @@
           "notNull": false,
           "autoincrement": false
         },
+        "transport_allowance": {
+          "name": "transport_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "position_allowance": {
+          "name": "position_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "housing_allowance": {
+          "name": "housing_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "non_taxable_allowance": {
+          "name": "non_taxable_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gross_amount": {
+          "name": "gross_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "net_amount": {
           "name": "net_amount",
           "type": "decimal(10,2)",
@@ -1935,6 +2155,13 @@
         },
         "paid_amount": {
           "name": "paid_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "attendance_penality": {
+          "name": "attendance_penality",
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
@@ -2036,7 +2263,37 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "payroll_id_idx": {
+          "name": "payroll_id_idx",
+          "columns": [
+            "payroll_id"
+          ],
+          "isUnique": false
+        },
+        "period_idx": {
+          "name": "period_idx",
+          "columns": [
+            "year",
+            "month"
+          ],
+          "isUnique": false
+        },
+        "payment_method_idx": {
+          "name": "payment_method_idx",
+          "columns": [
+            "payment_method_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "payroll_entries_payroll_id_payroll_runs_id_fk": {
           "name": "payroll_entries_payroll_id_payroll_runs_id_fk",
@@ -2125,20 +2382,11 @@
           ]
         }
       },
-      "uniqueConstraints": {
-        "payroll_entries_staff_id_pay_period_start_pay_period_end_unique": {
-          "name": "payroll_entries_staff_id_pay_period_start_pay_period_end_unique",
-          "columns": [
-            "staff_id",
-            "pay_period_start",
-            "pay_period_end"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "payroll_runs": {
-      "name": "payroll_runs",
+    "payroll_receipts": {
+      "name": "payroll_receipts",
       "columns": {
         "id": {
           "name": "id",
@@ -2146,6 +2394,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
+        },
+        "payroll_run_id": {
+          "name": "payroll_run_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "pay_period_start": {
           "name": "pay_period_start",
@@ -2161,12 +2416,162 @@
           "notNull": true,
           "autoincrement": false
         },
-        "payment_date": {
-          "name": "payment_date",
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "paid_date": {
+          "name": "paid_date",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "number_of_employees": {
+          "name": "number_of_employees",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reciept_link": {
+          "name": "reciept_link",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payroll_receipts_payroll_run_id_payroll_runs_id_fk": {
+          "name": "payroll_receipts_payroll_run_id_payroll_runs_id_fk",
+          "tableFrom": "payroll_receipts",
+          "tableTo": "payroll_runs",
+          "columnsFrom": [
+            "payroll_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payroll_receipts_created_by_user_id_fk": {
+          "name": "payroll_receipts_created_by_user_id_fk",
+          "tableFrom": "payroll_receipts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "payroll_receipts_updated_by_user_id_fk": {
+          "name": "payroll_receipts_updated_by_user_id_fk",
+          "tableFrom": "payroll_receipts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "payroll_receipts_deleted_by_user_id_fk": {
+          "name": "payroll_receipts_deleted_by_user_id_fk",
+          "tableFrom": "payroll_receipts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "payroll_receipts_id": {
+          "name": "payroll_receipts_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "payroll_runs": {
+      "name": "payroll_runs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
         },
         "month": {
           "name": "month",
@@ -2182,13 +2587,40 @@
           "notNull": true,
           "autoincrement": false
         },
-        "status": {
-          "name": "status",
-          "type": "enum('pending','processing','completed','failed')",
+        "total_salaries": {
+          "name": "total_salaries",
+          "type": "decimal(10,2)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'pending'"
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_overtime": {
+          "name": "total_overtime",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_transport": {
+          "name": "total_transport",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_housing": {
+          "name": "total_housing",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_position": {
+          "name": "total_position",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "total_net": {
           "name": "total_net",
@@ -2204,8 +2636,22 @@
           "notNull": false,
           "autoincrement": false
         },
-        "total_paid": {
-          "name": "total_paid",
+        "total_penalities": {
+          "name": "total_penalities",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_tax": {
+          "name": "total_tax",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_gross": {
+          "name": "total_gross",
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
@@ -4620,7 +5066,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "amount_idx": {
+          "name": "amount_idx",
+          "columns": [
+            "amount"
+          ],
+          "isUnique": false
+        },
+        "bonus_date_idx": {
+          "name": "bonus_date_idx",
+          "columns": [
+            "bonus_date"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "bonuses_staff_id_employee_id_fk": {
           "name": "bonuses_staff_id_employee_id_fk",
@@ -4777,7 +5245,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "amount_idx": {
+          "name": "amount_idx",
+          "columns": [
+            "amount"
+          ],
+          "isUnique": false
+        },
+        "commission_date_idx": {
+          "name": "commission_date_idx",
+          "columns": [
+            "commission_date"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "commissions_services_staff_id_employee_id_fk": {
           "name": "commissions_services_staff_id_employee_id_fk",
@@ -4955,7 +5445,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "amount_idx": {
+          "name": "amount_idx",
+          "columns": [
+            "amount"
+          ],
+          "isUnique": false
+        },
+        "bonus_date_idx": {
+          "name": "bonus_date_idx",
+          "columns": [
+            "deduction_date"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "deductions_staff_id_employee_id_fk": {
           "name": "deductions_staff_id_employee_id_fk",
@@ -5068,7 +5580,15 @@
           "default": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "department_id": {
@@ -5195,14 +5715,6 @@
           "autoincrement": false,
           "default": "'Ethiopia'"
         },
-        "religion": {
-          "name": "religion",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'Christianity'"
-        },
         "blood_type": {
           "name": "blood_type",
           "type": "enum('A+','A-','B+','B-','AB+','AB-','O+','O-')",
@@ -5214,7 +5726,7 @@
           "name": "tin_no",
           "type": "varchar(10)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "department_id": {
@@ -5288,15 +5800,16 @@
           "notNull": false,
           "autoincrement": false
         },
-        "address": {
-          "name": "address",
-          "type": "int",
+        "existingPensionCard": {
+          "name": "existingPensionCard",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": false
         },
-        "tax_type": {
-          "name": "tax_type",
+        "address": {
+          "name": "address",
           "type": "int",
           "primaryKey": false,
           "notNull": false,
@@ -5364,6 +5877,13 @@
         }
       },
       "indexes": {
+        "id_no_idx": {
+          "name": "id_no_idx",
+          "columns": [
+            "id_no"
+          ],
+          "isUnique": false
+        },
         "first_name_idx": {
           "name": "first_name_idx",
           "columns": [
@@ -5382,6 +5902,13 @@
           "name": "grand_father_name_idx",
           "columns": [
             "grand_father_name"
+          ],
+          "isUnique": false
+        },
+        "hire_date_idx": {
+          "name": "hire_date_idx",
+          "columns": [
+            "hire_date"
           ],
           "isUnique": false
         }
@@ -5445,19 +5972,6 @@
           "tableTo": "address",
           "columnsFrom": [
             "address"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "employee_tax_type_tax_type_id_fk": {
-          "name": "employee_tax_type_tax_type_id_fk",
-          "tableFrom": "employee",
-          "tableTo": "tax_type",
-          "columnsFrom": [
-            "tax_type"
           ],
           "columnsTo": [
             "id"
@@ -5955,8 +6469,15 @@
         }
       },
       "indexes": {
-        "termination_status_idx": {
-          "name": "termination_status_idx",
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": false
+        },
+        "termination_status_unique_idx": {
+          "name": "termination_status_unique_idx",
           "columns": [
             "termination_status"
           ],
@@ -6287,7 +6808,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "day_idx": {
+          "name": "day_idx",
+          "columns": [
+            "day"
+          ],
+          "isUnique": false
+        },
+        "deductable_idx": {
+          "name": "deductable_idx",
+          "columns": [
+            "deductable"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "missing_days_staff_id_employee_id_fk": {
           "name": "missing_days_staff_id_employee_id_fk",
@@ -6353,6 +6896,164 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "office_worker_commission": {
+      "name": "office_worker_commission",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "percentage_idx": {
+          "name": "percentage_idx",
+          "columns": [
+            "amount"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "office_worker_commission_staff_id_employee_id_fk": {
+          "name": "office_worker_commission_staff_id_employee_id_fk",
+          "tableFrom": "office_worker_commission",
+          "tableTo": "employee",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "office_worker_commission_created_by_user_id_fk": {
+          "name": "office_worker_commission_created_by_user_id_fk",
+          "tableFrom": "office_worker_commission",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "office_worker_commission_updated_by_user_id_fk": {
+          "name": "office_worker_commission_updated_by_user_id_fk",
+          "tableFrom": "office_worker_commission",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "office_worker_commission_deleted_by_user_id_fk": {
+          "name": "office_worker_commission_deleted_by_user_id_fk",
+          "tableFrom": "office_worker_commission",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "office_worker_commission_id": {
+          "name": "office_worker_commission_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "office_worker_commission_staff_id_unique": {
+          "name": "office_worker_commission_staff_id_unique",
+          "columns": [
+            "staff_id"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
     "over_time": {
       "name": "over_time",
       "columns": {
@@ -6382,6 +7083,13 @@
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "over_time_type_id": {
+          "name": "over_time_type_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "hours": {
@@ -6458,7 +7166,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "amount_idx": {
+          "name": "amount_idx",
+          "columns": [
+            "total"
+          ],
+          "isUnique": false
+        },
+        "date_idx": {
+          "name": "date_idx",
+          "columns": [
+            "date"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "over_time_staff_id_employee_id_fk": {
           "name": "over_time_staff_id_employee_id_fk",
@@ -6466,6 +7196,19 @@
           "tableTo": "employee",
           "columnsFrom": [
             "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "over_time_over_time_type_id_over_time_type_id_fk": {
+          "name": "over_time_over_time_type_id_over_time_type_id_fk",
+          "tableFrom": "over_time",
+          "tableTo": "over_time_type",
+          "columnsFrom": [
+            "over_time_type_id"
           ],
           "columnsTo": [
             "id"
@@ -6516,6 +7259,197 @@
       "compositePrimaryKeys": {
         "over_time_id": {
           "name": "over_time_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "over_time_type": {
+      "name": "over_time_type",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rate": {
+          "name": "rate",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "over_time_type_created_by_user_id_fk": {
+          "name": "over_time_type_created_by_user_id_fk",
+          "tableFrom": "over_time_type",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "over_time_type_updated_by_user_id_fk": {
+          "name": "over_time_type_updated_by_user_id_fk",
+          "tableFrom": "over_time_type",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "over_time_type_deleted_by_user_id_fk": {
+          "name": "over_time_type_deleted_by_user_id_fk",
+          "tableFrom": "over_time_type",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "over_time_type_id": {
+          "name": "over_time_type_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "penality": {
+      "name": "penality",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rate": {
+          "name": "rate",
+          "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": false
+        },
+        "rate_idx": {
+          "name": "rate_idx",
+          "columns": [
+            "rate"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "penality_id": {
+          "name": "penality_id",
           "columns": [
             "id"
           ]
@@ -6865,6 +7799,38 @@
           "notNull": true,
           "autoincrement": false
         },
+        "transportation_allowance": {
+          "name": "transportation_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "housing_allowance": {
+          "name": "housing_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "non_tax_allowance": {
+          "name": "non_tax_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "position_allowance": {
+          "name": "position_allowance",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
         "amount": {
           "name": "amount",
           "type": "decimal(10,2)",
@@ -6939,7 +7905,64 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "staff_id_idx": {
+          "name": "staff_id_idx",
+          "columns": [
+            "staff_id"
+          ],
+          "isUnique": false
+        },
+        "transportation_allowance_idx": {
+          "name": "transportation_allowance_idx",
+          "columns": [
+            "transportation_allowance"
+          ],
+          "isUnique": false
+        },
+        "housing_allowance_idx": {
+          "name": "housing_allowance_idx",
+          "columns": [
+            "housing_allowance"
+          ],
+          "isUnique": false
+        },
+        "non_tax_allowance_idx": {
+          "name": "non_tax_allowance_idx",
+          "columns": [
+            "non_tax_allowance"
+          ],
+          "isUnique": false
+        },
+        "position_allowance_idx": {
+          "name": "position_allowance_idx",
+          "columns": [
+            "position_allowance"
+          ],
+          "isUnique": false
+        },
+        "amount_idx": {
+          "name": "amount_idx",
+          "columns": [
+            "amount"
+          ],
+          "isUnique": false
+        },
+        "start_date_idx": {
+          "name": "start_date_idx",
+          "columns": [
+            "start_date"
+          ],
+          "isUnique": false
+        },
+        "end_date_idx": {
+          "name": "end_date_idx",
+          "columns": [
+            "end_date"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "salaries_staff_id_employee_id_fk": {
           "name": "salaries_staff_id_employee_id_fk",
@@ -7036,14 +8059,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "primary": {
-          "name": "primary",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
         "is_active": {
           "name": "is_active",
           "type": "boolean",
@@ -7097,7 +8112,22 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "accountDetail_idx": {
+          "name": "accountDetail_idx",
+          "columns": [
+            "account_detail"
+          ],
+          "isUnique": false
+        },
+        "is_active_idx": {
+          "name": "is_active_idx",
+          "columns": [
+            "is_active"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "staff_accounts_staff_id_employee_id_fk": {
           "name": "staff_accounts_staff_id_employee_id_fk",
@@ -7848,9 +8878,23 @@
           "notNull": true,
           "autoincrement": false
         },
+        "threshold": {
+          "name": "threshold",
+          "type": "decimal(12,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "rate": {
           "name": "rate",
           "type": "decimal(15,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "deduction": {
+          "name": "deduction",
+          "type": "decimal(12,2)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -7864,7 +8908,43 @@
           "default": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": false
+        },
+        "threshold_idx": {
+          "name": "threshold_idx",
+          "columns": [
+            "threshold"
+          ],
+          "isUnique": false
+        },
+        "rate_idx": {
+          "name": "rate_idx",
+          "columns": [
+            "rate"
+          ],
+          "isUnique": false
+        },
+        "deduction_idx": {
+          "name": "deduction_idx",
+          "columns": [
+            "deduction"
+          ],
+          "isUnique": false
+        },
+        "status_idx": {
+          "name": "status_idx",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "tax_type_id": {
@@ -8414,6 +9494,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "address": {
           "name": "address",
           "type": "int",
@@ -8428,35 +9515,13 @@
           "notNull": true,
           "autoincrement": false
         },
-        "customer_id": {
-          "name": "customer_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "end_date": {
-          "name": "end_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "includeVat": {
-          "name": "includeVat",
+        "office_commission": {
+          "name": "office_commission",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": false
-        },
-        "siteCommission": {
-          "name": "siteCommission",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
+          "default": true
         },
         "is_active": {
           "name": "is_active",
@@ -8513,12 +9578,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "site_address_address_id_fk": {
-          "name": "site_address_address_id_fk",
+        "site_customer_id_customers_id_fk": {
+          "name": "site_customer_id_customers_id_fk",
           "tableFrom": "site",
-          "tableTo": "address",
+          "tableTo": "customers",
           "columnsFrom": [
-            "address"
+            "customer_id"
           ],
           "columnsTo": [
             "id"
@@ -8526,12 +9591,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "site_customer_id_customers_id_fk": {
-          "name": "site_customer_id_customers_id_fk",
+        "site_address_address_id_fk": {
+          "name": "site_address_address_id_fk",
           "tableFrom": "site",
-          "tableTo": "customers",
+          "tableTo": "address",
           "columnsFrom": [
-            "customer_id"
+            "address"
           ],
           "columnsTo": [
             "id"
@@ -8582,6 +9647,630 @@
       "compositePrimaryKeys": {
         "site_id": {
           "name": "site_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "site_contacts": {
+      "name": "site_contacts",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "site_id": {
+          "name": "site_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contact_type": {
+          "name": "contact_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contact_detail": {
+          "name": "contact_detail",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "site_contacts_site_id_site_id_fk": {
+          "name": "site_contacts_site_id_site_id_fk",
+          "tableFrom": "site_contacts",
+          "tableTo": "site",
+          "columnsFrom": [
+            "site_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "site_contacts_created_by_user_id_fk": {
+          "name": "site_contacts_created_by_user_id_fk",
+          "tableFrom": "site_contacts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_contacts_updated_by_user_id_fk": {
+          "name": "site_contacts_updated_by_user_id_fk",
+          "tableFrom": "site_contacts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_contacts_deleted_by_user_id_fk": {
+          "name": "site_contacts_deleted_by_user_id_fk",
+          "tableFrom": "site_contacts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "site_contacts_id": {
+          "name": "site_contacts_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "site_contracts": {
+      "name": "site_contracts",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contract_amount": {
+          "name": "contract_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "service_id": {
+          "name": "service_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "contract_year": {
+          "name": "contract_year",
+          "type": "year",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contract_date": {
+          "name": "contract_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contract_file": {
+          "name": "contract_file",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "commission_considered": {
+          "name": "commission_considered",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "signing_officer": {
+          "name": "signing_officer",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "site_contracts_customer_id_site_id_fk": {
+          "name": "site_contracts_customer_id_site_id_fk",
+          "tableFrom": "site_contracts",
+          "tableTo": "site",
+          "columnsFrom": [
+            "customer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "site_contracts_service_id_services_id_fk": {
+          "name": "site_contracts_service_id_services_id_fk",
+          "tableFrom": "site_contracts",
+          "tableTo": "services",
+          "columnsFrom": [
+            "service_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "site_contracts_signing_officer_employee_id_fk": {
+          "name": "site_contracts_signing_officer_employee_id_fk",
+          "tableFrom": "site_contracts",
+          "tableTo": "employee",
+          "columnsFrom": [
+            "signing_officer"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_contracts_created_by_user_id_fk": {
+          "name": "site_contracts_created_by_user_id_fk",
+          "tableFrom": "site_contracts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_contracts_updated_by_user_id_fk": {
+          "name": "site_contracts_updated_by_user_id_fk",
+          "tableFrom": "site_contracts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_contracts_deleted_by_user_id_fk": {
+          "name": "site_contracts_deleted_by_user_id_fk",
+          "tableFrom": "site_contracts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "site_contracts_id": {
+          "name": "site_contracts_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "site_monthly_payments": {
+      "name": "site_monthly_payments",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "contract_id": {
+          "name": "contract_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payment_request_file": {
+          "name": "payment_request_file",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "penalty_amount": {
+          "name": "penalty_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "fs_number": {
+          "name": "fs_number",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "invoice_number": {
+          "name": "invoice_number",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "request_amount": {
+          "name": "request_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payment_amount": {
+          "name": "payment_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "before_Vat": {
+          "name": "before_Vat",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "vat": {
+          "name": "vat",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "withhold_amount": {
+          "name": "withhold_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "withhold_file": {
+          "name": "withhold_file",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "month": {
+          "name": "month",
+          "type": "enum('መስከረም','ጥቅምት','ህዳር','ታህሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "year": {
+          "name": "year",
+          "type": "year",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "site_monthly_payments_contract_id_site_contracts_id_fk": {
+          "name": "site_monthly_payments_contract_id_site_contracts_id_fk",
+          "tableFrom": "site_monthly_payments",
+          "tableTo": "site_contracts",
+          "columnsFrom": [
+            "contract_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "site_monthly_payments_transaction_id_transactions_id_fk": {
+          "name": "site_monthly_payments_transaction_id_transactions_id_fk",
+          "tableFrom": "site_monthly_payments",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "site_monthly_payments_created_by_user_id_fk": {
+          "name": "site_monthly_payments_created_by_user_id_fk",
+          "tableFrom": "site_monthly_payments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_monthly_payments_updated_by_user_id_fk": {
+          "name": "site_monthly_payments_updated_by_user_id_fk",
+          "tableFrom": "site_monthly_payments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_monthly_payments_deleted_by_user_id_fk": {
+          "name": "site_monthly_payments_deleted_by_user_id_fk",
+          "tableFrom": "site_monthly_payments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "site_monthly_payments_id": {
+          "name": "site_monthly_payments_id",
           "columns": [
             "id"
           ]
@@ -8725,6 +10414,184 @@
       "compositePrimaryKeys": {
         "site_payment_adjustment_id": {
           "name": "site_payment_adjustment_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "site_penalties": {
+      "name": "site_penalties",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "contract_id": {
+          "name": "contract_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "penalty_type": {
+          "name": "penalty_type",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "penalty_letter": {
+          "name": "penalty_letter",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "penalty_amount": {
+          "name": "penalty_amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "penalty_date": {
+          "name": "penalty_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "month": {
+          "name": "month",
+          "type": "enum('መስከረም','ጥቅምት','ህዳር','ታህሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "year": {
+          "name": "year",
+          "type": "year",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "site_penalties_contract_id_site_contracts_id_fk": {
+          "name": "site_penalties_contract_id_site_contracts_id_fk",
+          "tableFrom": "site_penalties",
+          "tableTo": "site_contracts",
+          "columnsFrom": [
+            "contract_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "site_penalties_created_by_user_id_fk": {
+          "name": "site_penalties_created_by_user_id_fk",
+          "tableFrom": "site_penalties",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_penalties_updated_by_user_id_fk": {
+          "name": "site_penalties_updated_by_user_id_fk",
+          "tableFrom": "site_penalties",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "site_penalties_deleted_by_user_id_fk": {
+          "name": "site_penalties_deleted_by_user_id_fk",
+          "tableFrom": "site_penalties",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "site_penalties_id": {
+          "name": "site_penalties_id",
           "columns": [
             "id"
           ]

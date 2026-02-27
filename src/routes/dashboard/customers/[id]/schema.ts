@@ -105,8 +105,7 @@ export const editSites = z.object({
 		.min(2, 'Phone must be at least 2 characters')
 		.max(100, 'Phone must be at most 100 characters'),
 	status: z.boolean('Status is Required').default(true),
-	startDate: z.string('Start Date is required'),
-	endDate: z.string('End Date is required')
+	startDate: z.string('Start Date is required')
 });
 
 export type EditSites = z.infer<typeof editSites>;

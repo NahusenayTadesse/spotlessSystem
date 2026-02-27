@@ -24,7 +24,7 @@
 		name,
 		phone,
 		startDate,
-		endDate,
+
 		status,
 		icon
 	}: {
@@ -33,7 +33,7 @@
 		name: string;
 		phone: string;
 		startDate: Date;
-		endDate: Date;
+
 		status: boolean;
 		icon: boolean;
 	} = $props();
@@ -56,7 +56,6 @@
 	$form.name = name;
 	$form.phone = phone;
 	$form.startDate = startDate.toLocaleDateString('en-CA');
-	$form.startDate = endDate.toLocaleDateString('en-CA');
 	$form.status = status;
 </script>
 
@@ -103,7 +102,6 @@
 								required
 							/>
 							<InputComp label="Start Date" name="startDate" type="date" {form} {errors} required />
-							<InputComp label="End Date" name="endDate" type="date" {form} {errors} required />
 
 							<InputComp
 								label="Status"

@@ -30,7 +30,7 @@ export const load: PageServerLoad = async () => {
 		.leftJoin(customers, eq(customers.id, site.customerId))
 		.leftJoin(address, eq(address.id, site.address))
 		.leftJoin(subcity, eq(subcity.id, address.subcityId))
-		.where(and(eq(customers.status, 'contracted'), eq(site.isActive, true)))
+		.where(eq(site.isActive, true))
 		.groupBy(site.id, site.startDate);
 
 	return {
