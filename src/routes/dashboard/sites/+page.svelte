@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>Customers List</title>
+	<title>Site List</title>
 </svelte:head>
 
 {#await data}

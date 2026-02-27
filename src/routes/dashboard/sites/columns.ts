@@ -38,15 +38,15 @@ export const columns = [
 		accessorKey: 'customerName',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Name',
+				name: 'Customer Name',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
-				id: row.original.id,
-				name: row.original.name,
+				id: row.original.customerId,
+				name: row.original.customerName,
 				link: '/dashboard/customers'
 			});
 		}

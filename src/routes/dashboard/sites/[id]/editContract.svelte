@@ -19,15 +19,31 @@
 	let {
 		data,
 		id,
-		contactType,
-		contactDetail,
+		service,
+		contractDate,
+		contractYear,
+		startDate,
+		endDate,
+		contractFile,
+		monthlyAmount,
 		status,
+		commissionConsidered,
+		signingOfficer,
+		serviceList,
 		icon
 	}: {
-		data: SuperValidated<Infer<EditContact>>;
+		data: SuperValidated<Infer<EditContract>>;
 		id: number;
-		contactType: string;
-		contactDetail: string;
+		service: number;
+		contractDate: Date;
+		contractYear: number | string;
+		startDate: Date;
+		endDate: Date;
+		contractFile: string;
+		monthlyAmount: number | string;
+		commissionConsidered: boolean;
+		signingOfficer?: number;
+		serviceList: Item[];
 		status: boolean;
 		icon: boolean;
 	} = $props();
@@ -38,6 +54,7 @@
 	});
 	import { toast } from 'svelte-sonner';
 	import type { EditContact } from './schema';
+	import type { Item } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -48,8 +65,14 @@
 		}
 	});
 	$form.id = id;
-	$form.contactType = contactType;
-	$form.contactDetail = contactDetail;
+	$form.service = service;
+	$form.contractDate = contractDate.toLocaleDateString('en-CA');
+	$form.startDate = startDate.toLocaleDateString('en-CA');
+	$form.endDate = endDate.toLocaleDateString('en-CA');
+	$form.contractYear = Number(contractYear);
+	$form.monthlyAmount = Number(monthlyAmount);
+	$form.commissionConsidered = commissionConsidered;
+	$form.signingOfficer = signingOfficer ?? null;
 	$form.status = status;
 </script>
 
@@ -61,53 +84,110 @@
 					{#if icon}
 						<SquarePen /> Edit
 					{:else}
-						{contactType?.toUpperCase()}
+						{contractYear}
 					{/if}
 				</Dialog.Trigger>
 				<Dialog.Content class="w-full bg-background">
 					<Dialog.Header>
-						<Dialog.Title class="text-center text-4xl">Edit {contactDetail}</Dialog.Title>
+						<Dialog.Title class="text-center text-4xl">Edit {contractYear} Contract</Dialog.Title>
 					</Dialog.Header>
-					<ScrollArea class="h-auto w-full px-2 pr-4" orientation="both">
+					<ScrollArea class="h-128 w-full px-2 pr-4" orientation="both">
 						<form
 							id="main"
-							action="?/editContact"
+							action="?/editContract"
 							class="flex w-full! min-w-full! flex-col items-center justify-center gap-3"
 							use:enhance
 							method="post"
+							enctype="multipart/form-data"
 						>
 							<input hidden bind:value={$form.id} name="id" />
 							<InputComp
-								label="Contact Type"
-								name="contactType"
+								label="Service Contracted"
+								name="service"
+								type="combo"
+								{form}
+								{errors}
+								required
+								items={serviceList}
+							/>
+							<InputComp
+								label="Monthly Amount"
+								name="monthlyAmount"
+								type="number"
+								{form}
+								{errors}
+								required
+								placeholder="Enter monthly Amount"
+							/>
+							<InputComp
+								label="Contract Start Date"
+								name="startDate"
+								type="date"
+								{form}
+								{errors}
+								year={true}
+								required
+								placeholder="Enter start date"
+							/>
+							<InputComp
+								label="Contract End Date"
+								name="endDate"
+								type="date"
+								{form}
+								year={true}
+								{errors}
+								required
+								placeholder="Enter end date"
+							/>
+							<InputComp
+								label="Contract Year"
+								name="contractYear"
+								type="number"
+								{form}
+								min="1900"
+								max="2099"
+								{errors}
+								required
+								placeholder="Enter end date"
+							/>
+
+							<InputComp
+								label="Contract Signing Date"
+								name="contractDate"
+								type="date"
+								{form}
+								{errors}
+								required
+								placeholder="Enter signing date"
+							/>
+							<InputComp
+								label="Contract File"
+								name="contractFile"
+								type="file"
+								{form}
+								{errors}
+								required
+								image={contractFile}
+								placeholder="Upload contract pdf or image"
+							/>
+
+							<InputComp
+								label="Office Commission"
+								name="commissionConsidered"
 								type="select"
 								{form}
 								{errors}
-								required
+								required={true}
 								items={[
-									{ value: 'phone', name: 'Phone Number' },
-									{ value: 'email', name: 'Email' },
-									{ value: 'telegram', name: 'Telegram' },
-									{ value: 'whatsapp', name: 'WhatsApp' },
-									{ value: 'instagram', name: 'Instagram' }
+									{
+										value: true,
+										name: 'Yes, Calculate commission for Office Workers for this contract'
+									},
+									{
+										value: false,
+										name: 'No, Do not calculate commission for Office Workers for this contract'
+									}
 								]}
-							/>
-							<InputComp
-								label="Contact Detail"
-								name="contactDetail"
-								type={$form?.contactType === 'phone'
-									? 'tel'
-									: $form?.contactType === 'email'
-										? 'email'
-										: 'text'}
-								{form}
-								{errors}
-								required
-								placeholder={`Enter ${
-									$form?.contactType
-										? $form.contactType.charAt(0).toUpperCase() + $form.contactType.slice(1)
-										: ''
-								}`}
 							/>
 
 							<InputComp
@@ -135,7 +215,7 @@
 			</Dialog.Root>
 		</Tooltip.Trigger>
 		<Tooltip.Content>
-			<p>Edit {contactDetail}</p>
+			<p>Edit {contractYear} Contract</p>
 		</Tooltip.Content>
 	</Tooltip.Root>
 </Tooltip.Provider>

@@ -4,7 +4,7 @@
 	import Copy from '$lib/Copy.svelte';
 	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 	import Statuses from '$lib/components/Table/statuses.svelte';
-	import Edit from './editContacts.svelte';
+	import Edit from './editContract.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -16,7 +16,7 @@
 	import { Plus } from '@lucide/svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import type { Item } from '$lib/global.svelte';
-	import { formatEthiopianDate } from '$lib/global.svelte';
+	import { formatETB, formatEthiopianDate, formatEthiopianYear } from '$lib/global.svelte';
 	import type { EditContract, AddContract } from './schema';
 	const isActives = [
 		{ value: true, name: 'Active' },
@@ -45,34 +45,90 @@
 			enableSorting: false
 		},
 		{
-			accessorKey: 'contactType',
+			accessorKey: 'contractYear',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
-					name: 'Contact Type',
+					name: 'Contract Year',
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original?.id,
-					contactType: row.original?.contactType,
-					contactDetail: row.original?.contactDetail,
-					status: row.original?.status,
 					data: editForm,
+					id: row.original.id,
+					service: row.original.serviceId,
+					contractDate: row.original.signedDate,
+					contractYear: row.original.contractYear,
+					startDate: row.original.startDate,
+					endDate: row.original.endDate,
+					contractFile: row.original.contractFile,
+					monthlyAmount: row.original.monthlyAmount,
+					commissionConsidered: row.original.officeCommission,
+					signingOfficer: row.original.signingOfficer,
+					serviceList,
+					status: row.original.status,
 					icon: false
 				});
 			}
 		},
-
 		{
-			accessorKey: 'contactDetail',
+			accessorKey: 'serviceName',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
-					name: 'Contact Detail',
+					name: 'Service',
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true
+		},
+
+		{
+			accessorKey: 'monthlyAmount',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Monthly Amount',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: (info) => {
+				return formatETB(info.getValue(), true);
+			}
+		},
+		{
+			accessorKey: 'startDate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Contract Start Date',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: (info) => {
+				return formatEthiopianDate(info.getValue());
+			}
+		},
+		{
+			accessorKey: 'endDate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Contract End Date',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: (info) => {
+				return formatEthiopianDate(info.getValue());
+			}
+		},
+		{
+			accessorKey: 'signedDate',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Signed On',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: (info) => {
+				return formatEthiopianDate(info.getValue());
+			}
 		},
 		{
 			accessorKey: 'status',
@@ -84,6 +140,29 @@
 					name: row.original.addedBy,
 					link: '/dashboard/admin-panel/users',
 
+					target: '_blank'
+				});
+			}
+		},
+		{
+			accessorKey: 'officeCommission',
+			header: 'Office Commission',
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(Statuses, {
+					status: row.original.status ? 'Yes' : 'No'
+				});
+			}
+		},
+		{
+			accessorKey: 'contractFile',
+			header: 'Contract File',
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(DataTableLinks, {
+					id: row.original.contractFile ? row.original.contractFile : '',
+					name: row.original.contractFile ? 'Contract File' : 'File Not Uploaded',
+					link: '/dashboard/files',
 					target: '_blank'
 				});
 			}
@@ -111,11 +190,19 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original?.id,
-					contactType: row.original?.contactType,
-					contactDetail: row.original?.contactDetail,
-					status: row.original?.status,
 					data: editForm,
+					id: row.original.id,
+					service: row.original.serviceId,
+					contractDate: row.original.signedDate,
+					contractYear: row.original.contractYear,
+					startDate: row.original.startDate,
+					endDate: row.original.endDate,
+					contractFile: row.original.contractFile,
+					monthlyAmount: row.original.monthlyAmount,
+					commissionConsidered: row.original.officeCommission,
+					signingOfficer: row.original.signingOfficer,
+					serviceList: row.original.serviceList,
+					status: row.original.status,
 					icon: true
 				});
 			}
@@ -138,42 +225,99 @@
 	});
 </script>
 
-<DialogComp variant="default" title="Add Contact" IconComp={Plus}>
+<DialogComp variant="default" title="Add Contract" IconComp={Plus}>
 	<form
-		action="?/addContact"
+		action="?/addContract"
 		use:enhance
 		method="post"
 		id="edit"
-		class="flex w-full flex-col gap-4 p-4 pt-8"
+		class="flex w-full flex-col gap-4 p-2 pt-8"
 		enctype="multipart/form-data"
 	>
 		<Errors allErrors={$allErrors} />
-		<InputComp label="Contract Type" name="contractType" type="text" {form} {errors} required />
 		<InputComp
-			label="Service"
+			label="Service Contracted"
 			name="service"
-			type="checkbox"
+			type="combo"
 			{form}
 			{errors}
 			required
 			items={serviceList}
 		/>
 		<InputComp
-			label="Contact Detail"
-			name="contactDetail"
-			type={$form?.contactType === 'phone'
-				? 'tel'
-				: $form?.contactType === 'email'
-					? 'email'
-					: 'text'}
+			label="Monthly Amount"
+			name="monthlyAmount"
+			type="number"
 			{form}
 			{errors}
 			required
-			placeholder={`Enter ${
-				$form?.contactType
-					? $form.contactType.charAt(0).toUpperCase() + $form.contactType.slice(1)
-					: ''
-			}`}
+			placeholder="Enter monthly Amount"
+		/>
+		<InputComp
+			label="Contract Start Date"
+			name="startDate"
+			type="date"
+			{form}
+			{errors}
+			year={true}
+			required
+			placeholder="Enter start date"
+		/>
+		<InputComp
+			label="Contract End Date"
+			name="endDate"
+			type="date"
+			{form}
+			year={true}
+			{errors}
+			required
+			placeholder="Enter end date"
+		/>
+		<InputComp
+			label="Contract Year"
+			name="contractYear"
+			type="number"
+			{form}
+			min="1900"
+			max="2099"
+			{errors}
+			required
+			placeholder="Enter end date"
+		/>
+
+		<InputComp
+			label="Contract Signing Date"
+			name="contractDate"
+			type="date"
+			{form}
+			{errors}
+			required
+			placeholder="Enter signing date"
+		/>
+		<InputComp
+			label="Contract File"
+			name="contractFile"
+			type="file"
+			{form}
+			{errors}
+			required
+			placeholder="Upload contract pdf or image"
+		/>
+
+		<InputComp
+			label="Office Commission"
+			name="commissionConsidered"
+			type="select"
+			{form}
+			{errors}
+			required={true}
+			items={[
+				{ value: true, name: 'Yes, Calculate commission for Office Workers for this contract' },
+				{
+					value: false,
+					name: 'No, Do not calculate commission for Office Workers for this contract'
+				}
+			]}
 		/>
 
 		<InputComp
@@ -188,16 +332,16 @@
 
 		<Button type="submit" class="mt-4" form="edit">
 			{#if $delayed}
-				<LoadingBtn name="Adding Contact" />
+				<LoadingBtn name="Adding Contract" />
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Add Contact
+				Add Contract
 			{/if}
 		</Button>
 	</form>
 </DialogComp>
 
 {#key data}
-	<DataTable {columns} {data} search={true} fileName="Contact" />
+	<DataTable {columns} {data} search={true} fileName="Contract" />
 {/key}

@@ -15,7 +15,8 @@ import {
 	serviceCategories,
 	services,
 	taxType,
-	site
+	site,
+	customers
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -187,4 +188,16 @@ export async function sites() {
 		.where(eq(site.isActive, true));
 
 	return sites;
+}
+
+export async function customerList() {
+	const customerList = await db
+		.select({
+			value: customers.id,
+			name: customers.name
+		})
+		.from(customers)
+		.where(eq(customers.status, 'contracted'));
+
+	return customerList;
 }

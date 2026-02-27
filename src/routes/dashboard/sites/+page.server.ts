@@ -9,6 +9,7 @@ export const load: PageServerLoad = async () => {
 			id: site.id,
 			name: site.name,
 			customerName: customers.name,
+			customerId: site.customerId,
 			phone: site.phone,
 			startedOn: sql<string>`DATE_FORMAT(${site.startDate}, '%Y-%m-%d')`,
 			addedBy: user.name,

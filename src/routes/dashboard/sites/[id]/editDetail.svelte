@@ -16,15 +16,17 @@
 		data,
 		name,
 		phone,
-		email,
-		tinNo,
+		officeCommission,
+		customerId,
+		customerList,
 		status
 	}: {
 		data: SuperValidated<Infer<EditDetail>>;
 		name?: string;
 		phone?: string;
-		email?: string;
-		tinNo?: string;
+		officeCommission?: boolean;
+		customerId: number;
+		customerList: Item[];
 		status?: boolean;
 	} = $props();
 
@@ -34,6 +36,7 @@
 	});
 	import { toast } from 'svelte-sonner';
 	import type { EditDetail } from './schema';
+	import type { Item } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -45,9 +48,9 @@
 	});
 
 	$form.name = name;
-	$form.email = email;
-	$form.tinNo = tinNo;
+	$form.customer = customerId;
 	$form.phone = phone;
+	$form.officeCommission = officeCommission;
 	$form.status = status;
 </script>
 
@@ -80,14 +83,26 @@
 			required={true}
 			placeholder="Enter Customer Phone"
 		/>
+
 		<InputComp
-			label="Email"
-			name="email"
-			type="email"
+			label="Site Owning Customer"
+			name="customer"
+			type="combo"
 			{form}
 			{errors}
-			required={false}
-			placeholder="Enter Customer Email"
+			required={true}
+			placeholder="Enter Customer Phone"
+			items={customerList}
+		/>
+
+		<InputComp
+			label="Start Date"
+			name="startDate"
+			type="date"
+			{form}
+			{errors}
+			required={true}
+			placeholder="Enter Customer Phone"
 		/>
 
 		<InputComp
@@ -99,22 +114,24 @@
 			required={true}
 			placeholder="Enter Customer Phone"
 			items={[
-				{ value: 'pending', name: 'Pending' },
-				{ value: 'active', name: 'Active' },
-				{ value: 'dead', name: 'Dead' },
-				{ value: 'contracted', name: 'Contracted' }
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'InActive' }
 			]}
 		/>
 
 		<InputComp
-			label="Tin Number"
-			name="tinNo"
-			type="number"
+			label="Office Commission"
+			name="officeCommission"
+			type="select"
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Tin Number"
+			items={[
+				{ value: true, name: 'Yes, Calculate commission for Office Workers for this Site' },
+				{ value: false, name: 'No, Do not calculate commission for Office Workers for this Site' }
+			]}
 		/>
+
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">
 			{#if $delayed}
