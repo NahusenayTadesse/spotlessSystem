@@ -73,6 +73,19 @@
 			}
 		},
 		{
+			accessorKey: 'addPayment',
+			header: 'Add Payment',
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(DataTableLinks, {
+					id: row.original.status ? row.original.id : '',
+					name: '+ Added Monthly Payment',
+					link: '/dashboard/sites/' + page.params.id + '/payments',
+					target: '_blank'
+				});
+			}
+		},
+		{
 			accessorKey: 'serviceName',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
@@ -213,6 +226,7 @@
 		resetForm: false
 	});
 	import { toast } from 'svelte-sonner';
+	import { page } from '$app/state';
 
 	$effect(() => {
 		if ($message) {

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { zod4Client } from 'sveltekit-superforms/adapters';
-
 	let { data } = $props();
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
