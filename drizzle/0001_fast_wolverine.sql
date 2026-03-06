@@ -1,0 +1,1 @@
+ALTER TABLE `site_monthly_payments` ADD `withhold_invoice_number` varchar(255) NOT NULL;

@@ -65,7 +65,7 @@ export const siteMonthlyPayments = mysqlTable('site_monthly_payments', {
 	vat: decimal('vat', { precision: 10, scale: 2 }).notNull(),
 	withholdAmount: decimal('withhold_amount', { precision: 10, scale: 2 }).notNull(),
 	withholdFile: varchar('withhold_file', { length: 255 }).notNull(),
-	withholdInvoiceNumber: varchar('invoice_number', { length: 255 }).notNull(),
+	withholdInvoiceNumber: varchar('withhold_invoice_number', { length: 255 }).notNull(),
 	month: mysqlEnum('month', [
 		'መስከረም', // Meskerem
 		'ጥቅምት', // Tikimt

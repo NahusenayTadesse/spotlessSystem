@@ -51,7 +51,6 @@
 			triggerRef.focus();
 		});
 	}
-	$inspect(value, items);
 </script>
 
 <Popover.Root bind:open>

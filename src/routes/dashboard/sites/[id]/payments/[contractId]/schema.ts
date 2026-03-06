@@ -4,7 +4,8 @@ import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentS
 import { z } from 'zod/v4';
 
 export const add = z.object({
-	id: z.number('Id not found'),
+	paymentMethod: z.number('Payment Method is required'),
+
 	paymentRequestFile: z
 		.instanceof(File, {
 			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
@@ -55,11 +56,7 @@ export const add = z.object({
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
 		),
 
-	month: z.enum(
-		['መስከረም', 'ጥቅምት', 'ህዳር', 'ታህሳስ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ'],
-
-		'Please select a valid Ethiopian month'
-	),
+	month: z.string('Month is required'),
 	date: z.string('Payment Date is required')
 });
 

@@ -62,20 +62,11 @@
 		enctype="multipart/form-data"
 		class="grid-form"
 	>
-		<!-- 1. PERSONAL INFO -->
+		<Errors allErrors={$allErrors} />
 		<section class={sectionStyle}>
 			<h4>Identification & Service</h4>
 
 			<div class={rowStyle}>
-				<InputComp
-					label="Bank or Payment Method"
-					name="paymentMethod"
-					type="combo"
-					{form}
-					{errors}
-					required
-					items={data?.paymentMethods}
-				/>
 				<InputComp
 					label="FS Number"
 					name="fsNumber"
@@ -144,6 +135,15 @@
 					{form}
 					{errors}
 					required
+				/>
+				<InputComp
+					label="Bank Name"
+					name="paymentMethod"
+					type="combo"
+					{form}
+					{errors}
+					required
+					items={data?.paymentMethods}
 				/>
 			</div>
 		</section>
