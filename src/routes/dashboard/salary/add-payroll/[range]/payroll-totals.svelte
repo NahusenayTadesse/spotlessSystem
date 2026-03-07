@@ -11,21 +11,14 @@
 	type Totals = {
 		gross: number;
 		tax: number;
-		penalty: number;
+		penEm: number;
+		penOrg: number;
 		netPay: number;
-		overtime: number;
 	};
 
 	let { totals }: { totals: Totals } = $props();
 
 	/** Format currency */
-	const formatCurrency = (value: number) => {
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: 'USD',
-			minimumFractionDigits: 2
-		}).format(value);
-	};
 </script>
 
 <h4>Totals</h4>
@@ -41,19 +34,6 @@
 			<p class="text-xs text-muted-foreground">Gross</p>
 			<p class="font-semibold text-emerald-600 dark:text-emerald-400">
 				{formatETB(totals.gross, true)}
-			</p>
-		</div>
-	</div>
-
-	<!-- Overtime -->
-	<div class="flex items-center gap-2 pr-4">
-		<div class="flex size-8 items-center justify-center rounded-full bg-blue-500/20">
-			<ClockIcon class="size-4 text-blue-600 dark:text-blue-400" />
-		</div>
-		<div>
-			<p class="text-xs text-muted-foreground">Overtime</p>
-			<p class="font-semibold text-blue-600 dark:text-blue-400">
-				+{formatETB(totals.overtime, true)}
 			</p>
 		</div>
 	</div>
@@ -77,8 +57,18 @@
 			<AlertTriangleIcon class="size-4 text-red-600 dark:text-red-400" />
 		</div>
 		<div>
-			<p class="text-xs text-muted-foreground">Penalty</p>
-			<p class="font-semibold text-red-600 dark:text-red-400">-{formatETB(totals.penalty, true)}</p>
+			<p class="text-xs text-muted-foreground">Pen(Em)</p>
+			<p class="font-semibold text-red-600 dark:text-red-400">-{formatETB(totals.penEm, true)}</p>
+		</div>
+	</div>
+
+	<div class="flex items-center gap-2 pr-4">
+		<div class="flex size-8 items-center justify-center rounded-full bg-red-500/20">
+			<AlertTriangleIcon class="size-4 text-red-600 dark:text-red-400" />
+		</div>
+		<div>
+			<p class="text-xs text-muted-foreground">Pen(Org)</p>
+			<p class="font-semibold text-red-600 dark:text-red-400">-{formatETB(totals.penOrg, true)}</p>
 		</div>
 	</div>
 

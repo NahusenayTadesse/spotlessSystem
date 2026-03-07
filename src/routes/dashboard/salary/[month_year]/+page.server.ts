@@ -43,6 +43,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			paymentMethod: paymentMethods.name,
 			attendancePenality: payrollEntries.attendancePenality,
 			bank: paymentMethods.name,
+			penEm: payrollEntries.penEm,
+			penOrg: payrollEntries.penOrg,
 			overTime: payrollEntries.overtimeAmount,
 			bonus: payrollEntries.bonusAmount,
 			taxAmount: payrollEntries.taxAmount,

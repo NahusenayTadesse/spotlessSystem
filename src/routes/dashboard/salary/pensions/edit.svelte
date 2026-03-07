@@ -17,8 +17,6 @@
 		id,
 		name,
 		rate,
-		taxTypes,
-		taxType,
 		icon = false,
 		status = true
 	}: {
@@ -28,8 +26,7 @@
 		name: string;
 		icon: boolean;
 		rate: string;
-		taxType: number;
-		taxTypes: Item[];
+
 		status: boolean;
 	} = $props();
 
@@ -43,7 +40,6 @@
 	$form.name = name;
 	$form.rate = rate;
 	$form.status = status;
-	$form.taxType = taxType;
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -95,16 +91,6 @@
 							name="rate"
 							placeholder="Enter tax type rate"
 							required={true}
-						/>
-
-						<InputComp
-							{form}
-							{errors}
-							label="Tax Types"
-							type="select"
-							name="taxType"
-							placeholder="Enter tax type rate"
-							items={taxTypes}
 						/>
 
 						<InputComp

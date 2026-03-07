@@ -245,3 +245,56 @@ export function formatETB(amount: number | null | undefined, useAmharic: boolean
 		return `${amount.toFixed(2)} ETB`;
 	}
 }
+
+export const getGregorianRangeFromEthiopian = (ethMonth: number, ethYear: number) => {
+	// 1. Ethiopian months 1-12 have 30 days. Month 13 has 5 or 6.
+	const startDay = 1;
+	const endDay = ethMonth === 13 ? (isEthiopianLeapYear(ethYear) ? 6 : 5) : 30;
+
+	// 2. Approximate the Gregorian year (Ethiopian year + ~7/8 years)
+	const approxGregYear = ethYear + 8;
+
+	const findGregorian = (eYear: number, eMonth: number, eDay: number) => {
+		// Start searching around the approximate Gregorian date
+		let date = new Date(approxGregYear, 0, 1);
+
+		// Use a brute-force search within a small window or a known offset
+		// For simplicity and accuracy across environments:
+		const jdn = ethiopianToJDN(eYear, eMonth, eDay);
+		return jdnToGregorian(jdn);
+	};
+
+	return {
+		start: findGregorian(ethYear, ethMonth, startDay),
+		end: findGregorian(ethYear, ethMonth, endDay)
+	};
+};
+
+// Helper: Check for Ethiopian Leap Year
+const isEthiopianLeapYear = (year: number) => (year + 1) % 4 === 0;
+
+// Helper: Convert Ethiopian to Julian Day Number (JDN)
+function ethiopianToJDN(year: number, month: number, day: number): number {
+	const ERA = 1723856;
+	return ERA + (year - 1) * 365 + Math.floor(year / 4) + (month - 1) * 30 + day - 1;
+}
+
+// Helper: Convert JDN back to Gregorian Date object
+function jdnToGregorian(jdn: number): Date {
+	const z = jdn + 0.5;
+	const f = Math.floor(z);
+	let a = f;
+	if (f >= 2299161) {
+		const alpha = Math.floor((f - 1867216.25) / 36524.25);
+		a = f + 1 + alpha - Math.floor(alpha / 4);
+	}
+	const b = a + 1524;
+	const c = Math.floor((b - 122.1) / 365.25);
+	const d = Math.floor(365.25 * c);
+	const e = Math.floor((b - d) / 30.6001);
+	const day = b - d - Math.floor(30.6001 * e);
+	const month = e < 14 ? e - 1 : e - 13;
+	const year = month > 2 ? c - 4716 : c - 4715;
+
+	return new Date(year, month - 1, day);
+}

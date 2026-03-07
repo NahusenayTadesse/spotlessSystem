@@ -97,9 +97,9 @@
 	let totals = $derived({
 		gross: calculateTotal(filteredList, 'gross'),
 		tax: calculateTotal(filteredList, 'taxAmount'),
-		penalty: calculateTotal(filteredList, 'attendancePenality'),
-		netPay: calculateTotal(filteredList, 'netPay'),
-		overtime: calculateTotal(filteredList, 'overtime')
+		penEm: calculateTotal(filteredList, 'penEm'),
+		penOrg: calculateTotal(filteredList, 'penOrg'),
+		netPay: calculateTotal(filteredList, 'netPay')
 	});
 
 	import PayrollTotals from '../add-payroll/[range]/payroll-totals.svelte';

@@ -29,9 +29,12 @@ export const payrollSchema = z.object({
 			gross: z.coerce.number().default(0),
 			taxable: z.coerce.number().default(0),
 			taxAmount: z.coerce.number().default(0),
-			netPay: z.coerce.number().default(0)
+			netPay: z.coerce.number().default(0),
+			penEm: z.coerce.number().default(0),
+			penOrg: z.coerce.number().default(0)
 		})
 	),
+
 	reciept: z
 		.instanceof(File, {
 			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'

@@ -14,6 +14,7 @@ import {
 	commission,
 	employmentStatuses,
 	taxType,
+	penality,
 	payrollRuns,
 	payrollReceipts,
 	payrollEntries
@@ -34,6 +35,19 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const start = `${y1}-${m1}-${d1}`;
 	const end = `${y2}-${m2}-${d2}`;
+
+	// Fetch active penalties
+	const penalties = await db.select().from(penality).where(eq(penality.status, true));
+
+	// Identify specific penalties (assuming names are 'Pen(Em)' and 'Pen(Org)')
+	const penEm = penalties[0];
+	const penOrg = penalties[1];
+
+	const penEmRate = penEm ? Number(penEm.rate) : 0;
+	const penOrgRate = penOrg ? Number(penOrg.rate) : 0;
+
+	const penEmExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penEmRate}`;
+	const penOrgExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penOrgRate}`;
 
 	const otSub = db
 		.select({
@@ -118,6 +132,15 @@ export const load: PageServerLoad = async ({ params }) => {
 		taxSql.append(sql`ELSE 0 END`);
 	}
 
+	const netPayExpression = sql<number>`
+      (${grossExpression}) - (
+          ${taxSql} +
+          (COALESCE(${missingSub.missedCount}, 0) * (${salaries.amount} / 30)) +
+          COALESCE(${deductionSub.total}, 0) +
+          (${penEmExpression})
+      )
+  `;
+
 	const payrollData = await db
 		.select({
 			id: employee.id,
@@ -141,7 +164,9 @@ export const load: PageServerLoad = async ({ params }) => {
 			gross: grossExpression,
 			taxable: taxableIncomeExpression,
 			taxAmount: taxSql,
-			netPay: sql<number>`(${grossExpression}) - (${taxSql} + (COALESCE(${missingSub.missedCount}, 0) * (${salaries.amount} / 30)) + COALESCE(${deductionSub.total}, 0))`
+			penEm: penEmExpression,
+			penOrg: penOrgExpression,
+			netPay: netPayExpression
 		})
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
@@ -231,6 +256,8 @@ export const actions: Actions = {
 							totalHousing: '0',
 							totalNet: '0',
 							totalDeductions: '0',
+							penEm: '0',
+							penOrg: '0',
 							createdBy: locals?.user?.id
 						})
 						.$returningId();
@@ -247,6 +274,9 @@ export const actions: Actions = {
 						totalPosition: sql`${payrollRuns.totalPosition} + ${calculateTotal(employees, 'positionAllowance')}`,
 						totalDeductions: sql`${payrollRuns.totalDeductions} + ${calculateTotal(employees, 'deductions')}`,
 						totalTax: sql`${payrollRuns.totalTax} + ${calculateTotal(employees, 'taxAmount')}`,
+						penEm: sql`${payrollRuns.penEm} + ${calculateTotal(employees, 'penEm')}`,
+						penOrg: sql`${payrollRuns.totalTax} + ${calculateTotal(employees, 'penOrg')}`,
+
 						updatedBy: locals?.user?.id
 					})
 					.where(eq(payrollRuns.id, payrollId));
@@ -300,6 +330,8 @@ export const actions: Actions = {
 					paidAmount: emp.netPay.toString(), // Added to ensure the record shows what was paid
 					attendancePenality: emp.attendancePenality.toString(),
 					taxAmount: emp.taxAmount.toString(),
+					penEm: emp.penEm.toString(),
+					penOrg: emp.penOrg.toString(),
 					status: 'paid' as const,
 					paymentMethodId: emp.paymentMethodId ? Number(emp.paymentMethodId) : null,
 					createdBy: locals?.user?.id,

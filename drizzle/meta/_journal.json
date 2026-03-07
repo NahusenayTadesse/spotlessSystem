@@ -15,6 +15,27 @@
       "when": 1772817432964,
       "tag": "0001_fast_wolverine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1772837187234,
+      "tag": "0002_volatile_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1772837398694,
+      "tag": "0003_white_rumiko_fujikawa",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1772841319826,
+      "tag": "0004_left_patriot",
+      "breakpoints": true
     }
   ]
 }

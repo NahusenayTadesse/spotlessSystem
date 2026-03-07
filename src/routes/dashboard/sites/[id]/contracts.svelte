@@ -85,6 +85,20 @@
 				});
 			}
 		},
+
+		{
+			accessorKey: 'paymentHistory',
+			header: 'Payment History',
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(DataTableLinks, {
+					id: row.original.id + '/payment-history',
+					name: 'Payment History',
+					link: '/dashboard/sites/' + page.params.id + '/payments',
+					target: '_blank'
+				});
+			}
+		},
 		{
 			accessorKey: 'serviceName',
 			header: ({ column }) =>

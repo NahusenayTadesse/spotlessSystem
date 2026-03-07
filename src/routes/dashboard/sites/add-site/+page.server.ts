@@ -86,7 +86,11 @@ export const actions: Actions = {
 		});
 
 		if (!newCustomerResult)
-			return message(form, { type: 'error', text: 'Unexpected Error,  please try again' });
+			return message(
+				form,
+				{ type: 'error', text: 'Unexpected Error,  please try again' },
+				{ status: 500 }
+			);
 		// Stay on the same page and set a flash message
 		// setFlash({ type: 'success', message: 'Customer Successfully Added' }, cookies);
 		redirect(

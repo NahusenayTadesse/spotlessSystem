@@ -13,7 +13,8 @@ import {
 	boolean,
 	uniqueIndex,
 	tinyint,
-	check
+	check,
+	year
 } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 import { secureFields, lesserFields } from './secureFields';
@@ -375,6 +376,21 @@ export const commission = mysqlTable(
 
 		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		month: mysqlEnum('month', [
+			'መስከረም', // Meskerem
+			'ጥቅምት', // Tikimt
+			'ህዳር', // Hidar
+			'ታህሳስ', // Tahsas
+			'ጥር', // Tir
+			'የካቲት', // Yekatit
+			'መጋቢት', // Megabit
+			'ሚያዝያ', // Miyazya
+			'ግንቦት', // Ginbot
+			'ሰኔ', // Sene
+			'ሐምሌ', // Hamle
+			'ነሐሴ' // Nehasse
+		]).notNull(),
+		year: year('year').notNull(),
 		reason: varchar('reason', { length: 255 }),
 		commissionDate: date('commission_date').notNull(),
 		...secureFields
@@ -382,6 +398,7 @@ export const commission = mysqlTable(
 	(table) => [
 		index('staff_id_idx').on(table.staffId),
 		index('amount_idx').on(table.amount),
+		index('period_idx').on(table.year, table.month),
 		index('commission_date_idx').on(table.commissionDate)
 	]
 );

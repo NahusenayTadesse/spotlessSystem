@@ -126,6 +126,8 @@ export const payrollRuns = mysqlTable(
 		totalPenalities: decimal('total_penalities', { precision: 10, scale: 2 }),
 		totalTax: decimal('total_tax', { precision: 10, scale: 2 }),
 		totalGross: decimal('total_gross', { precision: 10, scale: 2 }),
+		penEm: decimal('pen_em', { precision: 10, scale: 2 }),
+		penOrg: decimal('pen_org', { precision: 10, scale: 2 }),
 
 		...secureFields
 	},
@@ -185,6 +187,8 @@ export const payrollEntries = mysqlTable(
 		status: mysqlEnum('status', ['pending', 'approved', 'paid']).default('pending').notNull(),
 		paymentMethodId: int('payment_method_id').references(() => paymentMethods.id),
 		paymentDate: date('payment_date'),
+		penEm: decimal('pen_em', { precision: 10, scale: 2 }),
+		penOrg: decimal('pen_org', { precision: 10, scale: 2 }),
 		notes: varchar('notes', { length: 255 }),
 		recieptLink: varchar('reciept_link', { length: 255 }),
 

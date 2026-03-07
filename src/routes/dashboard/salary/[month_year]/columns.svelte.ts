@@ -193,6 +193,31 @@ export const columns = [
 		}
 	},
 
+	{
+		id: 'penEm',
+		accessorKey: 'penEm',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Pen (Em) (0.7)',
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			return formatETB(row.original.penEm, true);
+		}
+	},
+	{
+		id: 'penOrg',
+		accessorKey: 'penOrgAmount',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Pen (Org) (0.11)',
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			return formatETB(row.original.penOrg, true);
+		}
+	},
+
 	// {
 	// 	id: 'tax',
 	// 	accessorKey: '',

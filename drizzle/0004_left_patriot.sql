@@ -1,0 +1,2 @@
+ALTER TABLE `commissions_services` ADD `month` enum('መስከረም','ጥቅምት','ህዳር','ታህሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ') NOT NULL;--> statement-breakpoint
+ALTER TABLE `commissions_services` ADD `year` year NOT NULL;

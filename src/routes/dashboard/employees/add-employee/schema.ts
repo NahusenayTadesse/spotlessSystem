@@ -102,7 +102,9 @@ export const add = z.object({
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),
 	floor: z.coerce.number().optional(),
-	houseNumber: z.string('House Number is Required')
+	houseNumber: z.string('House Number is Required'),
+	officeCommission: z.boolean('Office Commission is required').default(false),
+	percentage: z.number('Percentage is required').default(0)
 });
 
 // Type inference for TypeScript use

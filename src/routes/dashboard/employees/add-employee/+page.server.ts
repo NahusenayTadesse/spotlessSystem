@@ -4,7 +4,13 @@ import { fail } from '@sveltejs/kit';
 
 import { add } from './schema';
 import { db } from '$lib/server/db';
-import { salaries, employee, staffContacts, address } from '$lib/server/db/schema/';
+import {
+	salaries,
+	employee,
+	staffContacts,
+	address,
+	officeWorkerCommission
+} from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import { departments, empStatus, eduLevel, sites, subcities } from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
@@ -74,7 +80,9 @@ export const actions: Actions = {
 			buildingNumber,
 			floor,
 			houseNumber,
-			existingPensionCard
+			existingPensionCard,
+			officeCommission,
+			percentage
 		} = form.data;
 
 		// 1. Duplicate Check
@@ -185,6 +193,14 @@ export const actions: Actions = {
 				staffId: staffMember.id,
 				createdBy: locals.user?.id
 			});
+
+			if (officeCommission) {
+				await tx.insert(officeWorkerCommission).values({
+					staffId: staffMember.id,
+					percentage,
+					createdBy: locals.user?.id
+				});
+			}
 
 			delete form.data.govtId;
 			delete form.data.photo;

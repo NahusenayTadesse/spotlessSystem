@@ -280,6 +280,33 @@
 					items={data?.departmentList}
 					required
 				/>
+
+				{#if $form.departmentId === 8}
+					<Input
+						label="Office Commission"
+						name="officeCommission"
+						{form}
+						{errors}
+						type="select"
+						items={[
+							{ value: false, name: 'No' },
+							{ value: true, name: 'Yes' }
+						]}
+						required
+						placeholder="This Employee Rcieves Office Commission"
+					/>
+
+					{#if $form.officeCommission}
+						<Input
+							label="Commission Percentage"
+							name="percentage"
+							{form}
+							{errors}
+							type="number"
+							required
+						/>
+					{/if}
+				{/if}
 				<Input
 					label="Employment Status"
 					name="employmentStatus"

@@ -51,9 +51,9 @@
 					...emp,
 					// Ensure numeric fields from LEFT JOINs aren't null
 					id: emp.id,
-					positionAllowance: emp.positionAllowance ?? 0,
-					housingAllowance: emp.housingAllowance ?? 0,
-					transportAllowance: emp.transportAllowance ?? 0,
+					positionAllowance: Number(emp.positionAllowance) ?? 0,
+					housingAllowance: Number(emp.housingAllowance) ?? 0,
+					transportAllowance: Number(emp.transportAllowance) ?? 0,
 					nonTaxable: emp.nonTaxable ?? 0,
 					overtime: emp.overtime ?? 0,
 					bonus: emp.bonus ?? 0,
@@ -66,6 +66,8 @@
 					taxable: emp.taxable ?? 0,
 					taxAmount: Number(emp.taxAmount) ?? 0,
 					netPay: emp.netPay ?? 0,
+					penEm: emp.penEm ?? 0,
+					penOrg: emp.penOrg ?? 0,
 					// Ensure strings aren't null if the schema doesn't allow it
 					account: emp.account ?? '',
 					employmentStatus: emp.employmentStatus ?? ''
@@ -91,133 +93,126 @@
 	let totals = $derived({
 		gross: calculateTotal(filteredList, 'gross'),
 		tax: calculateTotal(filteredList, 'taxAmount'),
-		penalty: calculateTotal(filteredList, 'attendancePenality'),
-		netPay: calculateTotal(filteredList, 'netPay'),
-		overtime: calculateTotal(filteredList, 'overtime')
+		penEm: calculateTotal(filteredList, 'penEm'),
+		penOrg: calculateTotal(filteredList, 'penOrg'),
+		netPay: calculateTotal(filteredList, 'netPay')
 	});
 
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import { formatETB, formatEthiopianYearMonth } from '$lib/global.svelte';
+	import {
+		formatETB,
+		formatEthiopianYearMonth,
+		getGregorianRangeFromEthiopian
+	} from '$lib/global.svelte';
 </script>
 
 <svelte:head>
 	<title>UnPaid Salaries</title>
 </svelte:head>
 
-{#await data?.payrollData}
-	<div class="flex justify-center p-10">
-		<Loader class="animate-spin" />
+{getGregorianRangeFromEthiopian(6, 2018).start}
+{getGregorianRangeFromEthiopian(6, 2018).end}
+{formatEthiopianYearMonth(2018, 6)}
+
+{#if data.payrollData.length === 0}
+	<div class="flex h-96 w-5xl flex-col items-center justify-center">
+		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
+			<Frown class="h-12 w-16  animate-bounce" />
+
+			Transactions is Empty for this Date Range Choose Another Range
+		</p>
+		<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
 	</div>
-{:then payrollData}
-	{#if data.payrollData.length === 0}
-		<div class="flex h-96 w-5xl flex-col items-center justify-center">
-			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
-				<Frown class="h-12 w-16  animate-bounce" />
+{:else}
+	{$form?.employees[2]?.paymentMethodId}
+	<DialogComp
+		title="Finalise Payroll for Filtered Employees {filteredList?.length}"
+		variant="default"
+		IconComp={BanknoteArrowUp}
+	>
+		<Errors allErrors={$allErrors} />
+		<div class="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+			<h3 class="mb-3 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+				Payroll Summary
+			</h3>
 
-				Transactions is Empty for this Date Range Choose Another Range
-			</p>
-			<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
-		</div>
-	{:else}
-		{$form?.employees[2]?.paymentMethodId}
-		<DialogComp
-			title="Finalise Payroll for Filtered Employees {filteredList?.length}"
-			variant="default"
-			IconComp={BanknoteArrowUp}
-		>
-			<Errors allErrors={$allErrors} />
-			<div class="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-				<h3 class="mb-3 text-xs font-semibold tracking-wider text-slate-500 uppercase">
-					Payroll Summary
-				</h3>
+			<div class="space-y-2 text-sm">
+				<div class="flex justify-between">
+					<span class="text-slate-600">Gross Pay </span>
+					<span class="font-medium text-slate-900">{formatETB(totals.gross)}</span>
+				</div>
 
-				<div class="space-y-2 text-sm">
-					<div class="flex justify-between">
-						<span class="text-slate-600">Gross Pay </span>
-						<span class="font-medium text-slate-900">{formatETB(totals.gross)}</span>
-					</div>
+				<div class="flex justify-between border-b border-slate-100 pb-2">
+					<span class="text-slate-600">Tax & Penalties</span>
+					<span class="font-medium text-rose-600">
+						-{formatETB(totals.tax + totals.penEm + totals.penOrg)}
+					</span>
+				</div>
 
-					<div class="flex justify-between">
-						<span class="text-slate-600">Overtime</span>
-						<span class="font-medium text-emerald-600">+{formatETB(totals.overtime)}</span>
-					</div>
-
-					<div class="flex justify-between border-b border-slate-100 pb-2">
-						<span class="text-slate-600">Tax & Penalties</span>
-						<span class="font-medium text-rose-600">
-							-{formatETB(totals.tax + totals.penalty)}
-						</span>
-					</div>
-
-					<div class="flex justify-between pt-1">
-						<span class="font-bold text-slate-900">Net Pay</span>
-						<span class="text-base font-bold text-indigo-600">
-							{formatETB(totals.netPay)}
-						</span>
-					</div>
+				<div class="flex justify-between pt-1">
+					<span class="font-bold text-slate-900">Net Pay</span>
+					<span class="text-base font-bold text-indigo-600">
+						{formatETB(totals.netPay)}
+					</span>
 				</div>
 			</div>
-			<form
-				method="POST"
-				action="?/runPayroll"
-				use:enhance
-				class="flex w-full flex-col gap-2"
-				enctype="multipart/form-data"
-				id="payroll"
-			>
-				<InputComp type="hidden" label="" name="start" {form} {errors} />
-				<InputComp type="hidden" label="" name="end" {form} {errors} />
-				<InputComp type="hidden" label="Month" name="month" {form} {errors} required />
-				<MonthYear bind:value={$form.month} />
+		</div>
+		<form
+			method="POST"
+			action="?/runPayroll"
+			use:enhance
+			class="flex w-full flex-col gap-2"
+			enctype="multipart/form-data"
+			id="payroll"
+		>
+			<InputComp type="hidden" label="" name="start" {form} {errors} />
+			<InputComp type="hidden" label="" name="end" {form} {errors} />
+			<InputComp type="hidden" label="Month" name="month" {form} {errors} required />
+			<MonthYear bind:value={$form.month} />
 
-				<InputComp label="" type="hidden" name="employees" {form} {errors} />
-				<InputComp label="Payment Date" type="date" name="paymentDate" {form} {errors} />
-				<InputComp
-					label="Upload Bank Statement"
-					type="file"
-					name="reciept"
-					{form}
-					{errors}
-					placeholder="Upload a pdf or image of bank statemeent"
-				/>
-
-				<Button form="payroll" type="submit" class="text-md px-2 py-6">
-					{#if $delayed}
-						<LoadingBtn name="Finalising Payroll" />
-					{:else}
-						<BanknoteArrowUp class="size-6" />
-						Finalise Payroll for Filtered Employees {filteredList?.length}
-					{/if}
-				</Button>
-			</form>
-		</DialogComp>
-		<div class="mt-4 flex flex-col gap-4">
-			<h2 class="my-4 text-2xl">No of Salaries {filteredList?.length}</h2>
-			<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
-			<PayrollTotals {totals} />
-			<Filter
-				data={data?.payrollData}
-				bind:filteredList
-				filterKeys={[
-					'employmentStatus',
-					'absent',
-					'bank',
-					'department',
-					'overtime',
-					'basicSalary',
-					'housingAllowance',
-					'transportAllowance',
-					'positionAllowance'
-				]}
+			<InputComp label="" type="hidden" name="employees" {form} {errors} />
+			<InputComp label="Payment Date" type="date" name="paymentDate" {form} {errors} />
+			<InputComp
+				label="Upload Bank Statement"
+				type="file"
+				name="reciept"
+				{form}
+				{errors}
+				placeholder="Upload a pdf or image of bank statemeent"
 			/>
 
-			<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
-		</div>
-	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
+			<Button form="payroll" type="submit" class="text-md px-2 py-6">
+				{#if $delayed}
+					<LoadingBtn name="Finalising Payroll" />
+				{:else}
+					<BanknoteArrowUp class="size-6" />
+					Finalise Payroll for Filtered Employees {filteredList?.length}
+				{/if}
+			</Button>
+		</form>
+	</DialogComp>
+	<div class="mt-4 flex flex-col gap-4">
+		<h2 class="my-4 text-2xl">No of Salaries {filteredList?.length}</h2>
+		<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
+		<PayrollTotals {totals} />
+		<Filter
+			data={data?.payrollData}
+			bind:filteredList
+			filterKeys={[
+				'employmentStatus',
+				'absent',
+				'bank',
+				'department',
+				'overtime',
+				'basicSalary',
+				'housingAllowance',
+				'transportAllowance',
+				'positionAllowance'
+			]}
+		/>
+
+		<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
 	</div>
-{/await}
+{/if}

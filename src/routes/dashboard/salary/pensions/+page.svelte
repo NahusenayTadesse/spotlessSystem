@@ -32,22 +32,10 @@
 					rate: row?.original?.rate,
 					action: '?/edit',
 					data: data?.editForm,
-					taxType: row?.original?.taxType,
-					taxTypes: data?.taxTypes,
 					icon: false,
 					status: row.original.status
 				});
 			}
-		},
-
-		{
-			accessorKey: 'taxType',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Tax Type',
-					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
 		},
 
 		{
@@ -83,8 +71,6 @@
 					rate: row?.original?.rate,
 					action: '?/edit',
 					data: data?.editForm,
-					taxType: row?.original?.taxType,
-					taxTypes: data?.taxTypes,
 					icon: true,
 					status: row.original.status
 				});
@@ -115,7 +101,7 @@
 	<title>Pension Types</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Department" variant="default">
+<DialogComp title="+ Add New Pension Type" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp
 			{form}
@@ -130,20 +116,12 @@
 			{form}
 			{errors}
 			label="Rate"
-			type="text"
+			type="number"
 			name="rate"
 			placeholder="Enter tax type rate"
 			required={true}
 		/>
 
-		<InputComp
-			label="Tax Type"
-			name="taxType"
-			type="combo"
-			{form}
-			{errors}
-			items={data?.taxTypes}
-		/>
 		<InputComp
 			label="Status"
 			name="status"
@@ -158,13 +136,13 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Tax Type" />
+				<LoadingBtn name="Adding Pension Type" />
 			{:else}
-				<Plus /> Add Tax Type
+				<Plus /> Add Pension Type
 			{/if}
 		</Button>
 	</form>
 </DialogComp>
 {#key data.allData}
-	<DataTable {columns} data={data?.allData} search={true} fileName="Tax Types" />
+	<DataTable {columns} data={data?.allData} search={true} fileName="Pension Types" />
 {/key}
