@@ -98,6 +98,19 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'commission',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Commission',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return formatETB(row.original.commission);
+		}
+	},
+
+	{
 		accessorKey: 'overtime',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {

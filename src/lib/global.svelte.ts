@@ -298,3 +298,51 @@ function jdnToGregorian(jdn: number): Date {
 
 	return new Date(year, month - 1, day);
 }
+
+import { toGregorian, toEthiopian } from 'ethiopian-calendar-new';
+
+export function ethiopianRange(month: number, year: number) {
+	if (month === 13) {
+		return {
+			startDate: toGregorian(year, month, 1),
+			endDate: toGregorian(year, month, 5)
+		};
+	}
+
+	return {
+		startDate: toGregorian(year, month, 1),
+		endDate: toGregorian(year, month, 30)
+	};
+}
+
+const months = [
+	'መስከረም',
+	'ጥቅምት',
+	'ህዳር',
+	'ታህሳስ',
+	'ጥር',
+	'የካቲት',
+	'መጋቢት',
+	'ሚያዝያ',
+	'ግንቦት',
+	'ሰኔ',
+	'ሐምሌ',
+	'ነሐሴ'
+];
+
+/**
+ * Returns the 1-based index of the Ethiopian month.
+ * @param {string} monthName - The name of the month in Ethiopic script.
+ * @returns {number|string} - The month number or an error message.
+ */
+export function getMonthNumber(monthName: string): number {
+	// .indexOf finds the position (0-11)
+	const index = months.indexOf(monthName.trim());
+
+	// If index is -1, the month wasn't found
+	if (index === -1) {
+		return 0;
+	}
+
+	return index + 1;
+}

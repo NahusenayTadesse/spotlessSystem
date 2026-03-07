@@ -6,7 +6,7 @@
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 
-	import { BanknoteArrowUp, Frown, Loader } from '@lucide/svelte';
+	import { ArrowRight, BanknoteArrowUp, Frown, Loader } from '@lucide/svelte';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
 	import Filter from '$lib/components/Table/FilterMenu.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -101,32 +101,46 @@
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import {
-		formatETB,
-		formatEthiopianYearMonth,
-		getGregorianRangeFromEthiopian
-	} from '$lib/global.svelte';
+	import { formatETB, formatEthiopianYearMonth } from '$lib/global.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+
+	let month = $state(page.params.range);
+
+	$form.month = page.params.range;
+
+	let link = $derived(`${month}`);
 </script>
 
 <svelte:head>
 	<title>UnPaid Salaries</title>
 </svelte:head>
 
-{getGregorianRangeFromEthiopian(6, 2018).start}
-{getGregorianRangeFromEthiopian(6, 2018).end}
-{formatEthiopianYearMonth(2018, 6)}
-
 {#if data.payrollData.length === 0}
 	<div class="flex h-96 w-5xl flex-col items-center justify-center">
 		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 			<Frown class="h-12 w-16  animate-bounce" />
 
-			Transactions is Empty for this Date Range Choose Another Range
+			No Salaries are paid for this Date Range Choose Another Range
 		</p>
-		<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
+		<div class="flex h-96 w-5xl flex-col items-center justify-center">
+			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
+			<div class="flex items-center gap-2">
+				<label class="sr-only" for="month-select">Month</label>
+				<MonthYear bind:value={month} />
+			</div>
+
+			<Button
+				onclick={() => goto(`/dashboard/salary/add-payroll/${link}`)}
+				aria-label="Go to selected month and year"
+				class="flex items-center gap-2"
+			>
+				Go
+				<ArrowRight class="h-4 w-4" />
+			</Button>
+		</div>
 	</div>
 {:else}
-	{$form?.employees[2]?.paymentMethodId}
 	<DialogComp
 		title="Finalise Payroll for Filtered Employees {filteredList?.length}"
 		variant="default"
@@ -195,7 +209,22 @@
 	</DialogComp>
 	<div class="mt-4 flex flex-col gap-4">
 		<h2 class="my-4 text-2xl">No of Salaries {filteredList?.length}</h2>
-		<DateMonth start={data?.start} end={data?.end} link="/dashboard/salary/add-payroll" />
+		<div class="flex flex-col items-start justify-start">
+			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
+			<div class="flex flex-row items-start gap-2">
+				<label class="sr-only" for="month-select">Month</label>
+				<MonthYear bind:value={month} />
+
+				<Button
+					onclick={() => goto(`/dashboard/salary/${link}`)}
+					aria-label="Go to selected month and year"
+					class="flex items-center gap-2"
+				>
+					Go
+					<ArrowRight class="h-4 w-4" />
+				</Button>
+			</div>
+		</div>
 		<PayrollTotals {totals} />
 		<Filter
 			data={data?.payrollData}

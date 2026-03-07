@@ -17,7 +17,9 @@ import {
 	penality,
 	payrollRuns,
 	payrollReceipts,
-	payrollEntries
+	payrollEntries,
+	officeWorkerCommission,
+	siteContracts
 } from '$lib/server/db/schema';
 import { and, count, desc, asc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -26,15 +28,23 @@ import type { PageServerLoad, Actions } from '../$types';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
 import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import { getMonthNumber, ethiopianRange } from '$lib/global.svelte';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const form = await superValidate(zod4(payrollSchema));
 
 	const { range } = params as { range: string };
-	const [y1, m1, d1, y2, m2, d2] = range.split('-');
 
-	const start = `${y1}-${m1}-${d1}`;
-	const end = `${y2}-${m2}-${d2}`;
+	const [m, y] = range.split('_');
+
+	await addOfficeWorkerCommission(m, Number(y));
+	const monthNumber = getMonthNumber(m);
+	const year = Number(y);
+
+	const { startDate, endDate } = ethiopianRange(monthNumber, year);
+
+	const start = `${startDate.year}-${startDate.month}-${startDate.day}`;
+	const end = `${endDate.year}-${endDate.month}-${endDate.day}`;
 
 	// Fetch active penalties
 	const penalties = await db.select().from(penality).where(eq(penality.status, true));
@@ -75,7 +85,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			total: sql<number>`COALESCE(SUM(${commission.amount}), 0)`.as('total_comm')
 		})
 		.from(commission)
-		.where(currentMonthFilter(commission.commissionDate, start, end))
+		.where(and(eq(commission.month, m), eq(commission.year, Number(y))))
 		.groupBy(commission.staffId)
 		.as('comm_sub');
 
@@ -182,7 +192,21 @@ export const load: PageServerLoad = async ({ params }) => {
 		.leftJoin(deductionSub, eq(deductionSub.staffId, employee.id))
 		.leftJoin(missingSub, eq(missingSub.staffId, employee.id))
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
-		.where(and(eq(employee.isActive, true), eq(employmentStatuses.removeFromLists, false)))
+		.leftJoin(
+			payrollEntries,
+			and(
+				eq(payrollEntries.staffId, employee.id),
+				eq(payrollEntries.month, m),
+				eq(payrollEntries.year, Number(y))
+			)
+		)
+		.where(
+			and(
+				eq(employee.isActive, true),
+				eq(employmentStatuses.removeFromLists, false),
+				isNull(payrollEntries.id)
+			)
+		)
 		.groupBy(
 			employee.id,
 			employee.name,
@@ -362,3 +386,67 @@ export const actions: Actions = {
 		}
 	}
 };
+
+async function addOfficeWorkerCommission(currentMonth: string, currentYear: number) {
+	const existingCommissions = await db
+		.select({ id: commission.id })
+		.from(commission)
+		.where(and(eq(commission.month, currentMonth), eq(commission.year, currentYear)))
+		.limit(1);
+
+	if (existingCommissions.length > 0) {
+		return {
+			status: 'already_processed',
+			message: `Commissions for ${currentMonth} ${currentYear} already exist.`
+		};
+	}
+
+	// 3. Calculate and Insert in a Transaction
+	try {
+		await db.transaction(async (tx) => {
+			// A. Get the total sum of all active, commissionable contracts
+			// We use the 'isActive' field from your secureFields
+			const [contractData] = await tx
+				.select({
+					totalAmount: sql<number>`sum(${siteContracts.monthlyAmount})`
+				})
+				.from(siteContracts)
+				.where(
+					and(
+						eq(siteContracts.commissionConsidered, true),
+						eq(siteContracts.isActive, true) // Part of your secureFields
+					)
+				);
+
+			const totalPool = (Number(contractData?.totalAmount) || 0) * 0.03;
+
+			if (totalPool === 0) return;
+
+			// B. Get all office workers and their percentages
+			const workers = await tx.select().from(officeWorkerCommission);
+
+			// C. Prepare the batch insert
+			const commissionEntries = workers.map((worker) => ({
+				staffId: worker.staffId,
+				// Amount = (3% of all contracts) * (Worker's specific percentage)
+				amount: (totalPool * Number(worker.percentage)).toFixed(2),
+				month: currentMonth,
+				year: currentYear,
+				reason: `Office Worker shared commission (3% pool)`,
+				commissionDate: new Date(),
+				// Spread your secureFields defaults here if they aren't handled by DB defaults
+				createdAt: new Date(),
+				isActive: true
+			}));
+
+			if (commissionEntries.length > 0) {
+				await tx.insert(commission).values(commissionEntries);
+			}
+		});
+
+		return { status: 'success', message: 'Commissions generated successfully.' };
+	} catch (error) {
+		console.error('Commission Error:', error);
+		return { status: 'error', message: 'Failed to generate commissions.' };
+	}
+}
