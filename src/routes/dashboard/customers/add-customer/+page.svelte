@@ -41,10 +41,10 @@
 </script>
 
 <svelte:head>
-	<title>Add New Inventory Item</title>
+	<title>Add New Customer</title>
 </svelte:head>
 
-<FormCard title="Add New Customer" description="Add New Customer">
+<FormCard title="Add New Customer" description="Add a new customer to the system">
 	<form use:enhance action="?/addCustomer" id="main" class="flex flex-col gap-4" method="POST">
 		<Errors allErrors={$allErrors} />
 

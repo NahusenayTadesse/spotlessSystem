@@ -56,7 +56,18 @@
 			<input type="hidden" {name} bind:value={$form[name]} />
 		</div>
 	{:else}
-		<Input {type} step="any" {name} bind:value={$form[name]} {max} {min} {placeholder} {required} />
+		<Input
+			{type}
+			step="any"
+			{name}
+			bind:value={$form[name]}
+			autocomplete="off"
+			{max}
+			{min}
+			readonly
+			{placeholder}
+			{required}
+		/>
 	{/if}
 
 	{#if $errors[name]}
