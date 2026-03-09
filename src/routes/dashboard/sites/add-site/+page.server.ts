@@ -49,18 +49,11 @@ export const actions: Actions = {
 		const existingCustomer = await db
 			.select({ id: site.id })
 			.from(site)
-			.where(
-				or(
-					// Compare lowercased/trimmed column to lowercased/trimmed input
-					sql`lower(trim(${site.phone})) = ${phone.trim().toLowerCase()}`,
-					sql`lower(trim(${site.name})) = ${name.trim().toLowerCase()}`
-				)
-			);
+			.where(sql`lower(trim(${site.name})) = ${name.trim().toLowerCase()}`);
 
 		if (existingCustomer.length) {
-			setError(form, 'phone', 'Site with same phone or name exists');
-			setError(form, 'name', 'Site with same phone or name exists');
-			return message(form, { type: 'error', text: 'Error: Site with the same number exists' });
+			setError(form, 'name', 'Site with same name exists');
+			return message(form, { type: 'error', text: 'Error: Site with the same name exists' });
 		}
 
 		const newCustomerResult = await db.transaction(async (tx) => {
