@@ -293,7 +293,7 @@
 							{ value: true, name: 'Yes' }
 						]}
 						required
-						placeholder="This Employee Rcieves Office Commission"
+						placeholder="This Employee Recieves Office Commission"
 					/>
 
 					{#if $form.officeCommission}
@@ -312,7 +312,7 @@
 					name="employmentStatus"
 					{form}
 					{errors}
-					type="select"
+					type="combo"
 					items={data?.empStatusList}
 					required
 				/>
@@ -321,7 +321,7 @@
 					name="site"
 					{form}
 					{errors}
-					type="select"
+					type="combo"
 					items={data?.siteList}
 					required
 				/>
@@ -384,8 +384,7 @@
 					required
 				/>
 			</div>
-
-			{total}
+			<h4>Gross Salary (ETB) {total}</h4>
 		</section>
 
 		<section class={sectionStyle}>

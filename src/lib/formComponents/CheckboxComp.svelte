@@ -43,11 +43,11 @@
 			: 'grid-cols-1'} gap-3"
 >
 	{#each items as item (item.value)}
-		<div class="flex items-center gap-2">
+		<div class="flex w-full items-center gap-2">
 			<Label for={String(item.value)} class="cursor-pointer font-normal">
 				<Checkbox
 					id={String(item.value)}
-					checked={checkedValues.includes(String(item.value))}
+					checked={() => checkedValues.includes(String(item.value))}
 					onCheckedChange={(c) => handleChange(String(item.value), c)}
 				/>
 
