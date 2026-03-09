@@ -79,7 +79,7 @@
 		<InputComp
 			label="Tin Number"
 			name="tinNo"
-			type="number"
+			type="text"
 			{form}
 			{errors}
 			required={true}

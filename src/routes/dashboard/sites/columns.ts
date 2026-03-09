@@ -73,7 +73,33 @@ export const columns = [
 			});
 		}
 	},
-
+	{
+		accessorKey: 'expectedPayments',
+		header: 'Expected Payments',
+		sortable: true,
+		cell: ({ row }) =>
+			renderComponent(Copy, {
+				data: row.original.expectedPayments ? row.original.expectedPayments : '0'
+			})
+	},
+	{
+		accessorKey: 'actualPayments',
+		header: 'Actual Payments',
+		sortable: true,
+		cell: ({ row }) =>
+			renderComponent(Copy, {
+				data: row.original.actualPayments ? row.original.actualPayments : '0'
+			})
+	},
+	{
+		accessorKey: 'missingPayments',
+		header: 'Missing Payments',
+		sortable: true,
+		cell: ({ row }) =>
+			renderComponent(Copy, {
+				data: row.original.missingPayments ? row.original.missingPayments : '0'
+			})
+	},
 	{
 		accessorKey: 'addedBy',
 		header: ({ column }) =>
@@ -113,7 +139,7 @@ export const columns = [
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableActions, {
-				id: row.original.extraSettings,
+				id: row.original.customerId,
 				phone: row.original.phone,
 				createdBy: row.original.createdBy,
 				createdById: row.original.bookedById,

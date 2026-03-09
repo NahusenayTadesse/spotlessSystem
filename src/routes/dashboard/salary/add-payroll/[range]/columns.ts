@@ -2,43 +2,7 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatETB } from '$lib/global.svelte';
-import { getTaxTypes } from './data.remote';
 
-interface TaxBracket {
-	value: number | null;
-	name: string | null;
-	rate: number | null | string;
-	threshold: number | string | null; // or string, depending on your DB driver
-	deduction: number | null | string;
-}
-
-const calculateTax = (amount: number, taxTypes: TaxBracket[]): number => {
-	// 1. Sort brackets by threshold ascending to ensure we hit the lowest valid bracket first
-	const sortedBrackets = [...taxTypes].sort((a, b) => Number(a.threshold) - Number(b.threshold));
-
-	// 2. Find the first bracket where amount <= threshold
-	const bracket = sortedBrackets.find((b) => amount <= Number(b.threshold));
-
-	if (!bracket) {
-		return 0;
-	}
-
-	return Number(bracket.rate) * amount - Number(bracket.deduction);
-};
-
-// async function tax(row) {
-// 	const types = await getTaxTypes();
-// 	const taxableIncome = Number(Number(row.origional.gross) - Number(row.original.nonTaxable));
-// 	const tax = calculateTax(taxableIncome, types);
-
-// 	return formatETB(tax, true);
-// }
-//
-//
-let types: TaxBracket[] = [];
-export const initColumns = async () => {
-	types = await getTaxTypes();
-};
 export const columns = [
 	// 1. Row Index
 	//
@@ -71,6 +35,15 @@ export const columns = [
 				link: '/dashboard/salary/single'
 			});
 		}
+	},
+	{
+		accessorKey: 'status',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Status',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
 	},
 
 	// 3. Position (Assumes staffPosition is included in the SELECT)

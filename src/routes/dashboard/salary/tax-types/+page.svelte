@@ -63,7 +63,7 @@
 			sortable: true,
 			cell: ({ row }) => {
 				const value = Number(row.original.threshold);
-				return isNaN(value) ? 'N/A' : formatETB(value, true);
+				return isNaN(value) ? 'N/A' : '<=' + formatETB(value, true);
 			}
 		},
 

@@ -41,11 +41,11 @@
 </script>
 
 <svelte:head>
-	<title>Add New Inventory Item</title>
+	<title>Add New Site</title>
 </svelte:head>
 
-<FormCard title="Add New Customer" description="Add New Customer">
-	<form use:enhance action="?/addCustomer" id="main" class="flex flex-col gap-4" method="POST">
+<FormCard title="Add New Site" description="Add a new site to the system">
+	<form use:enhance action="?/addSite" id="main" class="flex flex-col gap-4" method="POST">
 		<Errors allErrors={$allErrors} />
 
 		<InputComp
@@ -55,7 +55,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Name"
+			placeholder="Enter Site Name"
 		/>
 		<InputComp
 			label="Email"
@@ -64,7 +64,7 @@
 			{form}
 			{errors}
 			required={false}
-			placeholder="Enter Customer Email"
+			placeholder="Enter Site Email"
 		/>
 		<InputComp
 			label="Phone"
@@ -79,11 +79,21 @@
 		<InputComp
 			label="Tin Number"
 			name="tinNo"
-			type="number"
+			type="text"
 			{form}
 			{errors}
 			required={true}
 			placeholder="Enter Customer Tin Number"
+		/>
+		<InputComp
+			label="Customer"
+			name="customer"
+			type="combo"
+			{form}
+			{errors}
+			required={true}
+			placeholder="Select Customer"
+			items={data?.cusList}
 		/>
 
 		<InputComp
@@ -147,11 +157,11 @@
 
 		<Button type="submit" class="mt-4" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Customer" />
+				<LoadingBtn name="Adding Site" />
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Add Customer
+				Add Site
 			{/if}
 		</Button>
 	</form>

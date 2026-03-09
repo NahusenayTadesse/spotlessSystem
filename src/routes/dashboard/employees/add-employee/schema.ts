@@ -12,14 +12,16 @@ export const add = z.object({
 		.string('Phone is required')
 		.min(10, 'Phone number is too short')
 		.max(15, 'Phone number is too long'),
-	email: z.email().optional(),
+	email: z.string().optional(),
 	nationality: z.string().max(50).default('Ethiopia'),
 
 	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).nullable().optional(),
 	// Ethiopian TIN is exactly 10 digits
 	tinNo: z
 		.string()
-		.regex(/^\d{10}$/, 'TIN must be exactly 10 digits')
+		.min(1, 'Tin Number is Required')
+		.length(10, 'Tin Number must be exactly 10 digits')
+		.regex(/^\d+$/, 'Tin Number must only contain numbers')
 		.optional(),
 
 	departmentId: z.number().int().positive('Please select a department'),
@@ -97,7 +99,7 @@ export const add = z.object({
 	newEmployeeVerified: z.boolean().default(false),
 	existingPensionCard: z.boolean().default(false),
 
-	subcity: z.number('Subsity is required'),
+	subcity: z.number('Subcity is required').min(1),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),

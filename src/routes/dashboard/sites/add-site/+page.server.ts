@@ -1,10 +1,10 @@
 import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { eq } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import { customerSchema as schema } from './schema';
 import { db } from '$lib/server/db';
-import { customers, address } from '$lib/server/db/schema/';
-import { subcities } from '$lib/server/fastData';
+import { customers, address, site } from '$lib/server/db/schema/';
+import { subcities, customerList } from '$lib/server/fastData';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
@@ -13,15 +13,17 @@ export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
 
 	const subcityList = await subcities();
+	const cusList = await customerList();
 
 	return {
 		form,
-		subcityList
+		subcityList,
+		cusList
 	};
 };
 
 export const actions: Actions = {
-	addCustomer: async ({ request, locals, cookies }) => {
+	addSite: async ({ request, locals, cookies }) => {
 		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {
@@ -37,6 +39,7 @@ export const actions: Actions = {
 			kebele,
 			buildingNumber,
 			floor,
+			customer,
 			street,
 			houseNumber
 		} = form.data;
@@ -44,13 +47,20 @@ export const actions: Actions = {
 		// try {
 
 		const existingCustomer = await db
-			.select({ id: customers.id })
-			.from(customers)
-			.where(eq(customers.phone, phone));
+			.select({ id: site.id })
+			.from(site)
+			.where(
+				or(
+					// Compare lowercased/trimmed column to lowercased/trimmed input
+					sql`lower(trim(${site.phone})) = ${phone.trim().toLowerCase()}`,
+					sql`lower(trim(${site.name})) = ${name.trim().toLowerCase()}`
+				)
+			);
 
 		if (existingCustomer.length) {
-			setError(form, 'phone', 'Customer with same phone number exists');
-			return message(form, { type: 'error', text: 'Error: customer with the same number exists' });
+			setError(form, 'phone', 'Site with same phone or name exists');
+			setError(form, 'name', 'Site with same phone or name exists');
+			return message(form, { type: 'error', text: 'Error: Site with the same number exists' });
 		}
 
 		const newCustomerResult = await db.transaction(async (tx) => {
@@ -71,10 +81,11 @@ export const actions: Actions = {
 
 			// 2. Insert Customer using the new address ID
 			const [customerRes] = await tx
-				.insert(customers)
+				.insert(site)
 				.values({
 					name,
 					phone,
+					customerId: customer,
 					email,
 					tinNo,
 					address: addressRes.id,
@@ -94,8 +105,8 @@ export const actions: Actions = {
 		// Stay on the same page and set a flash message
 		// setFlash({ type: 'success', message: 'Customer Successfully Added' }, cookies);
 		redirect(
-			`/dashboard/customers/${newCustomerResult.id}`,
-			{ type: 'success', message: 'Customer Successfully Added!' },
+			`/dashboard/sites/${newCustomerResult.id}`,
+			{ type: 'success', message: 'Site Successfully Added!' },
 			cookies
 		);
 		// } catch (err) {

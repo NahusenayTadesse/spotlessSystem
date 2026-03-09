@@ -200,13 +200,7 @@ export const load: PageServerLoad = async ({ params }) => {
 				eq(payrollEntries.year, Number(y))
 			)
 		)
-		.where(
-			and(
-				eq(employee.isActive, true),
-				eq(employmentStatuses.removeFromLists, false),
-				isNull(payrollEntries.id)
-			)
-		)
+		.where(and(eq(employee.isActive, true), isNull(payrollEntries.id)))
 		.groupBy(
 			employee.id,
 			employee.name,

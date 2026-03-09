@@ -5,7 +5,7 @@
 	let { data, children } = $props();
 </script>
 
-<div class="mb-8 flex flex-row items-center justify-start gap-2">
+<div class="mb-8 flex flex-row flex-wrap items-center justify-start gap-2">
 	<Button
 		href="/dashboard/customers"
 		variant={page.url.pathname === '/dashboard/customers' ? 'default' : 'outline'}

@@ -5,21 +5,17 @@
 	let { data, children } = $props();
 </script>
 
-<div class="mb-8 flex flex-row items-center justify-start gap-2">
+<div class="mb-8 flex flex-row flex-wrap items-center justify-start gap-2">
 	<Button
-		href="/dashboard/customers"
-		variant={page.url.pathname === '/dashboard/customers' ? 'default' : 'outline'}
-		><Sheet /> Uncontracted Customers</Button
-	>
+		href="/dashboard/sites"
+		variant={page.url.pathname === '/dashboard/sites' ? 'default' : 'outline'}
+		><Sheet /> All Sites
+	</Button>
+
 	<Button
-		href="/dashboard/customers/contracted"
-		variant={page.url.pathname === '/dashboard/customers/contracted' ? 'default' : 'outline'}
-		><Sheet /> Contracted Customers</Button
-	>
-	<Button
-		href="/dashboard/customers/add-customer"
-		variant={page.url.pathname === '/dashboard/customers/add-customer' ? 'default' : 'outline'}
-		><Plus /> Add Customers</Button
+		href="/dashboard/sites/add-site"
+		variant={page.url.pathname === '/dashboard/sites/add-site' ? 'default' : 'outline'}
+		><Plus /> Add Site</Button
 	>
 </div>
 

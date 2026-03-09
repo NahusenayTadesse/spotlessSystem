@@ -13,7 +13,6 @@
 		{ name: 'Date', value: data.singleTransaction?.date },
 		{ name: 'Amount', value: 'ETB ' + data.singleTransaction?.amount },
 		{ name: 'Payment Method', value: data.singleTransaction?.paymentMethods },
-		{ name: 'No of Products', value: data.singleTransaction?.noOfProducts },
 		{ name: 'No of Services', value: data.singleTransaction?.noOfServices },
 		{ name: 'No of Supplies', value: data.singleTransaction?.noOfSupplies },
 		{ name: 'Recieved By', value: data.singleTransaction?.recievedBy }
@@ -45,15 +44,7 @@
 >
 
 <div class="my-8 w-full lg:w-1/2">
-	{#if data.soldProducts.length || data.soldServices.length}
-		<div class="mb-6">
-			<h3 class="text-lg font-semibold">Products</h3>
-			<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-				Product sold in this Transactions.
-			</p>
-			<DataTable data={data.soldProducts} columns={soldProduct} search={false} />
-		</div>
-
+	{#if data.soldServices.length}
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Services</h3>
 			<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">

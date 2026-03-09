@@ -56,7 +56,7 @@
 	}));
 
 	const sectionStyle = `flex flex-col gap-4 my-4`;
-	const rowStyle = `grid grid-cols-3 mt-4  gap-4`;
+	const rowStyle = `grid lg:grid-cols-3 grid-cols-1 mt-4  gap-4`;
 
 	const total = $derived(
 		$form.positionAllowance +
