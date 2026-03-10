@@ -55,7 +55,7 @@
 				{ title: 'All Supplies', url: '/dashboard/supplies', icon: Sheet },
 				{ title: 'Add Supply', url: '/dashboard/supplies/add-supplies', icon: Plus },
 				{ title: 'Suppliers', url: '/dashboard/supplies/suppliers', icon: Sheet },
-				{ title: 'Add Supplier', url: '/dashboard/supplies/add-supplier', icon: Plus }
+				{ title: 'Add Supplier', url: '/dashboard/supplies/suppliers/add-suppliers', icon: Plus }
 			]
 		},
 		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },

@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
 import { salaries } from '$lib/server/db/schema';
 
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, desc } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -11,11 +11,17 @@ export const load: PageServerLoad = async ({ params }) => {
 		.select({
 			id: salaries.id,
 			amount: salaries.amount,
-			startDate: sql<string>`DATE_FORMAT(${salaries.startDate}, '%W, %b %d %Y')`,
-			endDate: sql<string>`DATE_FORMAT(${salaries.endDate}, '%W, %b %d %Y')`
+			baseSalary: salaries.amount,
+			housingAllowance: salaries.housingAllowance,
+			transportationAllowance: salaries.transportationAllowance,
+			nonTaxAllowance: salaries.nonTaxAllowance,
+			positionAllowance: salaries.positionAllowance,
+			startDate: salaries.startDate,
+			endDate: salaries.endDate
 		})
 		.from(salaries)
-		.where(eq(salaries.staffId, Number(id)));
+		.where(eq(salaries.staffId, Number(id)))
+		.orderBy(desc(salaries.amount));
 
 	return {
 		salaryHistory

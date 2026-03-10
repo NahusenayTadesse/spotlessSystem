@@ -64,7 +64,6 @@
 			autocomplete="off"
 			{max}
 			{min}
-			readonly
 			{placeholder}
 			{required}
 		/>

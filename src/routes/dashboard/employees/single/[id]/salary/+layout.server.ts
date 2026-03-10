@@ -30,6 +30,10 @@ export const load: LayoutServerLoad = async ({ params }) => {
 
 			// base salary (assumed single row per staff)
 			baseSalary: salaries.amount,
+			housingAllowance: salaries.housingAllowance,
+			transportationAllowance: salaries.transportationAllowance,
+			nonTaxAllowance: salaries.nonTaxAllowance,
+			positionAllowance: salaries.positionAllowance,
 			missingDays: count(missingDays.id),
 			overtime: overTime.total,
 			bonus: bonuses.amount
