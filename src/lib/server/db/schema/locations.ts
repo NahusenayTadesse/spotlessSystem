@@ -28,9 +28,9 @@ export const subcity = mysqlTable('subcity', {
 
 export const address = mysqlTable('address', {
 	id: int('id').primaryKey().autoincrement(),
-	subcityId: int('subcity_id')
-		.notNull()
-		.references(() => subcity.id), // Relationship link
+	subcityId: int('subcity_id').references(() => subcity.id),
+	otherSubcity: varchar('other_subcity', { length: 50 }),
+
 	street: varchar('street', { length: 100 }),
 	kebele: varchar('kebele', { length: 100 }),
 	buildingNumber: varchar('building_number', { length: 10 }),

@@ -35,16 +35,7 @@ export const columns = [
 				link: '/dashboard/salary/single'
 			});
 		}
-	},
-	{
-		accessorKey: 'status',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Status',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
-	},
+	}
 
 	// 3. Position (Assumes staffPosition is included in the SELECT)
 	{

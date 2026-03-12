@@ -75,6 +75,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.select({
 			id: address.id,
 			street: address.street,
+			otherSubcity: address.otherSubcity,
 			subcity: subcity.name,
 			subcityId: subcity.id,
 			kebele: address.kebele,
@@ -159,6 +160,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 				id: address.id,
 				street: address.street,
 				subcity: subcity.name,
+				otherSubcity: address.otherSubcity,
 				subcityId: subcity.id,
 				kebele: address.kebele,
 				buildingNumber: address.buildingNumber,

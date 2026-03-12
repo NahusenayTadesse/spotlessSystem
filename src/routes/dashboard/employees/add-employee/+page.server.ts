@@ -82,6 +82,7 @@ export const actions: Actions = {
 			houseNumber,
 			existingPensionCard,
 			officeCommission,
+			otherSubcity,
 			percentage
 		} = form.data;
 
@@ -157,6 +158,7 @@ export const actions: Actions = {
 					subcityId: subcity,
 					kebele,
 					buildingNumber,
+					otherSubcity,
 					floor,
 					houseNumber,
 					status: true

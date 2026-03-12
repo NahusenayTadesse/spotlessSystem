@@ -48,7 +48,7 @@
 		}
 	});
 	$form.id = id;
-	$form.contactType = contactType;
+	$form.contractType = contactType;
 	$form.contactDetail = contactDetail;
 	$form.status = status;
 </script>

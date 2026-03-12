@@ -46,8 +46,7 @@
 	});
 </script>
 
-<DialogComp title="Add Guarantor" variant="default" IconComp={Plus}
-	>Plus
+<DialogComp title="Add Guarantor" variant="default" IconComp={Plus}>
 	<form
 		id="main"
 		action="?/addGuarantor"
@@ -82,6 +81,7 @@
 			placeholder="Enter email address"
 			{form}
 			{errors}
+			required={false}
 		/>
 		<InputComp
 			label="Job Type"
@@ -162,14 +162,14 @@
 		/>
 		<h4>Guarantor Address</h4>
 
+		<InputComp label="Subcity" name="subcity" type="combo" {form} {errors} items={subcityList} />
 		<InputComp
-			label="Subcity"
-			name="subcity"
-			type="combo"
+			label="Other Subcity"
+			name="otherSubcity"
+			type="text"
 			{form}
 			{errors}
-			required
-			items={subcityList}
+			placeholder="Enter other subcity if applicable otherwise leave blank"
 		/>
 		<InputComp label="Street" name="street" type="text" {form} {errors} required />
 		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />

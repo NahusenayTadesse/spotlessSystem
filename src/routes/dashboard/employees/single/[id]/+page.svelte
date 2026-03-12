@@ -67,7 +67,8 @@
 		{ name: 'Last Updated By', value: data?.staffMember?.updatedBy }
 	]);
 	let employeeAddress = $derived([
-		{ name: 'Subcity', value: data?.address?.subcity },
+		{ name: 'Subcity', value: data?.address?.subcity || 'N/A' },
+		{ name: 'Other Subcity', value: data?.address?.otherSubcity || 'N/A' },
 		{ name: 'Street', value: data?.address?.street },
 		{ name: 'Kebele', value: data?.address?.kebele },
 		{ name: 'Building', value: data?.address?.buildingNumber },
@@ -79,7 +80,7 @@
 	let employeeGuarantor = $derived([
 		{ name: 'Name', value: data?.guarantor?.name },
 		{ name: 'Phone', value: data?.guarantor?.phone.slice(0, 15) },
-		{ name: 'Email', value: data?.guarantor?.email },
+		{ name: 'Email', value: data?.guarantor?.email || 'N/A' },
 		{
 			name: 'Relationship',
 			value:
@@ -93,6 +94,8 @@
 	]);
 
 	let guarantorAddress = $derived([
+		{ name: 'Subcity', value: data?.guarantor?.address?.subcity || 'N/A' },
+		{ name: 'Other Subcity', value: data?.guarantor?.address?.otherSubcity || 'N/A' },
 		{ name: 'Street', value: data?.guarantor?.address?.street },
 		{ name: 'Kebele', value: data?.guarantor?.address?.kebele },
 		{ name: 'Building', value: data?.guarantor?.address?.buildingNumber },

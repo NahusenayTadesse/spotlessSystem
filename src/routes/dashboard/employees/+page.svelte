@@ -5,7 +5,6 @@
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
@@ -21,9 +20,9 @@
 	<div class="flex h-96 w-5xl flex-col items-center justify-center">
 		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 			<Frown class="h-12 w-16  animate-bounce" />
-			No staff members added yet
+			No Employees added yet
 		</p>
-		<Button href="/dashboard/services/add-services"><Plus />Add New Employee Members</Button>
+		<Button href="/dashboard/employees/add-employee"><Plus />Add New Employees</Button>
 	</div>
 {:else}
 	<h2 class="my-4 text-2xl">Employees List</h2>

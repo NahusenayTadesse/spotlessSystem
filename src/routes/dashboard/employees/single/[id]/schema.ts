@@ -96,13 +96,14 @@ export type EditPersonal = z.infer<typeof editPersonal>;
 
 export const editAddress = z.object({
 	id: z.number('Address Id not found'),
-	subcity: z.number('Subsity is required'),
+	subcity: z.number('Subsity is required').optional(),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),
 	floor: z.string().optional(),
 	houseNumber: z.string('House Number is Required'),
-	status: z.boolean('Status is required')
+	status: z.boolean('Status is required'),
+	otherSubcity: z.string().optional()
 });
 export type EditAddress = z.infer<typeof editAddress>;
 
@@ -132,7 +133,7 @@ export const editFamily = z.object({
 	}),
 
 	phone: z.string(),
-	email: z.email().optional(),
+	email: z.string().optional(),
 	emergencyContact: z.boolean().default(false),
 	otherRelationShip: z.string().optional(),
 	relationShip: RelationShipEnum,
@@ -147,7 +148,7 @@ export const addFamily = z.object({
 	}),
 
 	phone: z.string(),
-	email: z.email().optional(),
+	email: z.string().optional(),
 	emergencyContact: z.boolean().default(false),
 	otherRelationShip: z.string().optional(),
 	relationShip: RelationShipEnum,
@@ -252,7 +253,7 @@ export const editGuarantor = z.object({
 		.string('Phone is required')
 		.min(1)
 		.max(15, 'Phone number must be between 1 and 15 characters'),
-	email: z.email('Email is required'),
+	email: z.string('Email is required').optional(),
 	jobType: z.string('Job type is required').min(1).max(100),
 	company: z.string('Company Name is required').min(1).max(100),
 	relationship: z.enum([
@@ -309,7 +310,7 @@ export const addGuarantor = z.object({
 		.string('Phone is required')
 		.min(1)
 		.max(15, 'Phone number must be between 1 and 15 characters'),
-	email: z.email('Email is required'),
+	email: z.string('Email is required').optional(),
 	jobType: z.string('Job type is required').min(1).max(100),
 	company: z.string('Company Name is required').min(1).max(100),
 	relationship: z.enum([
@@ -354,7 +355,8 @@ export const addGuarantor = z.object({
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
 		),
-	subcity: z.number('Subsity is required'),
+	subcity: z.number('Subsity is required').optional(),
+	otherSubcity: z.string().optional(),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),

@@ -36,6 +36,13 @@
       "when": 1772841319826,
       "tag": "0004_left_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1773342993922,
+      "tag": "0005_flimsy_sentinel",
+      "breakpoints": true
     }
   ]
 }

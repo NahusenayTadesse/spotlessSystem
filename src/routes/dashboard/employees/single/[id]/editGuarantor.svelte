@@ -39,7 +39,7 @@
 		data: SuperValidated<Infer<EditGuarantor>>;
 		name: string;
 		phone: string;
-		email: string;
+		email?: string;
 		relationship: string;
 		relation?: string;
 		jobType: string;
@@ -68,7 +68,7 @@
 	$form.id = id;
 	$form.name = name;
 	$form.phone = phone;
-	$form.email = email;
+	$form.email = email ? email : undefined;
 	$form.relationship = relationship;
 	$form.relation = relation;
 	$form.jobType = jobType;

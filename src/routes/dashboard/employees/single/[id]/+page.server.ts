@@ -409,7 +409,17 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const { id, street, subcity, kebele, buildingNumber, floor, houseNumber, status } = form.data;
+		const {
+			id,
+			street,
+			subcity,
+			otherSubcity,
+			kebele,
+			buildingNumber,
+			floor,
+			houseNumber,
+			status
+		} = form.data;
 
 		try {
 			if (!id) {
@@ -427,8 +437,9 @@ export const actions: Actions = {
 						street,
 						kebele,
 						buildingNumber,
-						floor,
-						houseNumber,
+						otherSubcity,
+						floor: Number(floor),
+						houseNumber: Number(houseNumber),
 						status
 					})
 					.where(eq(address.id, Number(id)));
@@ -810,7 +821,7 @@ export const actions: Actions = {
 	addGuarantor: async ({ request, locals, params }) => {
 		const { id } = params;
 		const form = await superValidate(request, zod4(addGuarantor));
-
+		console.log(form);
 		if (!form.valid) {
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
@@ -829,6 +840,7 @@ export const actions: Actions = {
 			govtId,
 			street,
 			subcity,
+			otherSubcity,
 			kebele,
 			buildingNumber,
 			floor,
@@ -845,6 +857,7 @@ export const actions: Actions = {
 					.values({
 						street,
 						subcityId: subcity,
+						otherSubcity,
 						kebele,
 						buildingNumber,
 						floor,

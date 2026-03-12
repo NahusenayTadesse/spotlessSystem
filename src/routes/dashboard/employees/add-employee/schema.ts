@@ -99,7 +99,8 @@ export const add = z.object({
 	newEmployeeVerified: z.boolean().default(false),
 	existingPensionCard: z.boolean().default(false),
 
-	subcity: z.number('Subcity is required').min(1),
+	subcity: z.number('Subcity is required').optional(),
+	otherSubcity: z.string().optional(),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),

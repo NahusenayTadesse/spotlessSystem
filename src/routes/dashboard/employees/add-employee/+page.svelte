@@ -191,8 +191,15 @@
 					type="combo"
 					{form}
 					{errors}
-					required
 					items={data?.subcityList}
+				/>
+				<Input
+					label="Other Subcity"
+					name="otherSubcity"
+					type="text"
+					{form}
+					{errors}
+					placeholder="Enter other subcity if subcity is not available, leave blank otherwise"
 				/>
 				<Input label="Street" name="street" type="text" {form} {errors} required />
 				<Input label="Kebele" name="kebele" type="text" {form} {errors} required />
