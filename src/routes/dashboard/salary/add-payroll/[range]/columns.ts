@@ -35,7 +35,7 @@ export const columns = [
 				link: '/dashboard/salary/single'
 			});
 		}
-	}
+	},
 
 	// 3. Position (Assumes staffPosition is included in the SELECT)
 	{
