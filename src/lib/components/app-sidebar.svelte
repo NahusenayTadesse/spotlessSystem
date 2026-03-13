@@ -20,7 +20,6 @@
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
-	import { page } from '$app/state';
 	import { bgGradient } from '$lib/global.svelte';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 

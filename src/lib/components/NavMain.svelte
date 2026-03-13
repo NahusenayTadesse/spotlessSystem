@@ -4,6 +4,9 @@
 	import { cn } from 'tailwind-variants';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { sidebarMenuButtonVariants } from './ui/sidebar/sidebar-menu-button.svelte';
+
+	import { Button } from '$lib/components/ui/button/index.js';
+
 	let {
 		items
 	}: {
@@ -44,33 +47,36 @@
 		// For other items, check if current path starts with their URL but is not just /dashboard
 		return currentPath === url;
 	}
+
+	let btnStyle = 'text-md w-full! justify-start pl-2! py-6 font-normal';
 </script>
 
 <Sidebar.Group>
-	<Sidebar.Menu>
+	<Sidebar.Menu class="gap-2">
 		{#each items as item (item.title)}
 			{#if item.items}
 				<Collapsible.Root open={item.isActive} class="group/collapsible">
 					{#snippet child({ props })}
 						<Sidebar.MenuItem {...props}>
-							<Collapsible.Trigger onclick={() => goto(item.url)}>
+							<Collapsible.Trigger>
 								{#snippet child({ props })}
-									<Sidebar.MenuButton
+									<Button
 										{...props}
-										variant={variantChecker(item.url) ? 'outline' : 'default'}
+										variant={variantChecker(item.url) ? 'default' : 'ghost'}
 										size="lg"
+										class={btnStyle}
+										href={item.url}
 										title="Goto {item.title}"
-										tooltipContent={item.title}
 									>
 										{#if item.icon}
-											<item.icon />
+											<item.icon class="h-5! w-5!" />
 										{/if}
 										<span>{item.title}</span>
 
 										<ChevronRightIcon
 											class="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
 										/>
-									</Sidebar.MenuButton>
+									</Button>
 								{/snippet}
 							</Collapsible.Trigger>
 
@@ -78,22 +84,19 @@
 								<Sidebar.MenuSub>
 									{#each item.items ?? [] as subItem (subItem.title)}
 										<Sidebar.MenuSubItem>
-											<Sidebar.MenuButton
+											<Button
 												{...props}
-												variant={variantChecker2(subItem.url) ? 'outline' : 'default'}
+												variant={variantChecker2(subItem.url) ? 'default' : 'ghost'}
 												size="sm"
+												class="w-full! justify-start text-sm font-normal"
+												href={subItem.url}
 												title="Goto {subItem.title}"
-												tooltipContent={subItem.title}
 											>
-												{#snippet child({ props })}
-													<a href={subItem.url} {...props} transition:slide|global>
-														{#if subItem.icon}
-															<subItem.icon class="h-4 w-4" />
-														{/if}
-														<span>{subItem.title}</span>
-													</a>
-												{/snippet}
-											</Sidebar.MenuButton>
+												{#if subItem.icon}
+													<subItem.icon class="h-4 w-4" />
+												{/if}
+												<span>{subItem.title}</span>
+											</Button>
 										</Sidebar.MenuSubItem>
 									{/each}
 								</Sidebar.MenuSub>
@@ -104,17 +107,15 @@
 			{:else}
 				<Sidebar.Menu class="w-full gap-3" title="Goto {item.title}">
 					<Sidebar.MenuItem>
-						<Sidebar.MenuButton
+						<Button
 							size="lg"
-							variant={variantChecker(item.url) ? 'outline' : 'default'}
+							class={btnStyle}
+							href={item.url}
+							variant={variantChecker(item.url) ? 'default' : 'ghost'}
 						>
-							{#snippet child({ props })}
-								<a href={item.url} {...props}>
-									<item.icon class="h-5! w-5!" />
-									<span>{item.title}</span>
-								</a>
-							{/snippet}
-						</Sidebar.MenuButton>
+							<item.icon class="h-5! w-5!" />
+							<span>{item.title}</span>
+						</Button>
 					</Sidebar.MenuItem>
 				</Sidebar.Menu>
 			{/if}

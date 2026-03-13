@@ -28,6 +28,6 @@
 <ModeWatcher />
 <Toaster position="bottom-right" richColors closeButton />
 
-<ProgressBar class="text-accent" />
+<ProgressBar color="#10182b" />
 
 {@render children()}
