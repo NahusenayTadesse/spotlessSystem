@@ -1,6 +1,5 @@
 import { z } from 'zod/v4';
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentSchema';
-import { gender } from '$lib/global.svelte';
 
 export const terminate = z.object({
 	reason: z.string().min(2).max(255),
@@ -83,7 +82,9 @@ export const editEmployment = z.object({
 	hireDate: z.coerce.string('Hired on date is required'),
 	employmentStatus: z.number('Employment Status is required'),
 	leavesLeft: z.number('Leaves Left is required').default(0),
-	educationalLevel: z.number('Educational Level is required')
+	educationalLevel: z.number('Educational Level is required'),
+	officeCommission: z.boolean('Office Commission is required').default(false),
+	percentage: z.number('Percentage is required').default(0)
 });
 export type EditEmployment = z.infer<typeof editEmployment>;
 
@@ -414,3 +415,10 @@ export const editAccount = z.object({
 });
 
 export type EditAccount = z.infer<typeof editAccount>;
+
+export const editCommission = z.object({
+	percentage: z.number('Percentage is Required').default(0),
+	status: z.boolean('Status is Required').default(true)
+});
+
+export type EditCommission = z.infer<typeof editCommission>;

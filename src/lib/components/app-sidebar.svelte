@@ -47,6 +47,27 @@
 		},
 
 		{
+			title: 'Employees',
+			url: '/dashboard/employees',
+			icon: IdCardLanyard,
+			items: [
+				{ title: 'All Employees', url: '/dashboard/employees', icon: List },
+				{ title: 'Add New Employee', url: '/dashboard/employees/add-employee', icon: Plus }
+			]
+		},
+		{
+			title: 'Salary',
+			url: '/dashboard/salary',
+			icon: Banknote,
+			items: [
+				{ title: 'Paid Salaries', url: '/dashboard/salary/paid-salaries', icon: Banknote },
+				{ title: 'UnPaid Salaries', url: '/dashboard/salary/add-payroll', icon: BanknoteArrowUp },
+				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
+				{ title: 'Over Types', url: '/dashboard/salary/overtime-types', icon: Banknote },
+				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
+			]
+		},
+		{
 			title: 'Supplies',
 			url: '/dashboard/supplies',
 			icon: Container,
@@ -57,28 +78,9 @@
 				{ title: 'Add Supplier', url: '/dashboard/supplies/suppliers/add-suppliers', icon: Plus }
 			]
 		},
-		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
-		{
-			title: 'Employees',
-			url: '/dashboard/employees',
-			icon: IdCardLanyard,
-			items: [
-				{ title: 'All Employees', url: '/dashboard/employees', icon: List },
-				{ title: 'Add Employee', url: '/dashboard/employees/add-employee', icon: Plus }
-			]
-		},
-		{
-			title: 'Salary',
-			url: '/dashboard/salary',
-			icon: Banknote,
-			items: [
-				{ title: 'Paid Salaries', url: '/dashboard/salary', icon: Banknote },
-				{ title: 'UnPaid Salaries', url: '/dashboard/salary/add-payroll', icon: BanknoteArrowUp },
-				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
-				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
-			]
-		},
+
 		{ title: 'Finance', url: '/dashboard/transactions', icon: ScanLine },
+		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
 		{
 			title: 'Admin Panel',
 			url: '/dashboard/admin-panel',

@@ -18,9 +18,11 @@ import {
 	staffSchedule,
 	staffContacts,
 	staffAccounts,
-	paymentMethods
+	paymentMethods,
+	officeWorkerCommission
 } from '$lib/server/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/mysql-core';
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -221,6 +223,21 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(staffAccounts.staffId, Number(id)))
 		.orderBy(desc(staffAccounts.isActive));
 
+	const creator = alias(user, 'creator');
+	const updater = alias(user, 'updater');
+	const officeCommission = await db
+		.select({
+			percentage: officeWorkerCommission.percentage,
+			status: officeWorkerCommission.isActive,
+			createdBy: creator.name,
+			updatedBy: updater.name
+		})
+		.from(officeWorkerCommission)
+		.leftJoin(creator, eq(officeWorkerCommission.createdBy, creator.id))
+		.leftJoin(updater, eq(officeWorkerCommission.updatedBy, updater.id))
+		.where(eq(officeWorkerCommission.staffId, Number(id)))
+		.then((rows) => rows[0]);
+
 	return {
 		staffMember,
 		address: employeeAddress,
@@ -231,6 +248,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		contacts,
 		schedule,
 		accounts,
-		form
+		form,
+		officeCommission
 	};
 };

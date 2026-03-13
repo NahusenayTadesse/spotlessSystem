@@ -6,6 +6,7 @@ import { db } from '$lib/server/db';
 import {
 	employee,
 	employeeTermination,
+	officeWorkerCommission,
 	employmentStatuses,
 	address,
 	staffFamilies,
@@ -41,7 +42,8 @@ import {
 	addContact,
 	editContact,
 	addAccount,
-	editAccount
+	editAccount,
+	editCommission
 } from './schema';
 import { empStatus, departments, eduLevel, subcities, paymentMethods } from '$lib/server/fastData';
 
@@ -68,6 +70,7 @@ export const load: PageServerLoad = async () => {
 	const addContactForm = await superValidate(zod4(addContact));
 	const addAccountForm = await superValidate(zod4(addAccount));
 	const editAccountForm = await superValidate(zod4(editAccount));
+	const editCommissionForm = await superValidate(zod4(editCommission));
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
@@ -100,7 +103,8 @@ export const load: PageServerLoad = async () => {
 		editContactForm,
 		addAccountForm,
 		editAccountForm,
-		bankList
+		bankList,
+		editCommissionForm
 	};
 };
 
@@ -337,8 +341,16 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const { idNo, leavesLeft, department, educationalLevel, employmentStatus, hireDate } =
-			form.data;
+		const {
+			idNo,
+			leavesLeft,
+			department,
+			educationalLevel,
+			employmentStatus,
+			hireDate,
+			officeCommission,
+			percentage
+		} = form.data;
 
 		try {
 			if (!id) {
@@ -361,6 +373,14 @@ export const actions: Actions = {
 						updatedBy: locals?.user?.id
 					})
 					.where(eq(employee.id, Number(id)));
+
+				if (officeCommission) {
+					await tx.insert(officeWorkerCommission).values({
+						staffId: Number(id),
+						percentage,
+						createdBy: locals.user?.id
+					});
+				}
 			});
 			return message(form, { type: 'success', text: 'Employment Details Updated Successfully!' });
 		} catch (err) {
@@ -1106,6 +1126,44 @@ export const actions: Actions = {
 				type: 'error',
 				text: `Updated Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 			});
+		}
+	},
+	editCommission: async ({ request, locals, params }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(editCommission));
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { percentage, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(officeWorkerCommission)
+					.set({
+						percentage: String(percentage),
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(officeWorkerCommission.staffId, Number(id)));
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Commission Details Updated Successfully!'
+			});
+		} catch (err) {
+			console.error(err?.message);
+			return message(
+				form,
+				{
+					type: 'error',
+					text: `Updated Commission failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				},
+				{
+					status: 500
+				}
+			);
 		}
 	}
 };

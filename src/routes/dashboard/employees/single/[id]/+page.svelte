@@ -106,6 +106,16 @@
 		{ name: 'Status', value: data?.guarantor?.address?.status ? 'Active' : 'Inactive' }
 	]);
 
+	let officeCommission = $derived([
+		{
+			name: 'Percentage',
+			value: data?.officeCommission?.percentage || 'Not Included in Office Commission'
+		},
+		{ name: 'First Added By', value: data?.officeCommission?.createdBy },
+		{ name: 'Last Updated By', value: data?.officeCommission?.updatedBy },
+		{ name: 'Status', value: data?.officeCommission?.status ? 'Active' : 'Inactive' }
+	]);
+
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
 	import EditIdentity from './editIdentity.svelte';
@@ -121,6 +131,7 @@
 	import Schedules from './schedules.svelte';
 	import Contacts from './contacts.svelte';
 	import Accounts from './accounts.svelte';
+	import EditCommission from './editCommission.svelte';
 </script>
 
 <svelte:head>
@@ -429,6 +440,19 @@
 					addForm={data?.addExperienceForm}
 				/>
 			</Section>
+
+			{#if data?.officeCommission}
+				<Section title="System Information" IconComp={Settings} style="systemIcon">
+					{#snippet editDialog()}
+						<EditCommission
+							data={data?.editCommissionForm}
+							percentage={data?.officeCommission?.percentage}
+							status={data?.officeCommission?.status}
+						/>
+					{/snippet}
+					<SingleTable singleTable={officeCommission} />
+				</Section>
+			{/if}
 
 			<Section title="System Information" IconComp={Settings} style="systemIcon">
 				<SingleTable singleTable={systemInformation} />

@@ -78,6 +78,33 @@
 			items={departmentList}
 		/>
 
+		{#if $form.department === 8 && department !== 8}
+			<InputComp
+				label="Office Commission"
+				name="officeCommission"
+				{form}
+				{errors}
+				type="select"
+				items={[
+					{ value: false, name: 'No' },
+					{ value: true, name: 'Yes' }
+				]}
+				required
+				placeholder="This Employee Recieves Office Commission"
+			/>
+
+			{#if $form.officeCommission}
+				<InputComp
+					label="Commission Percentage"
+					name="percentage"
+					{form}
+					{errors}
+					type="number"
+					required
+				/>
+			{/if}
+		{/if}
+
 		<InputComp label="Leaves Left" name="leavesLeft" type="number" {form} {errors} required />
 
 		<InputComp

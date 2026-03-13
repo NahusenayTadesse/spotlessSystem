@@ -16,7 +16,8 @@ import {
 	services,
 	taxType,
 	site,
-	customers
+	customers,
+	overTimeType
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -176,6 +177,18 @@ export async function taxTypes() {
 		.from(taxType)
 		.where(eq(taxType.status, true));
 	return taxTypes;
+}
+
+export async function overtimeTypes() {
+	const overtimeTypes = await db
+		.select({
+			value: overTimeType.id,
+			name: overTimeType.name,
+			rate: overTimeType.rate
+		})
+		.from(overTimeType)
+		.where(eq(overTimeType.isActive, true));
+	return overtimeTypes;
 }
 
 export async function sites() {
