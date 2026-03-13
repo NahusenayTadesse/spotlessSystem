@@ -102,19 +102,52 @@
 		netPay: calculateTotal(filteredList, 'netPay')
 	});
 
-	import PayrollTotals from '../add-payroll/[range]/payroll-totals.svelte';
+	import PayrollTotals from '$lib/components/payroll-totals.svelte';
 </script>
 
 <svelte:head>
 	<title>Salaries List for {data.month} {data.year}</title>
 </svelte:head>
 
-{#await data}
-	<Loading name="Salaries" />
-{:then payrollData}
-	{#if data?.payrollData.length === 0}
-		<div class="flex h-96 w-5xl flex-col items-center justify-center">
-			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
+{#if data?.payrollData.length === 0}
+	<div class="flex h-96 w-5xl flex-col items-center justify-center">
+		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
+		<div class="flex items-center gap-2">
+			<label class="sr-only" for="month-select">Month</label>
+			<MonthYear bind:value={month} />
+		</div>
+
+		<Button
+			onclick={() => goto(`/dashboard/salary/${link}`)}
+			aria-label="Go to selected month and year"
+			class="flex items-center gap-2"
+		>
+			Go
+			<ArrowRight class="h-4 w-4" />
+		</Button>
+	</div>
+	<Frown class="h-12 w-16  animate-bounce" />
+	No salaries added yet for {data.month}
+	{data.year}
+
+	<!-- <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button> -->
+{:else}
+	<div
+		class="mx-auto max-w-4xl gap-4 rounded-lg bg-white/80 p-4 shadow-sm backdrop-blur-sm lg:flex lg:items-center lg:justify-between dark:bg-gray-800/80"
+	>
+		<div class="flex-1">
+			<h1 class="text-lg font-semibold text-gray-900 lg:text-2xl dark:text-gray-100">
+				Salaries — {data?.month}
+				{data.year}
+			</h1>
+			<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+				Total Employees: <span class="font-medium text-gray-800 dark:text-gray-100"
+					>{data?.payrollData.length}</span
+				>
+			</p>
+		</div>
+
+		<div class="mt-3 flex flex-col items-stretch gap-3 sm:mt-0 sm:flex-row sm:items-center">
 			<div class="flex items-center gap-2">
 				<label class="sr-only" for="month-select">Month</label>
 				<MonthYear bind:value={month} />
@@ -129,76 +162,35 @@
 				<ArrowRight class="h-4 w-4" />
 			</Button>
 		</div>
-		<Frown class="h-12 w-16  animate-bounce" />
-		No salaries added yet for {data.month}
-		{data.year}
-
-		<!-- <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button> -->
-	{:else}
-		<div
-			class="mx-auto max-w-4xl gap-4 rounded-lg bg-white/80 p-4 shadow-sm backdrop-blur-sm lg:flex lg:items-center lg:justify-between dark:bg-gray-800/80"
-		>
-			<div class="flex-1">
-				<h1 class="text-lg font-semibold text-gray-900 lg:text-2xl dark:text-gray-100">
-					Salaries — {data?.month}
-					{data.year}
-				</h1>
-				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-					Total Employees: <span class="font-medium text-gray-800 dark:text-gray-100"
-						>{data?.payrollData.length}</span
-					>
-				</p>
-			</div>
-
-			<div class="mt-3 flex flex-col items-stretch gap-3 sm:mt-0 sm:flex-row sm:items-center">
-				<div class="flex items-center gap-2">
-					<label class="sr-only" for="month-select">Month</label>
-					<MonthYear bind:value={month} />
-				</div>
-
-				<Button
-					onclick={() => goto(`/dashboard/salary/${link}`)}
-					aria-label="Go to selected month and year"
-					class="flex items-center gap-2"
-				>
-					Go
-					<ArrowRight class="h-4 w-4" />
-				</Button>
-			</div>
-		</div>
-		<PayrollTotals {totals} />
-		<br />
-
-		<div class="mb-4 flex flex-col">
-			<h4>Bank Statements</h4>
-			<DataTable
-				data={data?.payrollReciept}
-				class="w-6xl!"
-				columns={reciepts}
-				fileName="Bank Statements"
-			/>
-		</div>
-
-		<Filter
-			data={data?.payrollData}
-			bind:filteredList
-			filterKeys={[
-				'bank',
-				'department',
-				'taxAmount',
-				'overtime',
-				'basicSalary',
-				'housingAllowance',
-				'transportAllowance',
-				'positionAllowance'
-			]}
-		/>
-		<br />
-
-		<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
-	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
 	</div>
-{/await}
+	<PayrollTotals {totals} />
+	<br />
+
+	<div class="mb-4 flex flex-col">
+		<h4>Bank Statements</h4>
+		<DataTable
+			data={data?.payrollReciept}
+			class="w-6xl!"
+			columns={reciepts}
+			fileName="Bank Statements"
+		/>
+	</div>
+
+	<Filter
+		data={data?.payrollData}
+		bind:filteredList
+		filterKeys={[
+			'bank',
+			'department',
+			'taxAmount',
+			'overtime',
+			'basicSalary',
+			'housingAllowance',
+			'transportAllowance',
+			'positionAllowance'
+		]}
+	/>
+	<br />
+
+	<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
+{/if}

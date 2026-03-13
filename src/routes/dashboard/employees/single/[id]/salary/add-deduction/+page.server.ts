@@ -38,8 +38,7 @@ export const actions: Actions = {
 				type,
 				description,
 				deductionDate,
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
+				createdBy: locals.user?.id
 			});
 
 			// Stay on the same page and set a flash message

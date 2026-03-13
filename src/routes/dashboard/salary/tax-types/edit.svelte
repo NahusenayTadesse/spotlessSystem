@@ -42,8 +42,9 @@
 	$form.id = id;
 	$form.name = name;
 	$form.rate = Number(rate);
-	$form.status = Number(status);
+	$form.status = status;
 	$form.threshold = Number(threshold);
+	$form.deduction = Number(deduction);
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

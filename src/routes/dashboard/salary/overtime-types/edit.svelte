@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { SquarePen, Plus } from '@lucide/svelte';
+	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import type { Edit } from './schema';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
@@ -17,7 +17,7 @@
 		id,
 		name,
 		rate,
-		taxTypes,
+
 		icon = false,
 		status = true
 	}: {
@@ -27,7 +27,7 @@
 		name: string;
 		icon: boolean;
 		rate: string;
-		taxType: Item[];
+
 		status: boolean;
 	} = $props();
 
@@ -39,12 +39,11 @@
 
 	$form.id = id;
 	$form.name = name;
-	$form.rate = rate;
+	$form.rate = Number(rate);
 	$form.status = status;
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import type { Item } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -88,20 +87,10 @@
 							{form}
 							{errors}
 							label="Rate"
-							type="text"
+							type="number"
 							name="rate"
 							placeholder="Enter tax type rate"
 							required={true}
-						/>
-
-						<InputComp
-							{form}
-							{errors}
-							label="Tax Types"
-							type="combo"
-							name="taxType"
-							placeholder="Enter tax type rate"
-							items={taxTypes}
 						/>
 
 						<InputComp
@@ -120,7 +109,7 @@
 							{#if $delayed}
 								<LoadingBtn name="Saving Changes" />
 							{:else}
-								<Plus class="h-4 w-4" />
+								<Save class="h-4 w-4" />
 
 								Save Changes
 							{/if}

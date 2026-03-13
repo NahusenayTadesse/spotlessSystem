@@ -16,8 +16,7 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	let { data } = $props();
 
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
 		data.form,
@@ -50,42 +49,6 @@
 	<title>Add New Overtime</title>
 </svelte:head>
 
-{#snippet fe(
-	label = '',
-	name = '',
-	type = '',
-	placeholder = '',
-	required = false,
-	min = '',
-
-	max = ''
-)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name}>{label}</Label>
-		<Input
-			{type}
-			{name}
-			{placeholder}
-			{required}
-			{min}
-			{max}
-			bind:value={$form[name]}
-			aria-invalid={$errors[name] ? 'true' : undefined}
-		/>
-		{#if $errors[name]}
-			<span class="text-red-500">{$errors[name]}</span>
-		{/if}
-	</div>
-{/snippet}
-
-{#snippet date(name, title)}
-	<Label for={name} class="capitalize">{title}</Label>
-
-	<DatePicker2 bind:data={$form[name]} oldDays={true} />
-	<input type="hidden" {name} bind:value={$form[name]} />
-	{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-{/snippet}
-
 <Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 	<Card.Header>
 		<Card.Title class="text-2xl">Add an Overtime for {data.salaryDetail.name}</Card.Title>
@@ -94,37 +57,34 @@
 		<form use:enhance action="?/addOvertime" id="main" class="flex flex-col gap-4" method="post">
 			<Errors allErrors={$allErrors} />
 
-			{@render date('date', 'Overtime Date')}
+			<InputComp
+				{form}
+				{errors}
+				name="overtimeType"
+				type="combo"
+				label="Overtime Type"
+				required
+				items={data?.overtimeTypes}
+			/>
+			<InputComp {form} {errors} name="date" type="date" label="Overtime Date" required />
 
-			{@render fe(
-				'Overtime Amount Per Hour',
-				'amountPerHour',
-				'number',
-				'Enter the amount per hour of overtime work',
-				true,
-				'0'
-			)}
-			{@render fe(
-				'Hours Worked',
-				'hours',
-				'number',
-				'Enter the total amount of hours worked',
-				true,
-				'0'
-			)}
-
-			<div class="flex w-full flex-col justify-start gap-2">
-				<Label for="reason">Overtime Reason (optional)</Label>
-
-				<Textarea
-					name="reason"
-					placeholder="Enter overtime reason"
-					bind:value={$form.reason}
-					aria-invalid={$errors.reason ? 'true' : undefined}
-				/>
-
-				{#if $errors.reason}<span class="text-red-500">{$errors.reason}</span>{/if}
-			</div>
+			<InputComp
+				{form}
+				{errors}
+				name="amountPerHour"
+				type="number"
+				label="Overtime Amount Per Hour"
+				required
+			/>
+			<InputComp {form} {errors} name="hours" type="number" label="Hours Worked" required />
+			<InputComp
+				{form}
+				{errors}
+				name="reason"
+				type="textarea"
+				label="Overtime Reason"
+				placeholder="Enter overtime reason"
+			/>
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}

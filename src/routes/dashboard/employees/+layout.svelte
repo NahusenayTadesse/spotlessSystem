@@ -10,7 +10,7 @@
 	<Button
 		href="/dashboard/employees/add-employee"
 		variant={page.url.pathname === '/dashboard/employees/add-employee' ? 'default' : 'outline'}
-		><Plus /> Add Employee</Button
+		><Plus /> Add New Employee</Button
 	>
 	<Button
 		href="/dashboard/employees"

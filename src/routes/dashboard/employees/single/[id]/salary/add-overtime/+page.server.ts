@@ -7,12 +7,14 @@ import { overTime } from '$lib/server/db/schema';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { overtimeTypes } from '$lib/server/fastData';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
 
 	return {
-		form
+		form,
+		overtimeTypes: await overtimeTypes()
 	};
 };
 
@@ -28,18 +30,18 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const { reason, date, amountPerHour, hours } = form.data;
+		const { reason, date, overtimeType, amountPerHour, hours } = form.data;
 
 		try {
 			await db.insert(overTime).values({
 				staffId: Number(id),
 				amountPerHour,
+				overTimeTypeId: overtimeType,
 				hours,
 				total: Number(hours) * Number(amountPerHour),
 				reason,
 				date,
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
+				createdBy: locals.user?.id
 			});
 
 			setFlash({ type: 'success', message: 'Overtime Successuflly Added' }, cookies);
