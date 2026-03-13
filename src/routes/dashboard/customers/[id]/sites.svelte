@@ -154,7 +154,6 @@
 					name: row.original?.name,
 					phone: row.original?.phone,
 					startDate: row.original?.startDate,
-					endDate: row.original?.endDate,
 					status: row.original?.status,
 					data: editForm,
 					icon: true

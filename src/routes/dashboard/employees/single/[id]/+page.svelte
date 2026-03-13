@@ -20,7 +20,9 @@
 		CalendarDays,
 		Phone,
 		Banknote,
-		IdCardLanyard
+		Plus,
+		IdCardLanyard,
+		Sheet
 	} from '@lucide/svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 
@@ -149,6 +151,12 @@
 
 			<Button href="/dashboard/employees/single/{page.params.id}/id-maker">
 				<IdCardLanyard /> ID Maker</Button
+			>
+			<Button href="/dashboard/employees/single/{page.params.id}/add-leave" variant="default"
+				><Plus /> Add Leave</Button
+			>
+			<Button href="/dashboard/employees/single/{page.params.id}/leave-history" variant="default"
+				><Sheet /> Leave History</Button
 			>
 		</div>
 		<div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">

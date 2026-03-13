@@ -209,7 +209,6 @@ export const pension = mysqlTable('pension', {
 
 export const leave = mysqlTable('leave', {
 	id: int('id').autoincrement().primaryKey(),
-	name: varchar('name', { length: 255 }).notNull(),
 	staffId: int('staff_id')
 		.references(() => employee.id)
 		.notNull(),
@@ -218,9 +217,6 @@ export const leave = mysqlTable('leave', {
 	endDate: date('end_date').notNull(),
 	reason: varchar('reason', { length: 255 }),
 	leaveLetter: varchar('leave_letter', { length: 100 }),
-	siteId: int('site_id')
-		.references(() => site.id)
-		.notNull(),
 	...secureFields
 });
 
