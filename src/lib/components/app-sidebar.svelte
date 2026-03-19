@@ -12,11 +12,14 @@
 		BanknoteArrowUp,
 		ScanLine,
 		List,
+		FileX,
+		FileCheck,
 		Plus,
 		MapPin,
 		Building2,
 		Sheet,
-		BanknoteArrowDown
+		BanknoteArrowDown,
+		ScrollText
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -43,6 +46,15 @@
 			items: [
 				{ title: 'All Sites', url: '/dashboard/sites', icon: List },
 				{ title: 'Add Site', url: '/dashboard/sites/add-site', icon: Plus }
+			]
+		},
+		{
+			title: 'Contracts',
+			url: '/dashboard/contracts',
+			icon: ScrollText,
+			items: [
+				{ title: 'Active Contracts', url: '/dashboard/contracts', icon: FileCheck },
+				{ title: 'Inactive Contract', url: '/dashboard/contracts/inactive', icon: FileX }
 			]
 		},
 
