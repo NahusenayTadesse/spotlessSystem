@@ -5,6 +5,7 @@ import {
 	paymentMethods,
 	salaries,
 	employee,
+	site,
 	department,
 	staffAccounts,
 	missingDays,
@@ -171,6 +172,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			attendancePenality: sql<number>`COALESCE(${missingSub.missedCount}, 0) * (${salaries.amount} / 30)`,
 			commission: commissionSub.total,
 			deductions: deductionSub.total,
+			site: site.name,
 			gross: grossExpression,
 			taxable: taxableIncomeExpression,
 			taxAmount: taxSql,
@@ -180,6 +182,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
+		.leftJoin(site, eq(site.id, employee.siteId))
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(
 			staffAccounts,

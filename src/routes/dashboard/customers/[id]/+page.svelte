@@ -23,7 +23,7 @@
 		{ name: 'Name', value: data.customer?.name },
 		{ name: 'Phone', value: data.customer?.phone },
 		{ name: 'Email', value: data.customer?.email },
-		{ name: 'Status', value: data.customer?.status },
+		{ name: 'Status', value: data.customer?.status ? 'Active' : 'Inactive' },
 		{ name: 'Tin Number', value: data.customer?.tinNo },
 		{ name: 'Number of Sites', value: data.customer?.sites },
 		{ name: 'Added By', value: data.customer?.addedBy },

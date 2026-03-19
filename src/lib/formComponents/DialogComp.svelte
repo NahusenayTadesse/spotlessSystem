@@ -10,6 +10,7 @@
 
 	let {
 		title,
+		description,
 		children,
 		variant,
 		IconComp,
@@ -17,6 +18,7 @@
 		class: className = ''
 	}: {
 		title: string;
+		description?: string;
 		children: Snippet;
 		variant: ButtonVariant;
 		IconComp?: Component<IconProps>;
@@ -42,6 +44,7 @@
 		<Dialog.Header>
 			<Dialog.Title>{title}</Dialog.Title>
 		</Dialog.Header>
+		<Dialog.Description>{description}</Dialog.Description>
 		<ScrollArea class="h-auto w-full px-2 pr-4" orientation="both">
 			<div class="h-auto max-h-96 w-full lg:max-h-[calc(100vh-10rem)]">
 				{@render children()}

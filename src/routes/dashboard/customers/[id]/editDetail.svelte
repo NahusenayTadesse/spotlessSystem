@@ -25,7 +25,7 @@
 		phone?: string;
 		email?: string;
 		tinNo?: string;
-		status?: string;
+		status?: boolean;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -97,12 +97,10 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Phone"
+			placeholder="Enter Customer Status"
 			items={[
-				{ value: 'pending', name: 'Pending' },
-				{ value: 'active', name: 'Active' },
-				{ value: 'dead', name: 'Dead' },
-				{ value: 'contracted', name: 'Contracted' }
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'InActive' }
 			]}
 		/>
 

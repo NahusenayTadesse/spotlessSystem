@@ -161,7 +161,7 @@
 		<InputComp
 			label="Contact Detail"
 			name="contactDetail"
-			type={$form?.contactType === 'phone'
+			type={$form?. === 'phone'
 				? 'tel'
 				: $form?.contactType === 'email'
 					? 'email'
@@ -170,7 +170,7 @@
 			{errors}
 			required
 			placeholder={`Enter ${
-				$form?.contactType
+				$form?.contractAmount
 					? $form.contactType.charAt(0).toUpperCase() + $form.contactType.slice(1)
 					: ''
 			}`}

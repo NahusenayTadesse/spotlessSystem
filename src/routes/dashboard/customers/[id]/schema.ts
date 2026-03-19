@@ -10,9 +10,7 @@ export const editDetail = z.object({
 		.string('Phone Number is Required')
 		.min(2, 'Phone must be at least 2 characters')
 		.max(100, 'Phone must be at most 100 characters'),
-	status: z
-		.enum(['active', 'pending', 'dead', 'contracted'], 'Status is required')
-		.default('pending'),
+	status: z.boolean('Status is required').default(true),
 	tinNo: z.coerce
 		.string('Tin Number is Required')
 		.min(10, 'Tin Number must be exactly 10 numbers')

@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			phone: customers.phone,
 			email: customers.email,
 			tinNo: customers.tinNo,
-			status: customers.status,
+			status: customers.isActive,
 			sites: count(site.id),
 			joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
 			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
@@ -182,7 +182,7 @@ export const actions: Actions = {
 					phone,
 					tinNo,
 					email,
-					status,
+					isActive: status,
 					updatedBy: locals?.user?.id
 				})
 				.where(eq(customers.id, Number(id)));

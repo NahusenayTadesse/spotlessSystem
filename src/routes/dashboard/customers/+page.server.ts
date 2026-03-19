@@ -1,27 +1,57 @@
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { editCustomer } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { customers, site, user } from '$lib/server/db/schema';
-import { eq, and, sql, count, ne } from 'drizzle-orm';
-import type { PageServerLoad } from '../$types';
+import { customers, site, siteContracts, user } from '$lib/server/db/schema';
+import { eq, and, sql, count } from 'drizzle-orm';
+import type { PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { type Actions } from '@sveltejs/kit';
+import { fail, message } from 'sveltekit-superforms';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async () => {
-	const customerList = await db
-		.select({
-			id: customers.id,
-			name: customers.name,
-			phone: customers.phone,
-			email: customers.email,
-			status: customers.status,
-			joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
-			addedBy: user.name,
-			addedById: user.id
-		})
-		.from(customers)
-		.leftJoin(user, eq(customers.createdBy, user.id))
-		.leftJoin(site, eq(customers.id, site.customerId))
-		.where(ne(customers.status, 'contracted'))
-		.groupBy(customers.id, customers.createdBy);
+	try {
+		const form = await superValidate(zod4(editCustomer));
 
-	return {
-		customerList
-	};
+		const customerList = await db
+			.select({
+				id: customers.id,
+				name: customers.name,
+				phone: customers.phone,
+				email: customers.email,
+				tinNo: customers.tinNo,
+				noOfSites: count(site.id),
+				noOfContracts: count(siteContracts.id),
+				joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
+				daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
+				addedBy: user.name,
+				addedById: user.id
+			})
+			.from(customers)
+			.leftJoin(user, eq(customers.createdBy, user.id))
+			.leftJoin(site, eq(customers.id, site.customerId))
+			.leftJoin(
+				siteContracts,
+				and(eq(site.id, siteContracts.isActive), eq(site.id, siteContracts.siteId))
+			)
+			.where(eq(customers.isActive, true))
+			.groupBy(
+				customers.id, // The primary key handles the "uniqueness"
+				user.id, // Included because it's from a joined table
+				user.name // Included to satisfy SQL strict mode
+			);
+		return {
+			customerList,
+			form
+		};
+	} catch (error) {
+		console.error('Error loading customer dashboard:', error);
+		return {
+			customer: null,
+			form: null,
+			allMethods: [],
+			reciepts: [],
+			error: 'Failed to load customer dashboard.'
+		};
+	}
 };

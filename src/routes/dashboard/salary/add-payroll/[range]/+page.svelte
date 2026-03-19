@@ -216,7 +216,7 @@
 				<MonthYear bind:value={month} />
 
 				<Button
-					onclick={() => goto(`/dashboard/salary/${link}`)}
+					onclick={() => goto(`/dashboard/salary/add-payroll/${link}`)}
 					aria-label="Go to selected month and year"
 					class="flex items-center gap-2"
 				>
@@ -232,6 +232,7 @@
 			filterKeys={[
 				'employmentStatus',
 				'absent',
+				'site',
 				'bank',
 				'department',
 				'overtime',

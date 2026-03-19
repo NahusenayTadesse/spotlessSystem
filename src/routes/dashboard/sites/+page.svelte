@@ -31,6 +31,10 @@
    <DataTable data={data.customersList} {columns} />
  </div> -->
 
-	<FilterMenu data={data?.siteList} bind:filteredList filterKeys={['customerName']} />
-	<DataTable data={filteredList} fileName="Site List" {columns} class="lg:w-6xl!" />
+	<FilterMenu
+		data={data?.siteList}
+		bind:filteredList
+		filterKeys={['customerName', 'expectedPayments', 'actualPayments', 'missingPayments']}
+	/>
+	<DataTable data={filteredList} fileName="Site List" class="w-6xl!" {columns} />
 {/if}

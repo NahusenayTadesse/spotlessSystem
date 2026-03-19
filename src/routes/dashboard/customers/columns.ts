@@ -2,7 +2,6 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableActions from './data-table-actions.svelte';
-import Statuses from '$lib/components/Table/statuses.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
@@ -45,16 +44,22 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.email })
 	},
+	{
+		accessorKey: 'tinNo',
+		header: 'Tin Number',
+		sortable: true,
+		cell: ({ row }) => renderComponent(Copy, { data: row.original.tinNo })
+	},
 
 	{
-		accessorKey: 'status',
+		accessorKey: 'sites',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Status',
+				name: 'Sites',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
-		cell: ({ row }) => renderComponent(Statuses, { status: row.original.status })
+		cell: ({ row }) => renderComponent(Copy, { data: row.original.noOfSites })
 	},
 
 	{
@@ -87,6 +92,19 @@ export const columns = [
 		cell: (info) => {
 			const n = info.getValue(); // number of days
 			return formatEthiopianDate(new Date(n));
+		}
+	},
+	{
+		accessorKey: 'noOfContracts',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'No. of Contracts',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => {
+			const n = info.getValue(); // number of days
+			return `${n} ${n === 1 ? 'Contract' : 'Contracts'}`;
 		}
 	},
 

@@ -68,10 +68,7 @@ export const load: PageServerLoad = async () => {
 				houseNumber: address.houseNumber,
 				status: address.status
 			},
-			// ... your other existing fields
 
-			// 1. Calculate Expected Payments (Months since contract started)
-			// We use TIMESTAMPDIFF to get the number of months between startDate and now
 			expectedPayments: sql<number>`
             GREATEST(0, TIMESTAMPDIFF(MONTH, ${siteContracts.startDate}, CURRENT_DATE()) + 1)
         `.as('expected'),
@@ -97,7 +94,6 @@ export const load: PageServerLoad = async () => {
 		.leftJoin(customers, eq(customers.id, site.customerId))
 		.leftJoin(address, eq(address.id, site.address))
 		.leftJoin(subcity, eq(subcity.id, address.subcityId))
-		// Filter for the current/active contract only if necessary
 		.where(eq(site.isActive, true))
 		.groupBy(site.id, siteContracts.id);
 

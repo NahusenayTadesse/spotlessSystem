@@ -109,7 +109,7 @@
 	let officeCommission = $derived([
 		{
 			name: 'Percentage',
-			value: data?.officeCommission?.percentage || 'Not Included in Office Commission'
+			value: data?.officeCommission?.percentage + '%' || 'Not Included in Office Commission'
 		},
 		{ name: 'First Added By', value: data?.officeCommission?.createdBy },
 		{ name: 'Last Updated By', value: data?.officeCommission?.updatedBy },
