@@ -15,12 +15,14 @@
 		data,
 		id,
 		name,
-		count
+		count,
+		days
 	}: {
 		data: SuperValidated<Infer<Edit>>;
 		id: number;
 		name: string;
 		count: number;
+		days?: string;
 	} = $props();
 	let open = $state(false);
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -44,6 +46,11 @@
 		}
 	});
 	$form.id = id;
+
+	if (days) {
+		$form.day = days;
+		$form.oldDays = days;
+	}
 </script>
 
 <Tooltip.Provider>
@@ -53,11 +60,13 @@
 				<Dialog.Trigger class="flex w-auto flex-row items-center justify-center gap-2 border-0">
 					{count}
 
-					Add Days
+					{days ? 'Edit' : 'Add'} Days
 				</Dialog.Trigger>
 				<Dialog.Content class="w-full bg-white">
 					<Dialog.Header>
-						<Dialog.Title class="text-center text-4xl">Add Missing Days for {name}</Dialog.Title>
+						<Dialog.Title class="text-center text-4xl"
+							>{days ? 'Edit Missing Days for ' : 'Add Missing Days for '} {name}</Dialog.Title
+						>
 					</Dialog.Header>
 					<form
 						action="?/addDays"
@@ -67,7 +76,8 @@
 						class="flex w-full flex-col gap-4 p-4"
 					>
 						<Errors allErrors={$allErrors} />
-						<input bind:value={$form.id} name="id" type="hidden" />
+						<InputComp {form} {errors} label="" name="id" type="hidden" />
+						<input bind:value={$form.oldDays} name="oldDays" type="hidden" />
 
 						<InputComp
 							{form}
@@ -123,7 +133,7 @@
 			</Dialog.Root>
 		</Tooltip.Trigger>
 		<Tooltip.Content>
-			<p>Add Missing Days for {name}</p>
+			<p>{days ? 'Edit' : 'Add'} Missing Days for {name}</p>
 		</Tooltip.Content>
 	</Tooltip.Root>
 </Tooltip.Provider>

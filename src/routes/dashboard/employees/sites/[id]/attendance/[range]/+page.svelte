@@ -46,6 +46,7 @@
 			<ArrowRight class="h-4 w-4" />
 		</Button>
 	</div>
+
 	<FilterMenu
 		data={data?.staffList}
 		bind:filteredList

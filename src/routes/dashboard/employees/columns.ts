@@ -68,24 +68,6 @@ export const columns = [
 			}),
 		sortable: true
 	},
-	{
-		accessorKey: 'absent',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Missing Days',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(Edit, {
-				data: form,
-				id: row.original.id,
-				name: row.original.name,
-				count: row.original.absent
-			});
-		}
-	},
 
 	// {
 	// 	accessorKey: 'phone',

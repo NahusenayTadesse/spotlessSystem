@@ -10,6 +10,7 @@ import { minutesToHoursString } from '$lib/global.svelte';
 import Copy from '$lib/Copy.svelte';
 import { edit } from './schema';
 import Edit from './edit.svelte';
+import ReasonsDialog from './reasons-dialog.svelte';
 
 export const columns = [
 	{
@@ -50,6 +51,21 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'reasons',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Absent Details',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(ReasonsDialog, {
+				staff: row.original
+			});
+		}
+	},
+
+	{
 		accessorKey: 'absent',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -64,6 +80,65 @@ export const columns = [
 				id: row.original.id,
 				name: row.original.name,
 				count: row.original.absent
+			});
+		}
+	},
+
+	{
+		accessorKey: 'deductable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Deductable',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			// You can pass whatever you need from `row.original` to the component
+			return renderComponent(Edit, {
+				data: form,
+				id: row.original.id,
+				name: row.original.name,
+				count: row.original.deductable,
+				days: row.original.deductableDays
+			});
+		}
+	},
+
+	{
+		accessorKey: 'nonDeductable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Non Deductable',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			// You can pass whatever you need from `row.original` to the component
+			return renderComponent(Edit, {
+				data: form,
+				id: row.original.id,
+				name: row.original.name,
+				count: row.original.nonDeductable,
+				days: row.original.nonDeductableDays
+			});
+		}
+	},
+
+	{
+		accessorKey: 'nonDeductable',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Missing Days',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			// You can pass whatever you need from `row.original` to the component
+			return renderComponent(Edit, {
+				data: form,
+				id: row.original.id,
+				name: row.original.name,
+				count: row.original.nonDeductable
 			});
 		}
 	},

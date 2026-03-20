@@ -9,9 +9,9 @@ import {
 	site,
 	employeeGuarantor,
 	staffAccounts,
-	staffFamilies
+	staffFamilie
 } from '$lib/server/db/schema';
-import { eq, and, sql, isNull, count, countDistinct } from 'drizzle-orm';
+import { eq, and, sql, count, inArray } from 'drizzle-orm';
 import { edit } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { superValidate, message } from 'sveltekit-superforms';
@@ -40,7 +40,31 @@ export const load: PageServerLoad = async ({ params }) => {
 			department: department.name,
 			status: employmentStatuses.name,
 			absent: count(missingDays.id),
-			active: employee.isActive
+
+			deductable: sql<number>`SUM(CASE WHEN ${missingDays.deductable} = true THEN 1 ELSE 0 END)`,
+
+			// Conditional Count for False: Sum 1 if false, else 0
+			nonDeductable: sql<number>`SUM(CASE WHEN ${missingDays.deductable} = false THEN 1 ELSE 0 END)`,
+			allAbsentDays: sql<string>`GROUP_CONCAT(${missingDays.day})`,
+			deductableDays: sql<string>`GROUP_CONCAT(CASE WHEN ${missingDays.deductable} = true THEN ${missingDays.day} ELSE NULL END)`,
+			nonDeductableDays: sql<string>`GROUP_CONCAT(CASE WHEN ${missingDays.deductable} = false THEN ${missingDays.day} ELSE NULL END)`,
+			allReasons: sql<string>`GROUP_CONCAT(${missingDays.reason})`,
+
+			// This creates a list like "2026-03-01 (Sick), 2026-03-05 (Personal)"
+			daysWithReasons: sql<string>`
+        GROUP_CONCAT(
+          CONCAT(${missingDays.day}, ' (', COALESCE(${missingDays.reason}, 'No Reason'), ')')
+          SEPARATOR ', '
+        )
+      `,
+
+			// Optional: Categorized reasons based on deductibility
+			deductableReasons: sql<string>`
+        GROUP_CONCAT(CASE WHEN ${missingDays.deductable} = true THEN ${missingDays.reason} ELSE NULL END)
+      `,
+			nonDeductableReasons: sql<string>`
+           GROUP_CONCAT(CASE WHEN ${missingDays.deductable} = false THEN ${missingDays.reason} ELSE NULL END)
+         `
 		})
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
@@ -76,11 +100,19 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
 
-		const { id, day, reason, deductable, deductableAmount } = form.data;
+		const { id, day, reason, deductable, deductableAmount, oldDays } = form.data;
 
 		try {
 			const dateList = day.split(',');
 			await db.transaction(async (tx) => {
+				if (oldDays) {
+					const oldDateList = oldDays.split(',').map((d) => d.trim());
+
+					await tx
+						.delete(missingDays)
+						.where(and(eq(missingDays.staffId, Number(id)), inArray(missingDays.day, oldDateList)));
+				}
+
 				const valuesToInsert = dateList.map((singleDay) => ({
 					staffId: Number(id),
 					day: singleDay.trim(), // trim() handles potential spaces like "2026-01-01, 2026-01-02"

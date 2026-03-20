@@ -20,7 +20,7 @@
       "devDependencies": {
         "@eslint/compat": "^2.0.0",
         "@eslint/js": "^9.39.2",
-        "@internationalized/date": "^3.10.1",
+        "@internationalized/date": "^3.12.0",
         "@lucide/svelte": "^0.562.0",
         "@oslojs/crypto": "^1.0.1",
         "@oslojs/encoding": "^1.1.0",
@@ -34,7 +34,7 @@
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/table-core": "^8.21.3",
         "@types/node": "^25",
-        "bits-ui": "^2.15.4",
+        "bits-ui": "^2.16.3",
         "clsx": "^2.1.1",
         "dotenv": "^17.2.3",
         "drizzle-kit": "^0.31.8",
