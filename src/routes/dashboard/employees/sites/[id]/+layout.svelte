@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 
-	import { Plus, Sheet } from '@lucide/svelte';
+	import { Calendar, Plus, Sheet } from '@lucide/svelte';
 	let { children } = $props();
 </script>
 
@@ -27,7 +27,7 @@
 		href="/dashboard/employees/sites/{page.params.id}/attendance"
 		variant={page.url.pathname.startsWith(`/dashboard/employees/sites/${page.params.id}/attendance`)
 			? 'default'
-			: 'outline'}><Sheet /> Attendance</Button
+			: 'outline'}><Calendar /> Attendance</Button
 	>
 </div>
 

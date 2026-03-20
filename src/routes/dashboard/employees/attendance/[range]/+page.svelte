@@ -30,7 +30,7 @@
 	</div>
 {:else}
 	<h3 class="my-4 text-2xl">
-		{data?.siteName} Employees Attendance for {month?.replace('_', ' ')}
+		All Active Employees Attendance for {month?.replace('_', ' ')}
 	</h3>
 	<h4 class="mb-4">{data?.staffList.length} Employees</h4>
 	<div class="mb-4 flex w-32 flex-row items-start gap-2">
@@ -38,7 +38,7 @@
 		<MonthYear bind:value={month} />
 
 		<Button
-			href="/dashboard/employees/sites/{page.params.id}/attendance/{link}"
+			href="/dashboard/employees/attendance/{link}"
 			aria-label="Go to selected month and year"
 			class="flex items-center gap-2"
 		>
@@ -50,7 +50,7 @@
 	<FilterMenu
 		data={data?.staffList}
 		bind:filteredList
-		filterKeys={['department', 'status', 'absent', 'deductable', 'nonDeductable']}
+		filterKeys={['department', 'site', 'status', 'absent', 'deductable', 'nonDeductable']}
 	/>
 	<DataTable data={filteredList} class="w-300!" {columns} />
 {/if}

@@ -29,7 +29,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			site: site.name,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
-			absent: countDistinct(missingDays.id),
 			guarantor: countDistinct(employeeGuarantor.id),
 			accounts: countDistinct(staffAccounts.id),
 			families: countDistinct(staffFamilies.id),
@@ -40,7 +39,6 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(employee)
 		.leftJoin(site, eq(site.id, employee.siteId))
 		.leftJoin(department, eq(department.id, employee.departmentId))
-		.leftJoin(missingDays, eq(missingDays.staffId, employee.id))
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
 		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel))
 		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
