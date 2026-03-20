@@ -12,6 +12,7 @@ export const load: PageServerLoad = async () => {
 		})
 		.from(site)
 		.innerJoin(employee, eq(employee.siteId, site.id))
+		.where(eq(employee.isActive, true))
 		.groupBy(site.id);
 
 	return {

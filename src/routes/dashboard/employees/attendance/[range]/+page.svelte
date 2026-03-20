@@ -24,7 +24,7 @@
 	<div class="flex h-96 w-5xl flex-col items-center justify-center">
 		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 			<Frown class="h-12 w-16  animate-bounce" />
-			No Employees for {data?.siteName} added yet
+			No Employees added yet
 		</p>
 		<Button href="/dashboard/employees/add-employee"><Plus />Add New Employees</Button>
 	</div>

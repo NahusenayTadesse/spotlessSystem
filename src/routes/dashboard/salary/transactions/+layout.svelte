@@ -7,12 +7,12 @@
 </script>
 
 <div class="mb-8 flex flex-row flex-wrap items-center justify-start gap-2">
-	<Button
+	<!-- <Button
 		href="/dashboard/transactions/expenses/add-expense"
 		variant={page.url.pathname === '/dashboard/transactions/expenses/add-expense'
 			? 'default'
 			: 'outline'}><Plus /> Add Expense</Button
-	>
+	> -->
 	<Button
 		href="/dashboard/transactions/expenses/add-expense"
 		variant={page.url.pathname === '/dashboard/transactions/expenses/add-expense'

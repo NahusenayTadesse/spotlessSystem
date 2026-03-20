@@ -10,6 +10,7 @@
 		Users2Icon
 	} from '@lucide/svelte';
 	import { fly, scale } from 'svelte/transition';
+	import { goto } from '$app/navigation';
 
 	type Site = {
 		id: number | string;
@@ -47,7 +48,7 @@
 		const fullUrl = `${normalizedBase}/${site.id}`;
 
 		if (onSelect) onSelect(site, fullUrl);
-		window.location.href = fullUrl;
+		goto(fullUrl);
 	};
 
 	const getSiteColor = (name: string): string => {

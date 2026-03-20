@@ -69,12 +69,23 @@
 			]
 		},
 		{
-			title: 'Salary',
+			title: 'Finance',
 			url: '/dashboard/salary',
 			icon: Banknote,
 			items: [
 				{ title: 'Paid Salaries', url: '/dashboard/salary/paid-salaries', icon: Banknote },
-				{ title: 'UnPaid Salaries', url: '/dashboard/salary/add-payroll', icon: BanknoteArrowUp },
+				{
+					title: 'All UnPaid Salaries',
+					url: '/dashboard/salary/add-payroll',
+					icon: BanknoteArrowUp
+				},
+				{
+					title: 'UnPaid Salaries by Site',
+					url: '/dashboard/salary/add-payroll/sites',
+					icon: BanknoteArrowUp
+				},
+				{ title: 'Transactions', url: '/dashboard/salary/transactions', icon: ScanLine },
+
 				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
 				{ title: 'Over Types', url: '/dashboard/salary/overtime-types', icon: Banknote },
 				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
@@ -92,7 +103,6 @@
 			]
 		},
 
-		{ title: 'Finance', url: '/dashboard/transactions', icon: ScanLine },
 		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
 		{
 			title: 'Admin Panel',
