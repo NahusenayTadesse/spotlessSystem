@@ -22,6 +22,13 @@
 			? ''
 			: 'text-destructive'}><Sheet /> Inactive Employees</Button
 	>
+
+	<Button
+		href="/dashboard/employees/sites/{page.params.id}/attendance"
+		variant={page.url.pathname.startsWith(`/dashboard/employees/sites/${page.params.id}/attendance`)
+			? 'default'
+			: 'outline'}><Sheet /> Attendance</Button
+	>
 </div>
 
 {@render children()}

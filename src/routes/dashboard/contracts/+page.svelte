@@ -24,7 +24,7 @@
 		</p>
 	</div>
 {:else}
-	<h2 class="my-4 text-2xl">No of sites {data.contracts?.length}</h2>
+	<h2 class="my-4 text-2xl">No of Active Contracts: {data.contracts?.length}</h2>
 
 	<!-- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
 

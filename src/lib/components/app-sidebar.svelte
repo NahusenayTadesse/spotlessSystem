@@ -63,6 +63,7 @@
 			url: '/dashboard/employees/sites',
 			icon: IdCardLanyard,
 			items: [
+				{ title: 'Employees by Site', url: '/dashboard/employees/sites', icon: Building2 },
 				{ title: 'All Active Employees', url: '/dashboard/employees', icon: List },
 				{ title: 'Add New Employee', url: '/dashboard/employees/add-employee', icon: Plus }
 			]

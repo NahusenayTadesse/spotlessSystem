@@ -41,7 +41,7 @@
 			{/snippet}
 		</Tooltip.Trigger>
 		<Tooltip.Content class="left-0 justify-self-start">
-			<p class="text-[13px]!">See {name}'s page</p>
+			<p class="text-[13px]!">Goto {name}</p>
 		</Tooltip.Content>
 	</Tooltip.Root>
 </Tooltip.Provider>
