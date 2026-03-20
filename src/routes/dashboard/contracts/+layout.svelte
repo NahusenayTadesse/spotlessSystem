@@ -18,7 +18,7 @@
 		><Sheet /> Active Contracts</Button
 	>
 	<Button
-		href="/dashboard/employees/inactive"
+		href="/dashboard/contracts/inactive"
 		variant={page.url.pathname === '/dashboard/contracts/inactive' ? 'destructive' : 'outline'}
 		class={page.url.pathname === '/dashboard/contracts/inactive' ? '' : 'text-destructive'}
 		><Sheet /> Inactive Contracts</Button

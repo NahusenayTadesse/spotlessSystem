@@ -1,11 +1,24 @@
 <script lang="ts">
+	import type { Component } from 'svelte';
+	import type { IconProps } from '@lucide/svelte';
 	let {
 		id,
+		IconComp,
 		name,
 		link,
+		variant = 'ghost',
 		target = ''
-	}: { id: string; name: string; link: string; target?: string } = $props();
+	}: {
+		id: string;
+		name: string;
+		link: string;
+		target?: string;
+		IconComp?: Component<IconProps>;
+		variant?: ButtonVariant;
+	} = $props();
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import { Button, type ButtonVariant } from '$lib/components/ui/button/index.js';
+
 	import { buttonVariants } from '../ui/button/index.js';
 </script>
 
@@ -13,14 +26,18 @@
 	<Tooltip.Root>
 		<Tooltip.Trigger class={buttonVariants({ variant: 'ghost' })}>
 			{#snippet child({ props })}
-				<a
+				<Button
 					href="{link}/{id}"
 					{target}
+					{variant}
 					{...props}
-					class="wrap-break-words flex flex-row items-start! justify-start! capitalize transition-all duration-600 ease-in-out hover:scale-110"
+					class="wrap-break-words items-end! justify-start!  {variant === 'ghost' ? 'pl-0' : ''}"
 				>
+					{#if IconComp}
+						<IconComp class="size-4" />
+					{/if}
 					{name}
-				</a>
+				</Button>
 			{/snippet}
 		</Tooltip.Trigger>
 		<Tooltip.Content class="left-0 justify-self-start">

@@ -79,7 +79,7 @@
 			cell: ({ row }) => {
 				return renderComponent(DataTableLinks, {
 					id: row.original.status ? row.original.id : '',
-					name: '+ Added Monthly Payment',
+					name: '+ Add Monthly Payment',
 					link: '/dashboard/sites/' + page.params.id + '/payments',
 					target: '_blank'
 				});
