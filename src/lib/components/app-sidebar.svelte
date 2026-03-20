@@ -60,10 +60,10 @@
 
 		{
 			title: 'Employees',
-			url: '/dashboard/employees',
+			url: '/dashboard/employees/sites',
 			icon: IdCardLanyard,
 			items: [
-				{ title: 'All Employees', url: '/dashboard/employees', icon: List },
+				{ title: 'All Active Employees', url: '/dashboard/employees', icon: List },
 				{ title: 'Add New Employee', url: '/dashboard/employees/add-employee', icon: Plus }
 			]
 		},

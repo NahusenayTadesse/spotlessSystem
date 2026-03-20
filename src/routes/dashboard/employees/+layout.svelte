@@ -15,13 +15,13 @@
 	<Button
 		href="/dashboard/employees"
 		variant={page.url.pathname === '/dashboard/employees' ? 'default' : 'outline'}
-		><Sheet /> Active Employees</Button
+		><Sheet />All Active Employees</Button
 	>
 	<Button
 		href="/dashboard/employees/inactive"
 		variant={page.url.pathname === '/dashboard/employees/inactive' ? 'destructive' : 'outline'}
 		class={page.url.pathname === '/dashboard/employees/inactive' ? '' : 'text-destructive'}
-		><Sheet /> Inactive Employees</Button
+		><Sheet />All Inactive Employees</Button
 	>
 </div>
 
