@@ -29,7 +29,6 @@
 	export const snapshot: Snapshot = { capture, restore };
 
 	import { toast } from 'svelte-sonner';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import PayrollTotals from './payroll-totals.svelte';
 	$effect(() => {
 		if ($message) {
@@ -44,9 +43,11 @@
 	$form.start = data?.start;
 	$form.end = data?.end;
 
+	let selected = $state([]);
+
 	$effect(() => {
 		if (filteredList.length > 0) {
-			$form.employees = filteredList.map(
+			$form.employees = selected.map(
 				(emp): EmployeeFormType => ({
 					...emp,
 					// Ensure numeric fields from LEFT JOINs aren't null
@@ -90,12 +91,14 @@
 		return Math.round(total * 100) / 100;
 	};
 
+	let calculatable = $derived(selected?.length === 0 ? filteredList : selected);
+
 	let totals = $derived({
-		gross: calculateTotal(filteredList, 'gross'),
-		tax: calculateTotal(filteredList, 'taxAmount'),
-		penEm: calculateTotal(filteredList, 'penEm'),
-		penOrg: calculateTotal(filteredList, 'penOrg'),
-		netPay: calculateTotal(filteredList, 'netPay')
+		gross: calculateTotal(calculatable, 'gross'),
+		tax: calculateTotal(calculatable, 'taxAmount'),
+		penEm: calculateTotal(calculatable, 'penEm'),
+		penOrg: calculateTotal(calculatable, 'penOrg'),
+		netPay: calculateTotal(calculatable, 'netPay')
 	});
 
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
@@ -113,16 +116,21 @@
 </script>
 
 <svelte:head>
-	<title>UnPaid Salaries</title>
+	<title>UnPaid Salaries for All Employees</title>
 </svelte:head>
 
 {#if data.payrollData.length === 0}
 	<div class="flex h-96 w-5xl flex-col items-center justify-center">
-		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
-			<Frown class="h-12 w-16  animate-bounce" />
+		<div class="mt-12 flex flex-col items-center justify-center px-4 text-center">
+			<Frown class="mb-4 h-12 w-12 animate-bounce text-slate-400" />
 
-			No Salaries are paid for this Date Range Choose Another Range
-		</p>
+			<h3 class="text-2xl font-semibold">No payroll records found</h3>
+
+			<p class="mt-2 max-w-md">
+				There are no salaries recorded for <strong>{data?.siteName}</strong> within the selected date
+				range. Please try selecting a different period.
+			</p>
+		</div>
 		<div class="flex h-96 w-5xl flex-col items-center justify-center">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
 			<div class="flex items-center gap-2">
@@ -142,14 +150,14 @@
 	</div>
 {:else}
 	<DialogComp
-		title="Finalise Payroll for Filtered Employees {filteredList?.length}"
+		title="Finalise Payroll for Filtered Employees {selected?.length}"
 		variant="default"
 		IconComp={BanknoteArrowUp}
 	>
 		<Errors allErrors={$allErrors} />
 		<div class="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
 			<h3 class="mb-3 text-xs font-semibold tracking-wider text-slate-500 uppercase">
-				Payroll Summary
+				Payroll Summary for All Employees
 			</h3>
 
 			<div class="space-y-2 text-sm">
@@ -202,13 +210,13 @@
 					<LoadingBtn name="Finalising Payroll" />
 				{:else}
 					<BanknoteArrowUp class="size-6" />
-					Finalise Payroll for Filtered Employees {filteredList?.length}
+					Finalise Payroll for Filtered Employees {selected?.length}
 				{/if}
 			</Button>
 		</form>
 	</DialogComp>
 	<div class="mt-4 flex flex-col gap-4">
-		<h2 class="my-4 text-2xl">No of Salaries {filteredList?.length}</h2>
+		<h3 class="my-4">No of Salaries for All Employees: {filteredList?.length}</h3>
 		<div class="flex flex-col items-start justify-start">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
 			<div class="flex flex-row items-start gap-2">
@@ -232,7 +240,6 @@
 			filterKeys={[
 				'employmentStatus',
 				'absent',
-				'site',
 				'bank',
 				'department',
 				'overtime',
@@ -243,6 +250,12 @@
 			]}
 		/>
 
-		<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
+		<DataTable
+			data={filteredList}
+			bind:selected
+			class="w-6xl!"
+			{columns}
+			fileName="Bank Accounts"
+		/>
 	</div>
 {/if}

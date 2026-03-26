@@ -26,7 +26,8 @@
 		columns,
 		search = true,
 		class: className = '',
-		fileName = 'Spotless File'
+		fileName = 'File',
+		selected = $bindable()
 	}: DataTableProps<TData, TValue> = $props();
 	// let filterSchema = $derived(
 	//   discoverFilterSchema(data).filter(meta => !filterBlacklist.includes(meta.key))
@@ -48,8 +49,8 @@
 		data: TData[];
 		search?: boolean;
 		class?: string;
-		filterBlacklist?: string[];
 		fileName?: string;
+		selected?: TData[];
 	};
 
 	let sorting = $state<SortingState>([]);
@@ -143,10 +144,25 @@
 
 		return breakpoints;
 	}
+	if (selected) {
+		$effect(() => {
+			const selectedRows = table.getSelectedRowModel().rows;
+
+			// Extract the original data from those rows
+			selected = selectedRows.map((row) => row.original);
+		});
+	}
 </script>
 
 <!-- min-h-0 is required for flex-child overflow -->
+<!-- <div class="flex-1 text-sm text-muted-foreground">
+	{table.getFilteredSelectedRowModel().rows.length} of{''}
+	{table.getFilteredRowModel().rows.length} row(s) selected.
 
+	{#each table.getFilteredRowModel().rows as selected}
+		{selected?.id}
+	{/each}
+</div> -->
 <Resizable.PaneGroup
 	direction="horizontal"
 	class="lg:max-w-8xl mt-4 flex w-full min-w-full gap-0 rounded-lg lg:w-fit lg:min-w-2xl {className}"
@@ -187,8 +203,6 @@
 									{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column)}
 										<DropdownMenu.CheckboxItem
 											class="capitalize"
-											closeOnSelect
-={false}
 											bind:checked={
 												() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)
 											}

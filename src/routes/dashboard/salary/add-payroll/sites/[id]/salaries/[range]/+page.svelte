@@ -43,9 +43,11 @@
 	$form.start = data?.start;
 	$form.end = data?.end;
 
+	let selected = $state([]);
+
 	$effect(() => {
 		if (filteredList.length > 0) {
-			$form.employees = filteredList.map(
+			$form.employees = selected.map(
 				(emp): EmployeeFormType => ({
 					...emp,
 					// Ensure numeric fields from LEFT JOINs aren't null
@@ -89,12 +91,14 @@
 		return Math.round(total * 100) / 100;
 	};
 
+	let calculatable = $derived(selected?.length === 0 ? filteredList : selected);
+
 	let totals = $derived({
-		gross: calculateTotal(filteredList, 'gross'),
-		tax: calculateTotal(filteredList, 'taxAmount'),
-		penEm: calculateTotal(filteredList, 'penEm'),
-		penOrg: calculateTotal(filteredList, 'penOrg'),
-		netPay: calculateTotal(filteredList, 'netPay')
+		gross: calculateTotal(calculatable, 'gross'),
+		tax: calculateTotal(calculatable, 'taxAmount'),
+		penEm: calculateTotal(calculatable, 'penEm'),
+		penOrg: calculateTotal(calculatable, 'penOrg'),
+		netPay: calculateTotal(calculatable, 'netPay')
 	});
 
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
@@ -147,7 +151,7 @@
 	</div>
 {:else}
 	<DialogComp
-		title="Finalise Payroll for Filtered Employees {filteredList?.length}"
+		title="Finalise Payroll for Filtered Employees {selected?.length}"
 		variant="default"
 		IconComp={BanknoteArrowUp}
 	>
@@ -207,7 +211,7 @@
 					<LoadingBtn name="Finalising Payroll" />
 				{:else}
 					<BanknoteArrowUp class="size-6" />
-					Finalise Payroll for Filtered Employees {filteredList?.length}
+					Finalise Payroll for Filtered Employees {selected?.length}
 				{/if}
 			</Button>
 		</form>
@@ -221,7 +225,8 @@
 				<MonthYear bind:value={month} />
 
 				<Button
-					onclick={() => goto(`/dashboard/salary/add-payroll/${page.params.id}/salaries/${link}`)}
+					onclick={() =>
+						goto(`/dashboard/salary/add-payroll/sites/${page.params.id}/salaries/${link}`)}
 					aria-label="Go to selected month and year"
 					class="flex items-center gap-2"
 				>
@@ -247,6 +252,12 @@
 			]}
 		/>
 
-		<DataTable data={filteredList} class="w-6xl!" {columns} fileName="Bank Accounts" />
+		<DataTable
+			data={filteredList}
+			bind:selected
+			class="w-6xl!"
+			{columns}
+			fileName="Bank Accounts"
+		/>
 	</div>
 {/if}

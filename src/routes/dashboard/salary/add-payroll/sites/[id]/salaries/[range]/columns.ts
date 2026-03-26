@@ -2,10 +2,29 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatETB } from '$lib/global.svelte';
+import type { ColumnDef } from '@tanstack/table-core';
+import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 
 export const columns = [
-	// 1. Row Index
-	//
+	{
+		id: 'select',
+		accessorKey: 'id',
+		header: ({ table }) =>
+			renderComponent(Checkbox, {
+				checked: table.getIsAllPageRowsSelected(),
+				indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+				onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
+				'aria-label': 'Select all'
+			}),
+		cell: ({ row }) =>
+			renderComponent(Checkbox, {
+				checked: row.getIsSelected(),
+				onCheckedChange: (value) => row.toggleSelected(!!value),
+				'aria-label': 'Select row'
+			}),
+		enableSorting: false,
+		enableHiding: false
+	},
 
 	{
 		id: 'index',
@@ -43,6 +62,16 @@ export const columns = [
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Department',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
+
+	{
+		accessorKey: 'site',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Site',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true

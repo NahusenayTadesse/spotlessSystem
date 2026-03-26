@@ -5,7 +5,6 @@ import {
 	paymentMethods,
 	salaries,
 	employee,
-	site,
 	department,
 	staffAccounts,
 	missingDays,
@@ -39,9 +38,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const [m, y] = range.split('_');
 
-	if (id === '8') {
-		await addOfficeWorkerCommission(m, Number(y));
-	}
+	await addOfficeWorkerCommission(m, Number(y));
 
 	const monthNumber = getMonthNumber(m);
 	const year = Number(y);
