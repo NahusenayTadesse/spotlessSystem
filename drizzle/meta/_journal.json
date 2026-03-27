@@ -64,6 +64,27 @@
       "when": 1774530033006,
       "tag": "0008_reflective_stature",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1774646916517,
+      "tag": "0009_amused_fixer",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1774647145573,
+      "tag": "0010_tough_anthem",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1774647529688,
+      "tag": "0011_premium_the_spike",
+      "breakpoints": true
     }
   ]
 }

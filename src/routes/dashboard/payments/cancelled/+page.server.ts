@@ -107,7 +107,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(creator, eq(siteMonthlyPayments.createdBy, creator.id))
 		.leftJoin(approver, eq(siteMonthlyPayments.approvedBy, approver.id))
 		.leftJoin(services, eq(siteContracts.serviceId, services.id))
-		.where(eq(siteMonthlyPayments.status, 'pending'));
+		.where(eq(siteMonthlyPayments.status, 'rejected'));
 
 	const contracts = await Promise.all(
 		contractsWithoutform.map(async (contract) => {
@@ -200,6 +200,7 @@ export const actions: Actions = {
 				withholdInvoiceNumber,
 				receiptFile,
 				month,
+				status,
 				date
 			} = form.data;
 
@@ -229,6 +230,10 @@ export const actions: Actions = {
 						.set({ recieptLink: file })
 						.where(eq(transactions.id, transactionId));
 				}
+				await tx
+					.update(transactions)
+					.set({ paymentMethodId: paymentMethod })
+					.where(eq(transactions.id, transactionId));
 
 				const [monthName, year] = month.split('_');
 

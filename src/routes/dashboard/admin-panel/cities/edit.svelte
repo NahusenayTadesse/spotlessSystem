@@ -73,6 +73,7 @@
 						{name}
 					{/if}
 				</Dialog.Trigger>
+
 				<Dialog.Content class="w-full bg-white">
 					<Dialog.Header>
 						<Dialog.Title class="text-center text-4xl">Edit {name}</Dialog.Title>

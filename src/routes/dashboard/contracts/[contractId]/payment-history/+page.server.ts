@@ -6,7 +6,8 @@ import {
 	siteMonthlyPayments,
 	user,
 	services,
-	siteContracts
+	siteContracts,
+	paymentMethods
 } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from '../$types';
@@ -75,7 +76,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			withholdAmount: siteMonthlyPayments.withholdAmount,
 			invoiceNumber: siteMonthlyPayments.invoiceNumber,
 			fsNumber: siteMonthlyPayments.fsNumber,
-			// File Links
+			withholdInvoiceNumber: siteMonthlyPayments.withholdInvoiceNumber,
+			paymentMethod: paymentMethods.name,
+
 			requestFile: siteMonthlyPayments.paymentRequestFile,
 			withholdFile: siteMonthlyPayments.withholdFile,
 			// Joined Fields
@@ -87,6 +90,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.from(siteMonthlyPayments)
 		.innerJoin(siteContracts, eq(siteMonthlyPayments.contractId, siteContracts.id))
 		.innerJoin(transactions, eq(siteMonthlyPayments.transactionId, transactions.id))
+		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
 		.leftJoin(user, eq(siteMonthlyPayments.createdBy, user.id))
 		.where(eq(siteMonthlyPayments.contractId, Number(contractId)))
 		.orderBy(desc(siteMonthlyPayments.date));

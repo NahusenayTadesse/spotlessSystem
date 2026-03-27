@@ -216,7 +216,10 @@ export const leave = mysqlTable('leave', {
 	startDate: date('start_date').notNull(),
 	endDate: date('end_date').notNull(),
 	reason: varchar('reason', { length: 255 }),
+	approvedBy: int('signing_officer').references(() => employee.id, { onDelete: 'set null' }),
 	leaveLetter: varchar('leave_letter', { length: 100 }),
+	status: mysqlEnum('status', ['pending', 'approved', 'rejected']).default('pending'),
+	rejectionReason: varchar('rejection_reason', { length: 255 }),
 	...secureFields
 });
 

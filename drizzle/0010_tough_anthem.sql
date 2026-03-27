@@ -1,0 +1,1 @@
+ALTER TABLE `leave` ADD `status` enum('pending','approved','rejected') DEFAULT 'pending';

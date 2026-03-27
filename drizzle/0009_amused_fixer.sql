@@ -1,0 +1,2 @@
+ALTER TABLE `leave` ADD `signing_officer` int;--> statement-breakpoint
+ALTER TABLE `leave` ADD CONSTRAINT `leave_signing_officer_employee_id_fk` FOREIGN KEY (`signing_officer`) REFERENCES `employee`(`id`) ON DELETE set null ON UPDATE no action;

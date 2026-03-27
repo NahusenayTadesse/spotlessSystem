@@ -3,19 +3,73 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import { formatEthiopianDate, formatETB } from '$lib/global.svelte';
+import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+import type { ColumnDef } from '@tanstack/table-core';
+import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+import type { EditContract } from './schema';
+import Edit from './editContract.svelte';
+import { Eye } from '@lucide/svelte';
 
 export const columns = [
+	{
+		id: 'select',
+		accessorKey: 'id',
+		header: ({ table }) =>
+			renderComponent(Checkbox, {
+				checked: table.getIsAllPageRowsSelected(),
+				indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+				onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
+				'aria-label': 'Select all'
+			}),
+		cell: ({ row }) =>
+			renderComponent(Checkbox, {
+				checked: row.getIsSelected(),
+				onCheckedChange: (value) => row.toggleSelected(!!value),
+				'aria-label': 'Select row'
+			}),
+		enableSorting: false,
+		enableHiding: false
+	},
 	{
 		id: 'index',
 		header: '#',
 		cell: (info) => info.table.getRowModel().rows.findIndex((r) => r.id === info.row.id) + 1
 	},
+
 	{
-		accessorKey: 'date',
-		header: 'Payment Date',
-		cell: ({ row }) => formatEthiopianDate(new Date(row.original.date))
+		accessorKey: 'editContract',
+		header: 'Edit',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(Edit, {
+				data: row.original
+			});
+		}
 	},
+
+	{
+		accessorKey: 'site',
+		header: 'Site',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.siteId,
+				name: row.original.siteName,
+				link: '/dashboard/sites',
+
+				target: '_blank'
+			});
+		}
+	},
+	{
+		accessorKey: 'serviceName',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Service',
+				onclick: column.getToggleSortingHandler()
+			})
+	},
+
 	{
 		accessorKey: 'month',
 		header: ({ column }) =>
@@ -51,7 +105,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue());
+			return formatETB(info.getValue(), true);
 		}
 	},
 	{
@@ -62,7 +116,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue());
+			return formatETB(info.getValue(), true);
 		}
 	},
 	{
@@ -84,7 +138,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue());
+			return formatETB(info.getValue(), true);
 		}
 	},
 	{
@@ -95,7 +149,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue());
+			return formatETB(info.getValue(), true);
 		}
 	},
 	{
@@ -106,7 +160,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue());
+			return formatETB(info.getValue(), true);
 		}
 	},
 	{
@@ -136,8 +190,38 @@ export const columns = [
 
 	{
 		accessorKey: 'addedBy',
-		header: 'Processed By',
-		cell: ({ row }) => row.original.addedBy
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Processed By',
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			// Use staffId for the link, but ensure staffName is selected in the query
+			return renderComponent(DataTableLinks, {
+				id: row.original.addedById,
+				name: row.original.addedBy, // Fallback for safety
+				link: '/dashboard/admin-panel/users',
+				target: '_blank'
+			});
+		}
+	},
+
+	{
+		accessorKey: 'approvedBy',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Approved By',
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			// Use staffId for the link, but ensure staffName is selected in the query
+			return renderComponent(DataTableLinks, {
+				id: row.original.approvedById,
+				name: row.original.approvedBy, // Fallback for safety
+				link: '/dashboard/admin-panel/users',
+				target: '_blank'
+			});
+		}
 	},
 
 	{
@@ -152,10 +236,13 @@ export const columns = [
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
 			return renderComponent(DataTableLinks, {
-				id: row.original.requestFile,
-				name: row.original.requestFile ? 'View Request Document' : 'No Request Document Added', // Fallback for safety
-				link: row.original.requestFile ? `/dashboard/files` : '',
-				target: '_blank'
+				id: row.original.paymentRequestFile,
+				name: row.original.paymentRequestFile
+					? 'View Request Document'
+					: 'No Request Document Added', // Fallback for safety
+				link: row.original.paymentRequestFile ? `/dashboard/files` : '',
+				target: '_blank',
+				IconComp: Eye
 			});
 		}
 	},
@@ -172,10 +259,11 @@ export const columns = [
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
 			return renderComponent(DataTableLinks, {
-				id: row.original.withholdFile,
+				id: row.original.withholdFile ?? '',
 				name: row.original.withholdFile ? 'View Withhold Document' : 'No Withhold Document Added', // Fallback for safety
-				link: row.original.withholdFile ? `/dashboard/files` : '',
-				target: '_blank'
+				link: `/dashboard/files`,
+				target: '_blank',
+				IconComp: Eye
 			});
 		}
 	},
@@ -194,7 +282,8 @@ export const columns = [
 				id: row.original.receiptFile,
 				name: row.original.receiptFile ? 'View Bank Statement' : 'No Bank Statement Added', // Fallback for safety
 				link: row.original.receiptFile ? `/dashboard/files` : '',
-				target: '_blank'
+				target: '_blank',
+				IconComp: Eye
 			});
 		}
 	}

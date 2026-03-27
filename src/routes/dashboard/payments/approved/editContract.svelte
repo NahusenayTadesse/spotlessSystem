@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { SquarePen, Plus, Save, PencilIcon, Pencil } from '@lucide/svelte';
+	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -11,6 +11,7 @@
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
+
 	const isActives = [
 		{ value: true, name: 'Active' },
 		{ value: false, name: 'Inactive' }
@@ -43,7 +44,7 @@
 	$form.penalityAmount = data?.penalityAmount; // 4
 	$form.fsNumber = data?.fsNumber;
 	$form.invoiceNumber = data?.invoiceNumber;
-	$form.requestNumber = data?.requestNumber;
+	$form.requestAmount = data?.requestAmount;
 
 	$form.month = data?.month + '_' + data?.year; // 2
 	$form.date = data?.date.toLocaleDateString('en-CA'); // 3
@@ -60,9 +61,21 @@
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger class="flex w-full flex-row gap-4 {buttonVariants({ variant: 'default' })}">
-		<Pencil /> Edit Payment
-	</Dialog.Trigger>
+	<Tooltip.Provider>
+		<Tooltip.Root>
+			<Tooltip.Trigger class="{buttonVariants({ variant: 'ghost' })} justify-self-start p-0!">
+				<Dialog.Trigger
+					class={buttonVariants({ variant: 'ghost', size: 'icon' })}
+					title="Edit Payment"
+				>
+					<SquarePen />
+				</Dialog.Trigger>
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				<p>Edit Payment</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
+	</Tooltip.Provider>
 	<Dialog.Content class="w-full bg-background">
 		<Dialog.Header>
 			<Dialog.Title class="text-center text-4xl">Edit Payment</Dialog.Title>
@@ -151,6 +164,14 @@
 				<InputComp
 					label="Penalty Amount"
 					name="penalityAmount"
+					type="number"
+					{form}
+					{errors}
+					required
+				/>
+				<InputComp
+					label="Payment Amount"
+					name="paymentAmount"
 					type="number"
 					{form}
 					{errors}

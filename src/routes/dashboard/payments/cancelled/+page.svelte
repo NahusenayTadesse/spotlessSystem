@@ -2,11 +2,12 @@
 	import { columns } from './columns';
 
 	let { data } = $props();
+	import { fade, fly } from 'svelte/transition';
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 
-	import { BadgeCheck, Frown, Plus } from '@lucide/svelte';
+	import { BadgeCheck, Frown, Plus, X } from '@lucide/svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
@@ -50,38 +51,51 @@
 			<Frown class="h-12 w-16  animate-bounce" />
 			No Payments added Yet
 		</p>
-		<Button href="/dashboard/contracts/add-contract"><Plus /> Add Contracts</Button>
+		<Button href="/dashboard/payments/add-payment"><Plus /> Add Payment</Button>
 	</div>
 {:else}
 	<h2 class="my-4 text-2xl">No of Unapproved Payments: {data.contracts?.length}</h2>
 	{#if selected.length > 0}
-		<FormCard title="Approve or Cancel Selected Monthly Payments">
-			<p class="my-4 text-sm">Selected Contracts: {selected.length}</p>
-
-			<form action="?/approve" method="post" use:enhance class="my-4 flex flex-col gap-4">
-				<Errors allErrors={$allErrors} />
-				<InputComp {form} {errors} label="" type="hidden" name="ids" />
-				<InputComp
-					{form}
-					{errors}
-					label="Select Status for selected Contracts"
-					type="select"
-					name="status"
-					items={[
-						{ value: 'approved', name: 'Approve Contract Payment' },
-						{ value: 'rejected', name: 'Reject Contract Payment' }
-					]}
-				/>
-				<Button type="submit">
-					<BadgeCheck /> Save Changes</Button
+		<div transition:fly={{ x: -200, duration: 600 }}>
+			<FormCard title="Approve or Cancel Selected Monthly Payments" className="relative!">
+				<p class="my-4 text-sm">Selected Contracts: {selected.length}</p>
+				<Button
+					title="Unselect All"
+					variant="outline"
+					class="absolute top-2 right-2"
+					size="icon"
+					onclick={() => (selected = [])}
 				>
-			</form>
-		</FormCard>
+					<X /></Button
+				>
+
+				<form action="?/approve" method="post" use:enhance class="my-4 flex flex-col gap-4">
+					<Errors allErrors={$allErrors} />
+					<InputComp {form} {errors} label="" type="hidden" name="ids" />
+					<InputComp
+						{form}
+						{errors}
+						label="Select Status for selected Contracts"
+						type="select"
+						name="status"
+						items={[
+							{ value: 'approved', name: 'Approve Site Payment' },
+							{ value: 'pending', name: 'Pending Approval' }
+						]}
+					/>
+					<Button type="submit">
+						<BadgeCheck /> Save Changes</Button
+					>
+				</form>
+			</FormCard>
+		</div>
 	{/if}
-	<FilterMenu
-		data={data?.contracts}
-		bind:filteredList
-		filterKeys={['siteName', 'month', 'year', 'serviceName']}
-	/>
-	<DataTable data={filteredList} class="max-w-6xl" {columns} bind:selected />
+	{#key data?.contracts}
+		<FilterMenu
+			data={data?.contracts}
+			bind:filteredList
+			filterKeys={['siteName', 'month', 'year', 'serviceName']}
+		/>
+		<DataTable data={filteredList} class="max-w-6xl" {columns} bind:selected />
+	{/key}
 {/if}

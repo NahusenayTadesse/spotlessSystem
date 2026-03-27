@@ -26,33 +26,32 @@ import { paymentMethods } from '$lib/server/fastData';
 import { add, edit } from './schema';
 import { saveUploadedFile } from '$lib/server/upload';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(add));
 	const editForm = await superValidate(zod4(edit));
-	const { contractId } = params;
 
-	const siteName = await db
+	const contractList = await db
 		.select({
-			name: site.name
+			value: siteContracts.id,
+			name: sql<string>`TRIM(CONCAT(COALESCE(${site.name}, ''), ' (Service: ', ${services.name}, ', ', ${siteContracts.monthlyAmount}, ')'))`
 		})
 		.from(siteContracts)
+		.leftJoin(services, eq(siteContracts.serviceId, services.id))
 		.leftJoin(site, eq(siteContracts.siteId, site.id))
-		.where(eq(siteContracts.id, Number(contractId)))
-		.then((result) => result[0]?.name);
+		.where(eq(siteContracts.isActive, true));
 
 	const paymentMethodsList = await paymentMethods();
 
 	return {
 		form,
-		siteName,
 		editForm,
+		contractList,
 		paymentMethods: paymentMethodsList
 	};
 };
 
 export const actions: Actions = {
-	add: async ({ request, locals, params }) => {
-		const { contractId } = params;
+	add: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(add));
 
 		console.log(form);
@@ -68,6 +67,7 @@ export const actions: Actions = {
 		try {
 			// 3. Destructure ALL fields from form.data
 			const {
+				contract,
 				paymentRequestFile,
 				penaltyAmount,
 				fsNumber,
@@ -103,7 +103,7 @@ export const actions: Actions = {
 					.$returningId();
 
 				await tx.insert(siteMonthlyPayments).values({
-					contractId: Number(contractId),
+					contractId: contract,
 					paymentRequestFile: paymentRequestFileUrl,
 					penaltyAmount,
 					fsNumber,

@@ -19,7 +19,10 @@
 		Building2,
 		Sheet,
 		BanknoteArrowDown,
-		ScrollText
+		ScrollText,
+		Loader,
+		CircleCheckBig,
+		OctagonMinus
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -55,6 +58,17 @@
 			items: [
 				{ title: 'Active Contracts', url: '/dashboard/contracts', icon: FileCheck },
 				{ title: 'Inactive Contract', url: '/dashboard/contracts/inactive', icon: FileX }
+			]
+		},
+		{
+			title: 'Payments',
+			url: '/dashboard/payments',
+			icon: Banknote,
+			items: [
+				{ title: 'Add New Payment', url: '/dashboard/payments/add-payment', icon: Plus },
+				{ title: 'Pending Approval', url: '/dashboard/payments/pending', icon: Loader },
+				{ title: 'Approved Payments', url: '/dashboard/payments/approved', icon: CircleCheckBig },
+				{ title: 'Cancelled Payments', url: '/dashboard/payments/cancelled', icon: OctagonMinus }
 			]
 		},
 

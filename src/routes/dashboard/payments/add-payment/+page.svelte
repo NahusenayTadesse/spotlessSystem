@@ -51,7 +51,7 @@
 	<title>Add New Employee</title>
 </svelte:head>
 
-<FormCard title="Add Payment Collection for {data?.siteName}" className="lg:w-full!">
+<FormCard title="Add Payment Collection" className="lg:w-full!">
 	<!-- EmployeeAddForm.svelte -->
 
 	<form
@@ -65,7 +65,16 @@
 		<Errors allErrors={$allErrors} />
 		<section class={sectionStyle}>
 			<h4>Identification & Service</h4>
-
+			<InputComp
+				label="Contract"
+				name="contract"
+				type="combo"
+				{form}
+				{errors}
+				required
+				items={data?.contractList}
+				placeholder="Enter Contract Number"
+			/>
 			<div class={rowStyle}>
 				<InputComp
 					label="FS Number"
