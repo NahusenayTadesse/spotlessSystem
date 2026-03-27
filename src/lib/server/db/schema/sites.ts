@@ -16,6 +16,7 @@ import { address } from './locations';
 import { employee } from './staff';
 import { services } from './services';
 import { transactions } from './finance';
+import { user } from './user';
 
 export const site = mysqlTable('site', {
 	id: int('id').primaryKey().autoincrement(),
@@ -82,6 +83,10 @@ export const siteMonthlyPayments = mysqlTable('site_monthly_payments', {
 	]).notNull(),
 	year: year('year').notNull(),
 	date: date('date').notNull(),
+	status: mysqlEnum('status', ['pending', 'approved', 'rejected']).default('pending'),
+	approvedBy: varchar('user_id', { length: 255 })
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
 	transactionId: int('transaction_id')
 		.notNull()
 		.references(() => transactions.id, { onDelete: 'cascade' }),

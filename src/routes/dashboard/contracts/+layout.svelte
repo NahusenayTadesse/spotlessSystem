@@ -23,6 +23,11 @@
 		class={page.url.pathname === '/dashboard/contracts/inactive' ? '' : 'text-destructive'}
 		><Sheet /> Inactive Contracts</Button
 	>
+	<Button
+		href="/dashboard/contracts/pending"
+		variant={page.url.pathname === '/dashboard/contracts/pending' ? 'default' : 'outline'}
+		><Sheet /> Unapproved Payments</Button
+	>
 </div>
 
 {@render children()}

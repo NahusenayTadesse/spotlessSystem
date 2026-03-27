@@ -1,0 +1,3 @@
+ALTER TABLE `site_monthly_payments` ADD `status` enum('pending','approved','rejected') DEFAULT 'pending';--> statement-breakpoint
+ALTER TABLE `site_monthly_payments` ADD `user_id` varchar(255) NOT NULL;--> statement-breakpoint
+ALTER TABLE `site_monthly_payments` ADD CONSTRAINT `site_monthly_payments_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;

@@ -26,6 +26,7 @@
 	</div>
 {:else}
 	<h2 class="my-4 text-2xl">{data?.siteName} Employees</h2>
+	<h4>{data?.staffList.length} Your</h4>
 
 	<FilterMenu
 		data={data?.staffList}

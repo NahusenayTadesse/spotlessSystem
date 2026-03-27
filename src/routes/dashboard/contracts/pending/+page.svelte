@@ -1,0 +1,87 @@
+<script lang="ts">
+	import { columns } from './columns';
+
+	let { data } = $props();
+
+	import DataTable from '$lib/components/Table/data-table.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+
+	import { BadgeCheck, Frown, Plus } from '@lucide/svelte';
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+
+	let filteredList = $derived(data?.contracts);
+
+	let selected = $state([]);
+
+	import Errors from '$lib/formComponents/Errors.svelte';
+	import { superForm } from 'sveltekit-superforms/client';
+	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(data.form, {
+		dataType: 'json'
+	});
+	import { toast } from 'svelte-sonner';
+	import FormCard from '$lib/formComponents/FormCard.svelte';
+
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
+	$effect(() => {
+		if (selected.length > 0) {
+			$form.ids = selected.map((id) => id.id);
+		}
+	});
+</script>
+
+<svelte:head>
+	<title>Unapproved Payments</title>
+</svelte:head>
+
+{#if data?.contracts.length === 0}
+	<div class="flex h-96 w-5xl flex-col items-center justify-center">
+		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
+			<Frown class="h-12 w-16  animate-bounce" />
+			No Payments added Yet
+		</p>
+		<Button href="/dashboard/contracts/add-contract"><Plus /> Add Contracts</Button>
+	</div>
+{:else}
+	<h2 class="my-4 text-2xl">No of Unapproved Payments: {data.contracts?.length}</h2>
+	{#if selected.length > 0}
+		<FormCard title="Approve or Cancel Selected Monthly Payments">
+			<p class="my-4 text-sm">Selected Contracts: {selected.length}</p>
+
+			<form action="?/approve" method="post" use:enhance class="my-4 flex flex-col gap-4">
+				<Errors allErrors={$allErrors} />
+				<InputComp {form} {errors} label="" type="hidden" name="ids" />
+				<InputComp
+					{form}
+					{errors}
+					label="Select Status for selected Contracts"
+					type="select"
+					name="status"
+					items={[
+						{ value: 'approved', name: 'Approve Contract Payment' },
+						{ value: 'rejected', name: 'Reject Contract Payment' }
+					]}
+				/>
+				<Button type="submit">
+					<BadgeCheck /> Save Changes</Button
+				>
+			</form>
+		</FormCard>
+	{/if}
+	<FilterMenu
+		data={data?.contracts}
+		bind:filteredList
+		filterKeys={['siteName', 'month', 'year', 'serviceName']}
+	/>
+	<DataTable data={filteredList} class="max-w-6xl" {columns} bind:selected />
+{/if}
