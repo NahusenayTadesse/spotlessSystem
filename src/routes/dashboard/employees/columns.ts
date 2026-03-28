@@ -22,6 +22,7 @@ export const columns = [
 		},
 		enableSorting: false
 	},
+
 	{
 		accessorKey: 'name',
 		header: ({ column }) =>

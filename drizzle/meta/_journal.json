@@ -85,6 +85,20 @@
       "when": 1774647529688,
       "tag": "0011_premium_the_spike",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1774649585145,
+      "tag": "0012_slim_leo",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1774649736176,
+      "tag": "0013_round_professor_monster",
+      "breakpoints": true
     }
   ]
 }

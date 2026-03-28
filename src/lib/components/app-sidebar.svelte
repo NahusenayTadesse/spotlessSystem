@@ -22,7 +22,8 @@
 		ScrollText,
 		Loader,
 		CircleCheckBig,
-		OctagonMinus
+		OctagonMinus,
+		TreePalm
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -79,7 +80,8 @@
 			items: [
 				{ title: 'Employees by Site', url: '/dashboard/employees/sites', icon: Building2 },
 				{ title: 'All Active Employees', url: '/dashboard/employees', icon: List },
-				{ title: 'Add New Employee', url: '/dashboard/employees/add-employee', icon: Plus }
+				{ title: 'Add New Employee', url: '/dashboard/employees/add-employee', icon: Plus },
+				{ title: 'Leaves', url: '/dashboard/employees/leaves', icon: TreePalm }
 			]
 		},
 		{

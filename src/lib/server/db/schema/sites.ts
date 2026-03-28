@@ -84,9 +84,9 @@ export const siteMonthlyPayments = mysqlTable('site_monthly_payments', {
 	year: year('year').notNull(),
 	date: date('date').notNull(),
 	status: mysqlEnum('status', ['pending', 'approved', 'rejected']).default('pending'),
-	approvedBy: varchar('user_id', { length: 255 })
-		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
+	approvedBy: varchar('user_id', { length: 255 }).references(() => user.id, {
+		onDelete: 'set null'
+	}),
 	transactionId: int('transaction_id')
 		.notNull()
 		.references(() => transactions.id, { onDelete: 'cascade' }),
