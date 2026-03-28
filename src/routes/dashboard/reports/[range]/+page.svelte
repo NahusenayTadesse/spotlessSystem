@@ -5,39 +5,74 @@
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import Loading from '$lib/components/Loading.svelte';
-	import { Frown } from '@lucide/svelte';
+	import { ArrowBigRight, Frown } from '@lucide/svelte';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
+	import Input from '$lib/components/ui/input/input.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+
+	import { formatEthiopianYear } from '$lib/global.svelte';
+
+	let max = formatEthiopianYear(new Date());
+
+	let range = $derived(data?.range);
 </script>
 
 <svelte:head>
 	<title>Reports</title>
 </svelte:head>
 
-{#await data}
-	<Loading name="Customers" />
-{:then reports}
-	{#if data.allReports.length === 0}
-		<div class="flex h-96 w-full flex-col items-center justify-center lg:w-5xl">
-			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
-				<Frown class="h-12 w-16  animate-bounce" />
+{#if data.allReports.length === 0}
+	<div class="flex h-96 w-full flex-col items-center justify-center lg:w-5xl">
+		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
+			<Frown class="h-12 w-16  animate-bounce" />
 
-				Reports is Empty for this Date Range Choose Another Range
-			</p>
-			<DateMonth start={data?.start} end={data?.end} link="/dashboard/reports" />
+			Reports is Empty for this Year Choose Another Year
+		</p>
+		<div class="flex w-full max-w-sm items-center gap-0">
+			<div class="relative grow">
+				<Input
+					bind:value={range}
+					type="number"
+					min={2000}
+					{max}
+					class="rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+				/>
+			</div>
+			<Button
+				href="/dashboard/reports/{range}"
+				disabled={range > max}
+				variant={range > max ? 'destructive' : 'default'}
+				class="rounded-l-none border-l-0 bg-primary px-6 hover:bg-primary/90"
+			>
+				View {range > max ? 'ERROR MAX YEAR REACHED' : range} Reports <ArrowBigRight />
+			</Button>
 		</div>
-	{:else}
-		<h2 class="my-4 text-2xl">No of Reports {data.allReports?.length}</h2>
-
-		<DateMonth start={data?.start} end={data?.end} link="/dashboard/reports" />
-		<!--
-		<div class="mt-8 mb-4 w-[350px] p-2 px-2 pt-4 lg:w-[1250px] lg:p-0">
-			<DataTable data={data.allReports} {columns} />
-		</div> -->
-		<DataTable data={data.allReports} {columns} />
-	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
 	</div>
-{/await}
+{:else}
+	<h2 class="my-4 text-2xl">No of Salary Reports {data.allReports?.length}</h2>
+	<div class="flex w-full max-w-sm items-center gap-0">
+		<div class="relative grow">
+			<Input
+				bind:value={range}
+				type="number"
+				min={2000}
+				{max}
+				class="rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+			/>
+		</div>
+		<Button
+			href="/dashboard/reports/{range}"
+			disabled={range > max}
+			variant={range > max ? 'destructive' : 'default'}
+			class="rounded-l-none border-l-0 bg-primary px-6 hover:bg-primary/90"
+		>
+			View {range > max ? 'ERROR MAX YEAR REACHED' : range} Reports <ArrowBigRight />
+		</Button>
+	</div>
+	<DataTable
+		data={data.allReports}
+		{columns}
+		class="max-w-6xl"
+		fileName="Salary Reports for {range}"
+	/>
+{/if}

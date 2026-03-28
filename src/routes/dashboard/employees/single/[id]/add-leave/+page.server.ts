@@ -54,15 +54,15 @@ export const actions: Actions = {
 					});
 				}
 
-				const start = new Date(startDate);
-				const end = new Date(endDate);
+				// const start = new Date(startDate);
+				// const end = new Date(endDate);
 
-				const differenceInDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+				// const differenceInDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
-				// 2. Insert Customer using the new address ID
-				await tx.update(employee).set({
-					leavesLeft: sql`${employee.leavesLeft} - ${differenceInDays}`
-				});
+				// // 2. Insert Customer using the new address ID
+				// await tx.update(employee).set({
+				// 	leavesLeft: sql`${employee.leavesLeft} - ${differenceInDays}`
+				// });
 			});
 
 			return message(form, { type: 'success', text: 'Leave added successfully' });
