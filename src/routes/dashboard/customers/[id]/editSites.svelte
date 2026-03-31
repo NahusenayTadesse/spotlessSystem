@@ -32,7 +32,7 @@
 		id: number;
 		name: string;
 		phone: string;
-		startDate: Date;
+		startDate?: Date | undefined | string;
 
 		status: boolean;
 		icon: boolean;
@@ -55,7 +55,8 @@
 	$form.id = id;
 	$form.name = name;
 	$form.phone = phone;
-	$form.startDate = startDate.toLocaleDateString('en-CA');
+	if (typeof startDate === 'Date' || typeof startDate === 'string')
+		$form.startDate = new Date(startDate).toLocaleDateString('en-CA');
 	$form.status = status;
 </script>
 
@@ -101,7 +102,16 @@
 								placeholder="Enter Site Phone Number"
 								required
 							/>
-							<InputComp label="Start Date" name="startDate" type="date" {form} {errors} required />
+							<InputComp
+								label="Start Date"
+								year
+								name="startDate"
+								type="date"
+								futureDays
+								{form}
+								{errors}
+								required
+							/>
 
 							<InputComp
 								label="Status"

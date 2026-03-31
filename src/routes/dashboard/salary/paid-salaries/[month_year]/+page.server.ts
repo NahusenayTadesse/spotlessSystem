@@ -7,6 +7,7 @@ import {
 	staffAccounts,
 	missingDays,
 	overTime,
+	site,
 	deductions,
 	bonuses,
 	commission,
@@ -34,6 +35,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.select({
 			id: employee.id,
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
+			site: site.name,
 			department: department.name,
 			basicSalary: payrollEntries.basicSalary,
 			positionAllowance: payrollEntries.positionAllowance,
@@ -55,6 +57,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		})
 		.from(payrollEntries)
 		.leftJoin(employee, eq(payrollEntries.staffId, employee.id))
+		.leftJoin(site, eq(employee.siteId, site.id))
 		.leftJoin(department, eq(department.id, employee.departmentId))
 		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
 		.where(and(eq(payrollEntries.month, month), eq(payrollEntries.year, Number(year))));

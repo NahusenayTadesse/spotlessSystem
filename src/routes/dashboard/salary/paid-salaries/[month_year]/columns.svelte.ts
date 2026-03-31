@@ -47,6 +47,15 @@ export const columns = [
 			}),
 		sortable: true
 	},
+	{
+		accessorKey: 'site',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Site',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
 
 	{
 		accessorKey: 'basicSalary',

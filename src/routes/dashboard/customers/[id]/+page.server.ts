@@ -324,7 +324,7 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
 
-		const { id, name, phone, startDate, endDate, status } = form.data;
+		const { id, name, phone, startDate, status } = form.data;
 
 		try {
 			await db.transaction(async (tx) => {
@@ -334,7 +334,6 @@ export const actions: Actions = {
 						name,
 						phone,
 						startDate: new Date(startDate),
-						endDate: new Date(endDate),
 						isActive: status,
 						updatedBy: locals?.user?.id
 					})
@@ -364,7 +363,6 @@ export const actions: Actions = {
 			name,
 			phone,
 			startDate,
-			endDate,
 			status,
 			street,
 			subcity,
@@ -393,7 +391,6 @@ export const actions: Actions = {
 					phone,
 					customerId: Number(id),
 					startDate: new Date(startDate).toISOString(),
-					endDate: new Date(endDate).toISOString(),
 					isActive: status,
 					address: addressRes.id,
 					createdBy: locals?.user?.id

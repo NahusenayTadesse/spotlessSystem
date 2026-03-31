@@ -209,8 +209,7 @@ export async function customerList() {
 			value: customers.id,
 			name: customers.name
 		})
-		.from(customers)
-		.where(eq(customers.status, 'contracted'));
+		.from(customers);
 
 	return customerList;
 }

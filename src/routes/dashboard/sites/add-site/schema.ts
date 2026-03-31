@@ -23,7 +23,8 @@ export const customerSchema = z.object({
 		.min(1, 'Tin Number is Required')
 		.length(10, 'Tin Number must be exactly 10 digits')
 		.regex(/^\d+$/, 'Tin Number must only contain numbers'),
-	customer: z.coerce.number('Customer is Required'),
+	customer: z.number('Customer is Required').positive('Customer is required'),
+	startDate: z.string('Start Date is required'),
 	street: z
 		.string('Street is Required')
 		.min(2, 'Street must be at least 2 characters')

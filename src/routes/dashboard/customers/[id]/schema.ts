@@ -82,7 +82,6 @@ export const addSites = z.object({
 		.max(100, 'Phone must be at most 100 characters'),
 	status: z.boolean('Status is Required').default(true),
 	startDate: z.string('Start Date is required'),
-	endDate: z.string('End Date is required'),
 	subcity: z.number('Subsity is required'),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),

@@ -239,6 +239,7 @@
 			bind:filteredList
 			filterKeys={[
 				'employmentStatus',
+				'site',
 				'absent',
 				'bank',
 				'department',

@@ -31,6 +31,7 @@
 		data={data?.staffList}
 		bind:filteredList
 		filterKeys={[
+			'site',
 			'department',
 			'education',
 			'status',

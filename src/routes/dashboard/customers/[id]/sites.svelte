@@ -61,7 +61,6 @@
 					name: row.original?.name,
 					phone: row.original?.phone,
 					startDate: row.original?.startDate,
-					endDate: row.original?.endDate,
 					status: row.original?.status,
 					data: editForm,
 					icon: false
@@ -90,16 +89,16 @@
 			cell: (info) => formatEthiopianDate(info.getValue())
 		},
 
-		{
-			accessorKey: 'endDate',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'End Date',
-					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true,
-			cell: (info) => formatEthiopianDate(info.getValue())
-		},
+		// {
+		// 	accessorKey: 'endDate',
+		// 	header: ({ column }) =>
+		// 		renderComponent(DataTableSort, {
+		// 			name: 'End Date',
+		// 			onclick: column.getToggleSortingHandler()
+		// 		}),
+		// 	sortable: true,
+		// 	cell: (info) => formatEthiopianDate(info.getValue())
+		// },
 
 		{
 			accessorKey: '',
@@ -221,8 +220,16 @@
 			placeholder="Enter Site Phone Number"
 			required
 		/>
-		<InputComp label="Start Date" name="startDate" type="date" {form} {errors} required />
-		<InputComp label="End Date" name="endDate" type="date" {form} {errors} required />
+		<InputComp
+			label="Start Date"
+			year
+			name="startDate"
+			type="date"
+			{form}
+			futureDays
+			{errors}
+			required
+		/>
 
 		<InputComp
 			label="Status"

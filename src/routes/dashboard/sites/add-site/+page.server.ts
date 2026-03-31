@@ -40,6 +40,7 @@ export const actions: Actions = {
 			buildingNumber,
 			floor,
 			customer,
+			startDate,
 			street,
 			houseNumber
 		} = form.data;
@@ -78,6 +79,7 @@ export const actions: Actions = {
 				.values({
 					name,
 					phone,
+					startDate,
 					customerId: customer,
 					email,
 					tinNo,

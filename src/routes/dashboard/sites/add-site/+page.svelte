@@ -97,6 +97,16 @@
 		/>
 
 		<InputComp
+			label="Start Date"
+			year={true}
+			name="startDate"
+			type="date"
+			{form}
+			{errors}
+			required
+		/>
+
+		<InputComp
 			label="Subcity"
 			name="subcity"
 			type="combo"

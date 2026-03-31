@@ -97,12 +97,12 @@
 			{/key}
 		</Section>
 
-		<Section title="Contracts" class="lg:col-span-2" IconComp={Phone} style="identityIcon">
+		<!-- <Section title="Contracts" class="lg:col-span-2" IconComp={Phone} style="identityIcon">
 			<Contacts
 				data={data?.contracts}
 				form={data?.editContractForm}
 				addForm={data?.addContractForm}
 			/>
-		</Section>
+		</Section> -->
 	</div></SingleView
 >

@@ -180,6 +180,7 @@
 		data={data?.payrollData}
 		bind:filteredList
 		filterKeys={[
+			'site',
 			'bank',
 			'department',
 			'taxAmount',
