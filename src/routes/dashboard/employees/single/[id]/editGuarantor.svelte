@@ -45,9 +45,9 @@
 		jobType: string;
 		company: string;
 		salary: string;
-		photo: string;
-		document: string;
-		govtId: string;
+		photo?: string;
+		document?: string;
+		govtId?: string;
 		id: number;
 	} = $props();
 

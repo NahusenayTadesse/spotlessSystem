@@ -143,13 +143,13 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 		'other'
 	]).notNull(),
 	relation: varchar('relation', { length: 255 }),
-	jobType: varchar('job_type', { length: 255 }).notNull(),
-	company: varchar('company', { length: 255 }).notNull(),
+	jobType: varchar('job_type', { length: 255 }),
+	company: varchar('company', { length: 255 }),
 	salary: decimal('salary', { precision: 10, scale: 2 }).notNull(),
-	gurantorDocument: varchar('gurantor_document', { length: 255 }).notNull(),
-	phone: varchar('phone', { length: 255 }).notNull(),
-	photo: varchar('photo', { length: 255 }).notNull(),
-	govtId: varchar('govt_id', { length: 255 }).notNull(),
+	gurantorDocument: varchar('gurantor_document', { length: 255 }),
+	phone: varchar('phone', { length: 255 }),
+	photo: varchar('photo', { length: 255 }),
+	govtId: varchar('govt_id', { length: 255 }),
 	email: varchar('email', { length: 255 }),
 	address: int('address')
 		.references(() => address.id)
@@ -247,7 +247,7 @@ export const staffFamilies = mysqlTable('staff_families', {
 	gender: mysqlEnum('gender', ['male', 'female']).notNull().default('male'),
 	otherRelationship: varchar('other_relationship', { length: 255 }),
 	name: varchar('name', { length: 255 }).notNull(),
-	phone: varchar('phone', { length: 255 }).notNull(),
+	phone: varchar('phone', { length: 255 }),
 	email: varchar('email', { length: 255 }),
 	emergencyContact: boolean('emergency_contact').notNull().default(false),
 	...secureFields

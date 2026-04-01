@@ -90,7 +90,7 @@ export type EditEmployment = z.infer<typeof editEmployment>;
 
 export const editPersonal = z.object({
 	bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
-	tinNo: z.string('Tin Number is required').min(10).max(10),
+	tinNo: z.string().min(10).max(10).optional(),
 	martialStatus: z.enum(['single', 'married', 'widowed', 'divorced', 'other'])
 });
 export type EditPersonal = z.infer<typeof editPersonal>;
@@ -133,7 +133,7 @@ export const editFamily = z.object({
 		message: 'Please select a valid gender'
 	}),
 
-	phone: z.string(),
+	phone: z.string().optional(),
 	email: z.string().optional(),
 	emergencyContact: z.boolean().default(false),
 	otherRelationShip: z.string().optional(),
@@ -148,7 +148,7 @@ export const addFamily = z.object({
 		message: 'Please select a valid gender'
 	}),
 
-	phone: z.string(),
+	phone: z.string().optional(),
 	email: z.string().optional(),
 	emergencyContact: z.boolean().default(false),
 	otherRelationShip: z.string().optional(),
@@ -335,7 +335,8 @@ export const addGuarantor = z.object({
 		.refine(
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		)
+		.optional(),
 	govtId: z
 		.instanceof(File, {
 			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
@@ -345,7 +346,8 @@ export const addGuarantor = z.object({
 		.refine(
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		)
+		.optional(),
 	document: z
 		.instanceof(File, {
 			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
@@ -355,14 +357,15 @@ export const addGuarantor = z.object({
 		.refine(
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		)
+		.optional(),
 	subcity: z.number('Subsity is required').optional(),
 	otherSubcity: z.string().optional(),
-	street: z.string('Street is required'),
-	kebele: z.string('Kebele is required'),
+	street: z.string('Street is required').optional(),
+	kebele: z.string('Kebele is required').optional(),
 	buildingNumber: z.string().optional(),
 	floor: z.string().optional(),
-	houseNumber: z.string('House Number is Required')
+	houseNumber: z.string('House Number is Required').optional()
 });
 export type AddGuarantor = z.infer<typeof addGuarantor>;
 

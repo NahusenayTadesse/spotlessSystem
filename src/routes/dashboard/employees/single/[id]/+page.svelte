@@ -40,7 +40,7 @@
 	]);
 
 	let personalDetails = $derived([
-		{ name: 'Tin Number', value: data?.staffMember?.tinNo },
+		{ name: 'Tin Number', value: data?.staffMember?.tinNo ?? 'N/A' },
 		{ name: 'Marital Status', value: data?.staffMember?.maritalStatus },
 		{ name: 'Blood Type', value: data?.staffMember?.bloodType }
 	]);
@@ -98,11 +98,11 @@
 	let guarantorAddress = $derived([
 		{ name: 'Subcity', value: data?.guarantor?.address?.subcity || 'N/A' },
 		{ name: 'Other Subcity', value: data?.guarantor?.address?.otherSubcity || 'N/A' },
-		{ name: 'Street', value: data?.guarantor?.address?.street },
-		{ name: 'Kebele', value: data?.guarantor?.address?.kebele },
-		{ name: 'Building', value: data?.guarantor?.address?.buildingNumber },
-		{ name: 'Floor', value: data?.guarantor?.address?.floor },
-		{ name: 'House Number', value: data?.guarantor?.address?.houseNumber },
+		{ name: 'Street', value: data?.guarantor?.address?.street ?? 'N/A' },
+		{ name: 'Kebele', value: data?.guarantor?.address?.kebele ?? 'N/A' },
+		{ name: 'Building', value: data?.guarantor?.address?.buildingNumber ?? 'N/A' },
+		{ name: 'Floor', value: data?.guarantor?.address?.floor ?? 'N/A' },
+		{ name: 'House Number', value: data?.guarantor?.address?.houseNumber ?? 'N/A' },
 		{ name: 'Status', value: data?.guarantor?.address?.status ? 'Active' : 'Inactive' }
 	]);
 
@@ -281,6 +281,7 @@
 				{/snippet}
 				<SingleTable singleTable={personalDetails} />
 			</Section>
+
 			<Section title="Bank Accounts" class="lg:col-span-3" IconComp={Banknote} style="identityIcon">
 				<Accounts
 					data={data?.accounts}

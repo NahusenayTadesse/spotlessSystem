@@ -57,7 +57,8 @@
 		method="post"
 		enctype="multipart/form-data"
 	>
-		<InputComp label="Tin Number" name="tinNo" type="text" {form} {errors} required />
+		<InputComp label="Tin Number" name="tinNo" type="text" {form} {errors} />
+
 		<InputComp
 			label="Martial Status   "
 			name="martialStatus"

@@ -125,7 +125,17 @@
 			required
 			items={employmentStatusList}
 		/>
-		<InputComp label="Hired Date" name="hireDate" type="date" {form} {errors} required oldDays />
+		<InputComp
+			label="Hired Date"
+			year
+			futureDays={false}
+			name="hireDate"
+			type="date"
+			{form}
+			{errors}
+			required
+			oldDays
+		/>
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">

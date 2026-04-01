@@ -392,6 +392,8 @@ export const actions: Actions = {
 		const { id } = params;
 
 		const form = await superValidate(request, zod4(editPersonal));
+
+		console.log(form);
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
@@ -410,7 +412,7 @@ export const actions: Actions = {
 				await tx
 					.update(employee)
 					.set({
-						tinNo,
+						tinNo: tinNo ?? null,
 						martialStatus,
 						bloodType,
 						updatedBy: locals?.user?.id
@@ -886,9 +888,12 @@ export const actions: Actions = {
 					})
 					.$returningId();
 
-				const newPhoto = await saveUploadedFile(photo);
-				const newDocument = await saveUploadedFile(document);
-				const newGovtId = await saveUploadedFile(govtId);
+				let newPhoto: string;
+				let newDocument: string;
+				let newGovtId: string;
+				if (photo) newPhoto = await saveUploadedFile(photo);
+				if (document) newDocument = await saveUploadedFile(document);
+				if (govtId) newGovtId = await saveUploadedFile(govtId);
 
 				// 3. Update using 'tx'
 				await tx.insert(employeeGuarantor).values({

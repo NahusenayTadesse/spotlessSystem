@@ -140,7 +140,6 @@
 			{form}
 			{errors}
 			placeholder="Upload a 3 X 4 photo of Guarantor"
-			required
 		/>
 		<InputComp
 			label="Document"
@@ -149,7 +148,6 @@
 			{form}
 			{errors}
 			placeholder="Upload a document related to Guarantor"
-			required
 		/>
 		<InputComp
 			label="Goverment Id"
@@ -158,7 +156,6 @@
 			{form}
 			{errors}
 			placeholder="Upload a government ID(FIDA) of Guarantor"
-			required
 		/>
 		<h4>Guarantor Address</h4>
 
@@ -171,18 +168,11 @@
 			{errors}
 			placeholder="Enter other subcity if applicable otherwise leave blank"
 		/>
-		<InputComp label="Street" name="street" type="text" {form} {errors} required />
-		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />
-		<InputComp
-			label="Building Name or Number"
-			name="buildingNumber"
-			type="text"
-			{form}
-			{errors}
-			required
-		/>
-		<InputComp label="Floor" name="floor" type="number" {form} {errors} required />
-		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} required />
+		<InputComp label="Street" name="street" type="text" {form} {errors} />
+		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} />
+		<InputComp label="Building Name or Number" name="buildingNumber" type="text" {form} {errors} />
+		<InputComp label="Floor" name="floor" type="number" {form} {errors} />
+		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} />
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">

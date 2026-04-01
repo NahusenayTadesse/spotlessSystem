@@ -148,7 +148,6 @@
 								type="tel"
 								{form}
 								{errors}
-								required
 								placeholder="Enter Phone Number"
 							/>
 
