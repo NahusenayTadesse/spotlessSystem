@@ -26,14 +26,15 @@
 		oldDays = true,
 		year = false,
 		futureDays = false,
-		image = ''
+		image = '',
+		disabled = false
 	} = $props();
 </script>
 
 <div class="flex w-full max-w-full flex-col justify-start gap-2 p-1">
 	<Label for={name} class="capitalize">{label}</Label>
 	{#if type === 'textarea'}
-		<Textarea {name} bind:value={$form[name]} {required} {rows} {placeholder} />
+		<Textarea {name} {disabled} bind:value={$form[name]} {required} {rows} {placeholder} />
 	{:else if type === 'file'}
 		<FileUpload {name} {form} {image} {placeholder} />
 	{:else if type === 'select'}
@@ -63,6 +64,7 @@
 			bind:value={$form[name]}
 			autocomplete="off"
 			{max}
+			{disabled}
 			{min}
 			{placeholder}
 			{required}

@@ -35,10 +35,19 @@
 		status: boolean;
 		icon: boolean;
 	} = $props();
-
+	let disabled = $state(false);
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
 		resetForm: false,
-		invalidateAll: true
+		invalidateAll: true,
+		onChange() {
+			if ($form.paymentMethod === 8) {
+				$form.accountDetail = 'No Account';
+				disabled = true;
+			} else {
+				disabled = false;
+				$form.accountDetail = '';
+			}
+		}
 	});
 	import { toast } from 'svelte-sonner';
 	import type { Item } from '$lib/global.svelte';
@@ -92,13 +101,15 @@
 							/>
 							<InputComp
 								label="Account Detail"
-								name="accountDetail"
+								name={disabled ? 'accountDetail' : ''}
 								type="text"
 								{form}
 								{errors}
+								{disabled}
 								required
 								placeholder="Enter Account Details"
 							/>
+							<input type="hidden" name="accountDetail" bind:value={$form.accountDetail} />
 
 							<InputComp
 								label="Status"

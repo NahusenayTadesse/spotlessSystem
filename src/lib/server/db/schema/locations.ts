@@ -34,7 +34,7 @@ export const address = mysqlTable('address', {
 	street: varchar('street', { length: 100 }),
 	kebele: varchar('kebele', { length: 100 }),
 	buildingNumber: varchar('building_number', { length: 10 }),
-	floor: int('floor').notNull().default(0),
-	houseNumber: int('house_number').notNull().default(0),
+	floor: int('floor').default(0),
+	houseNumber: int('house_number').default(0),
 	...lesserFields
 });

@@ -124,9 +124,19 @@
 			}
 		}
 	];
+	let disabled = $state(false);
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
-		resetForm: false
+		resetForm: false,
+		onChange() {
+			if ($form.paymentMethod === 8) {
+				$form.accountDetail = 'No Account';
+				disabled = true;
+			} else {
+				disabled = false;
+				$form.accountDetail = '';
+			}
+		}
 	});
 	import { toast } from 'svelte-sonner';
 	import type { Item } from '$lib/global.svelte';
@@ -160,15 +170,18 @@
 			required
 			items={paymentMethods}
 		/>
+
 		<InputComp
 			label="Account Detail"
-			name="accountDetail"
+			name={disabled ? 'accountDetail' : ''}
 			type="text"
 			{form}
 			{errors}
+			{disabled}
 			required
 			placeholder="Enter Account Details"
 		/>
+		<input type="hidden" name="accountDetail" bind:value={$form.accountDetail} />
 
 		<InputComp
 			label="Status"

@@ -101,11 +101,11 @@ export const add = z.object({
 
 	subcity: z.number('Subcity is required').optional(),
 	otherSubcity: z.string().optional(),
-	street: z.string('Street is required'),
-	kebele: z.string('Kebele is required'),
+	street: z.string('Street is required').optional(),
+	kebele: z.string('Kebele is required').optional(),
 	buildingNumber: z.string().optional(),
 	floor: z.coerce.number().optional(),
-	houseNumber: z.string('House Number is Required'),
+	houseNumber: z.string('House Number is Required').optional(),
 	officeCommission: z.boolean('Office Commission is required').default(false),
 	percentage: z.number('Percentage is required').default(0)
 });

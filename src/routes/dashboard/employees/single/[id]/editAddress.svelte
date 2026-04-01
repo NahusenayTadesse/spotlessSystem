@@ -49,12 +49,12 @@
 	});
 	$form.id = address.id;
 	$form.subcity = address?.subcityId ? address.subcityId : undefined;
-	$form.street = address?.street;
-	$form.buildingNumber = address?.buildingNumber;
-	$form.kebele = address?.kebele;
-	$form.floor = address?.floor;
-	$form.houseNumber = address?.houseNumber;
-	$form.status = address?.status;
+	$form.street = address?.street ? address.street : undefined;
+	$form.buildingNumber = address?.buildingNumber ? address.buildingNumber : undefined;
+	$form.kebele = address?.kebele ? address.kebele : undefined;
+	$form.floor = address?.floor ? address.floor : undefined;
+	$form.houseNumber = address?.houseNumber ? address.houseNumber : undefined;
+	$form.status = address?.status ? address.status : undefined;
 </script>
 
 <DialogComp title="Edit" variant="default" class="" IconComp={SquarePen}>
@@ -70,18 +70,17 @@
 		<InputComp label="Subcity" name="subcity" type="combo" {form} {errors} items={subcityList} />
 		<InputComp label="Other Subcity" name="otherSubcity" type="text" {form} {errors} />
 
-		<InputComp label="Street" name="street" type="text" {form} {errors} required />
-		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />
+		<InputComp label="Street" name="street" type="text" {form} {errors} />
+		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} />
 		<InputComp label="Building Name or Number" name="buildingNumber" type="text" {form} {errors} />
-		<InputComp label="Floor" name="floor" type="number" {form} {errors} required />
-		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} required />
+		<InputComp label="Floor" name="floor" type="number" {form} {errors} />
+		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} />
 		<InputComp
 			label="Status"
 			name="status"
 			type="select"
 			{form}
 			{errors}
-			required
 			items={[
 				{ value: true, name: 'Active' },
 				{ value: false, name: 'Inactive' }

@@ -201,18 +201,11 @@
 					{errors}
 					placeholder="Enter other subcity if subcity is not available, leave blank otherwise"
 				/>
-				<Input label="Street" name="street" type="text" {form} {errors} required />
-				<Input label="Kebele" name="kebele" type="text" {form} {errors} required />
-				<Input
-					label="Building Name or Number"
-					name="buildingNumber"
-					type="text"
-					{form}
-					{errors}
-					required
-				/>
-				<Input label="Floor" name="floor" type="number" {form} {errors} required />
-				<Input label="House Number" name="houseNumber" type="text" {form} {errors} required />
+				<Input label="Street" name="street" type="text" {form} {errors} />
+				<Input label="Kebele" name="kebele" type="text" {form} {errors} />
+				<Input label="Building Name or Number" name="buildingNumber" type="text" {form} {errors} />
+				<Input label="Floor" name="floor" type="number" {form} {errors} />
+				<Input label="House Number" name="houseNumber" type="text" {form} {errors} />
 				<Input
 					label="Status"
 					name="status"

@@ -458,8 +458,8 @@ export const actions: Actions = {
 						kebele,
 						buildingNumber,
 						otherSubcity,
-						floor: Number(floor),
-						houseNumber: Number(houseNumber),
+						floor: floor ? Number(floor) : null,
+						houseNumber: houseNumber ? Number(houseNumber) : null,
 						status
 					})
 					.where(eq(address.id, Number(id)));

@@ -98,12 +98,12 @@ export type EditPersonal = z.infer<typeof editPersonal>;
 export const editAddress = z.object({
 	id: z.number('Address Id not found'),
 	subcity: z.number('Subsity is required').optional(),
-	street: z.string('Street is required'),
-	kebele: z.string('Kebele is required'),
-	buildingNumber: z.string().optional(),
-	floor: z.string().optional(),
-	houseNumber: z.string('House Number is Required'),
-	status: z.boolean('Status is required'),
+	street: z.string('Street is required').optional(),
+	kebele: z.string('Kebele is required').optional(),
+	buildingNumber: z.string().optional().optional(),
+	floor: z.string().optional().optional(),
+	houseNumber: z.string('House Number is Required').optional(),
+	status: z.boolean('Status is required').optional(),
 	otherSubcity: z.string().optional()
 });
 export type EditAddress = z.infer<typeof editAddress>;
