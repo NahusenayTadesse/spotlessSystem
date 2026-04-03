@@ -21,7 +21,7 @@
 		action = '?/edit',
 		id,
 		name,
-		location,
+
 		phone,
 		description,
 		icon = false,
@@ -32,7 +32,7 @@
 		id: number;
 		name: string;
 		icon: boolean;
-		location: string;
+
 		phone: string;
 		description: string;
 		status: boolean;
@@ -46,7 +46,7 @@
 
 	$form.id = id;
 	$form.name = name;
-	$form.location = location;
+
 	$form.phone = phone;
 	$form.description = description;
 	$form.status = status;
@@ -86,15 +86,7 @@
 						<input type="hidden" name="id" value={$form.id} />
 						<Messages {message} />
 						<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
-						<InputComp
-							{form}
-							{errors}
-							label="Location"
-							type="text"
-							name="location"
-							placeholder="Enter Department Location"
-							required={true}
-						/>
+
 						<InputComp
 							{form}
 							{errors}

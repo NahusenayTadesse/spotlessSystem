@@ -69,8 +69,7 @@ export const editContract = z.object({
 export type EditContract = z.infer<typeof editContract>;
 
 export const approveContract = z.object({
-	ids: z.array(z.number('No Contract Selected')),
-	status: z.enum(['pending', 'rejected'])
+	ids: z.array(z.number('No Contract Selected'))
 });
 
 export type ApproveContract = z.infer<typeof approveContract>;

@@ -127,6 +127,13 @@
       "when": 1775041186217,
       "tag": "0017_lethal_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1775208182384,
+      "tag": "0018_glorious_weapon_omega",
+      "breakpoints": true
     }
   ]
 }

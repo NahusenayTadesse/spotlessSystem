@@ -30,7 +30,6 @@ export const department = mysqlTable(
 		id: int('id').autoincrement().primaryKey(),
 		name: varchar('name', { length: 32 }).notNull().unique(),
 		phone: varchar('phone', { length: 20 }),
-		location: varchar('location', { length: 255 }),
 		description: varchar('description', { length: 255 }),
 		...lesserFields
 	},

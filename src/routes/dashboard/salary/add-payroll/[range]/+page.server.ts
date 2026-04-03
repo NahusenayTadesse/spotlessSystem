@@ -184,7 +184,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
-		.leftJoin(position, eq(position.id, position.positionId))
+		.leftJoin(position, eq(position.id, employee.positionId))
 		.leftJoin(site, eq(site.id, employee.siteId))
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(

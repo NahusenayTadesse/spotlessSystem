@@ -96,6 +96,11 @@
 					icon: BanknoteArrowUp
 				},
 				{
+					title: 'All OverTime',
+					url: '/dashboard/salary/add-overtime',
+					icon: BanknoteArrowUp
+				},
+				{
 					title: 'UnPaid Salaries by Site',
 					url: '/dashboard/salary/add-payroll/sites',
 					icon: BanknoteArrowUp

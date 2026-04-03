@@ -38,7 +38,7 @@
 >
 	<!-- Gradient Background -->
 	<div
-		class={`absolute inset-0 bg-gradient-to-br ${accentColor} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+		class={`absolute inset-0 bg-linear-to-br ${accentColor} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
 	></div>
 
 	<!-- Content -->

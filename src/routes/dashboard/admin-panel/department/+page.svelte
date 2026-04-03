@@ -51,16 +51,6 @@
 		},
 
 		{
-			accessorKey: 'location',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Location',
-					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
-		},
-
-		{
 			accessorKey: 'status',
 			header: 'Status',
 			sortable: true,
@@ -118,15 +108,7 @@
 <DialogComp title="+ Add New Department" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
-		<InputComp
-			{form}
-			{errors}
-			label="Location"
-			type="text"
-			name="location"
-			placeholder="Enter Department Location"
-			required={true}
-		/>
+
 		<InputComp
 			{form}
 			{errors}

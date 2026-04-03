@@ -141,9 +141,9 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Tax Type" />
+				<LoadingBtn name="Adding Overtime Type" />
 			{:else}
-				<Plus /> Add Tax Type
+				<Plus /> Add Overtime Type
 			{/if}
 		</Button>
 	</form>
