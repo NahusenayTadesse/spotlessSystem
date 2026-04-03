@@ -273,7 +273,7 @@
 			<div class={rowStyle}>
 				<Input
 					label="Department"
-					name="departmentId"
+					name="department"
 					{form}
 					{errors}
 					type="select"
@@ -281,7 +281,19 @@
 					required
 				/>
 
-				{#if $form.departmentId === 8}
+				<Input
+					label="Position"
+					name="position"
+					{form}
+					{errors}
+					type="combo"
+					items={$form.department
+						? data.positionList.filter((p) => p.departmentId === Number($form.department))
+						: [{ value: '', name: 'Select a Department First' }]}
+					required
+				/>
+
+				{#if $form.department === 8}
 					<Input
 						label="Office Commission"
 						name="officeCommission"

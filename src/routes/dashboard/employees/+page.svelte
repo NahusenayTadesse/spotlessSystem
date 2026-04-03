@@ -33,6 +33,7 @@
 		filterKeys={[
 			'site',
 			'department',
+			'position',
 			'education',
 			'status',
 			'years',

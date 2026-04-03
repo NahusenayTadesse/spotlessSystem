@@ -19,7 +19,8 @@ import {
 	staffContacts,
 	staffAccounts,
 	paymentMethods,
-	officeWorkerCommission
+	officeWorkerCommission,
+	position
 } from '$lib/server/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
@@ -44,6 +45,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			tinNo: employee.tinNo,
 			department: department.name,
 			departmentId: department.id,
+			position: position.name,
+			positionId: position.id,
 			status: employmentStatuses.name,
 			statusId: employmentStatuses.id,
 			address: employee.address,
@@ -64,6 +67,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		})
 		.from(employee)
 		.leftJoin(department, eq(employee.departmentId, department.id))
+		.leftJoin(position, eq(employee.positionId, position.id))
 		.leftJoin(employmentStatuses, eq(employee.employmentStatus, employmentStatuses.id))
 		.leftJoin(educationalLevel, eq(employee.educationalLevel, educationalLevel.id))
 		.leftJoin(user, eq(employee.createdBy, user.id))

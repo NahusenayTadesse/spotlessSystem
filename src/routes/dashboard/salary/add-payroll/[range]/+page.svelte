@@ -243,6 +243,7 @@
 				'absent',
 				'bank',
 				'department',
+				'position',
 				'overtime',
 				'basicSalary',
 				'housingAllowance',

@@ -48,6 +48,15 @@ export const columns = [
 		sortable: true
 	},
 	{
+		accessorKey: 'position',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Position',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
+	{
 		accessorKey: 'site',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {

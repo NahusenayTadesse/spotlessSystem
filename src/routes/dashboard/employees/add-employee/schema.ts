@@ -24,7 +24,8 @@ export const add = z.object({
 		.regex(/^\d+$/, 'Tin Number must only contain numbers')
 		.optional(),
 
-	departmentId: z.number().int().positive('Please select a department'),
+	department: z.number().int().positive('Please select a department'),
+	position: z.number().int().positive('Please select a position'),
 	site: z.number().int().positive('Please select a site'),
 	birthDate: z.coerce.string('Birth date is required').refine(
 		(value) => {

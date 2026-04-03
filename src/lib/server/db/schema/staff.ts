@@ -37,6 +37,20 @@ export const department = mysqlTable(
 	(table) => [index('name_idx').on(table.name)]
 );
 
+export const position = mysqlTable(
+	'position',
+	{
+		id: int('id').autoincrement().primaryKey(),
+		name: varchar('name', { length: 32 }).notNull().unique(),
+		departmentId: int('department_id')
+			.notNull()
+			.references(() => department.id),
+		description: varchar('description', { length: 255 }),
+		...lesserFields
+	},
+	(table) => [index('name_idx').on(table.name)]
+);
+
 export const employmentStatuses = mysqlTable(
 	'employment_statuses',
 	{
@@ -80,6 +94,7 @@ export const employee = mysqlTable(
 		departmentId: int('department_id')
 			.notNull()
 			.references(() => department.id),
+		positionId: int('position_id').references(() => position.id),
 		birthDate: date('birth_date').notNull(),
 		photo: varchar('photo', { length: 255 }).notNull(),
 		govtId: varchar('govt_id', { length: 255 }).notNull(),

@@ -9,7 +9,8 @@ import {
 	site,
 	employeeGuarantor,
 	staffAccounts,
-	staffFamilies
+	staffFamilies,
+	position
 } from '$lib/server/db/schema';
 import { eq, and, sql, isNull, count, countDistinct } from 'drizzle-orm';
 import { edit } from './schema';
@@ -24,6 +25,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Handling potential nulls for both name parts
 			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
 			department: department.name,
+			position: position.name,
 			site: site.name,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
@@ -38,6 +40,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(employee)
 		.leftJoin(site, eq(site.id, employee.siteId))
 		.leftJoin(department, eq(department.id, employee.departmentId))
+		.leftJoin(position, eq(position.id, employee.positionId))
 		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
 		.leftJoin(educationalLevel, eq(educationalLevel.id, employee.educationalLevel))
 		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
@@ -50,6 +53,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			employee.name,
 			employee.fatherName,
 			department.name,
+			position.name,
 			site.name,
 			educationalLevel.name,
 			employmentStatuses.name,

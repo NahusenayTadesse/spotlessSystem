@@ -17,7 +17,8 @@ import {
 	taxType,
 	site,
 	customers,
-	overTimeType
+	overTimeType,
+	position
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -141,6 +142,18 @@ export async function departments() {
 		.from(department);
 
 	return departments;
+}
+
+export async function positions() {
+	const positions = await db
+		.select({
+			value: position.id,
+			name: position.name,
+			departmentId: position.departmentId
+		})
+		.from(position);
+
+	return positions;
 }
 
 export async function empStatus() {

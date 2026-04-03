@@ -20,7 +20,8 @@ import {
 	payrollReceipts,
 	payrollEntries,
 	officeWorkerCommission,
-	siteContracts
+	siteContracts,
+	position
 } from '$lib/server/db/schema';
 import { and, count, desc, asc, eq, isNull, sql } from 'drizzle-orm';
 
@@ -157,6 +158,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			id: employee.id,
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
 			department: department.name,
+			position: position.name,
 			basicSalary: salaries.amount,
 			positionAllowance: salaries.positionAllowance,
 			housingAllowance: salaries.housingAllowance,
@@ -182,6 +184,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
+		.leftJoin(position, eq(position.id, position.positionId))
 		.leftJoin(site, eq(site.id, employee.siteId))
 		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
 		.leftJoin(

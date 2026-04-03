@@ -79,6 +79,7 @@ export type EditIdentity = z.infer<typeof editIdentity>;
 export const editEmployment = z.object({
 	idNo: z.string('ID Number is required'),
 	department: z.number('Department is required').nonnegative().positive(),
+	position: z.number('Position is required').nonnegative().positive(),
 	hireDate: z.coerce.string('Hired on date is required'),
 	employmentStatus: z.number('Employment Status is required'),
 	leavesLeft: z.number('Leaves Left is required').default(0),

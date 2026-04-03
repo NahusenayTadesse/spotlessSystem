@@ -182,7 +182,9 @@
 		filterKeys={[
 			'site',
 			'bank',
+
 			'department',
+			'position',
 			'taxAmount',
 			'overtime',
 			'basicSalary',

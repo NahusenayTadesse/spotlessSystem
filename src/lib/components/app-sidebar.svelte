@@ -129,6 +129,7 @@
 				{ title: 'Cities', url: '/dashboard/admin-panel/cities', icon: MapPin },
 				{ title: 'Subcities', url: '/dashboard/admin-panel/subcities', icon: MapPin },
 				{ title: 'Departments', url: '/dashboard/admin-panel/department', icon: Building2 },
+				{ title: 'Positions', url: '/dashboard/admin-panel/positions', icon: Building2 },
 				{ title: 'Services', url: '/dashboard/admin-panel/services', icon: SquareChartGantt },
 				{
 					title: 'Educational Level',

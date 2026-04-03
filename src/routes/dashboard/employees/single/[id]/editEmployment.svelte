@@ -14,10 +14,12 @@
 		data,
 		employmentStatus,
 		department,
+		position,
 		educationalLevel,
 		hireDate,
-		idNo,
+
 		departmentList,
+		positionList,
 		leavesLeft,
 		employmentStatusList,
 		educationalLevelList
@@ -25,13 +27,14 @@
 		data: SuperValidated<Infer<EditEmployment>>;
 		employee: string;
 		employmentStatus: number;
-		idNo: string;
+		position?: number;
 		department: number;
 		leavesLeft: number;
 		educationalLevel: number;
 		hireDate: Date;
 		statusList: Item[];
 		departmentList: Item[];
+		positionList: Item[];
 		employmentStatusList: Item[];
 		educationalLevelList: Item[];
 	} = $props();
@@ -50,10 +53,12 @@
 		}
 	});
 
-	$form.idNo = idNo;
+	// $form.idNo = idNo;
+
 	$form.employmentStatus = employmentStatus;
 	$form.educationalLevel = educationalLevel;
 	$form.department = department;
+	$form.position = position ?? null;
 	$form.hireDate = hireDate;
 	$form.leavesLeft = leavesLeft;
 </script>
@@ -67,7 +72,7 @@
 		method="post"
 		enctype="multipart/form-data"
 	>
-		<InputComp label="Employee ID" name="idNo" type="text" {form} {errors} required />
+		<!-- <InputComp label="Employee ID" name="idNo" type="text" {form} {errors} required /> -->
 		<InputComp
 			label="Department"
 			name="department"
@@ -76,6 +81,18 @@
 			{errors}
 			required
 			items={departmentList}
+		/>
+
+		<InputComp
+			label="Position"
+			name="position"
+			{form}
+			{errors}
+			type="combo"
+			items={$form.department
+				? positionList.filter((p) => p.departmentId === Number($form.department))
+				: [{ value: '', name: 'Select a Department First' }]}
+			required
 		/>
 
 		{#if $form.department === 8 && department !== 8}

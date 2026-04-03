@@ -17,6 +17,7 @@
 
 	let organization = [
 		{ name: 'Departments', href: '/dashboard/admin-panel/department' },
+		{ name: 'Positions', href: '/dashboard/admin-panel/positions' },
 		{ name: 'Educational Levels', href: '/dashboard/admin-panel/educational-level' },
 		{ name: 'Employement Status ', href: '/dashboard/admin-panel/employment-status' },
 		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },

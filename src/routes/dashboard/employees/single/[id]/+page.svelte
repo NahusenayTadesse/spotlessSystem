@@ -49,6 +49,7 @@
 		{ name: 'ID Number', value: data?.staffMember?.idNo },
 		{ name: 'Employment Status', value: data?.staffMember?.status },
 		{ name: 'Department', value: data?.staffMember?.department },
+		{ name: 'Position', value: data?.staffMember?.position },
 		{ name: 'Educational Level', value: data?.staffMember?.educationalLevel },
 		{ name: 'Leaves Left', value: data?.staffMember?.leavesLeft + ' Days' },
 		{
@@ -254,8 +255,8 @@
 					{#key data?.address}
 						<EditEmployment
 							data={data?.employmentForm}
-							idNo={data?.staffMember.idNo}
 							department={data?.staffMember.departmentId}
+							position={data?.staffMember.positionId}
 							educationalLevel={data?.staffMember.educationalLevelId}
 							educationalLevelList={data?.educationalLevelList}
 							employmentStatus={data?.staffMember.statusId}
@@ -264,6 +265,7 @@
 							leavesLeft={data?.staffMember.leavesLeft}
 							statusList={data?.statusList}
 							departmentList={data?.departmentList}
+							positionList={data?.positionList}
 						/>
 					{/key}
 				{/snippet}

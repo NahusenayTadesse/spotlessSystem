@@ -45,7 +45,14 @@ import {
 	editAccount,
 	editCommission
 } from './schema';
-import { empStatus, departments, eduLevel, subcities, paymentMethods } from '$lib/server/fastData';
+import {
+	empStatus,
+	departments,
+	eduLevel,
+	subcities,
+	paymentMethods,
+	positions
+} from '$lib/server/fastData';
 
 import { saveUploadedFile } from '$lib/server/upload';
 
@@ -74,6 +81,7 @@ export const load: PageServerLoad = async () => {
 
 	const statusList = await empStatus();
 	const departmentList = await departments();
+	const positionList = await positions();
 	const educationalLevelList = await eduLevel();
 	const subcityList = await subcities();
 	const bankList = await paymentMethods();
@@ -84,6 +92,7 @@ export const load: PageServerLoad = async () => {
 		statusList,
 		identityForm,
 		departmentList,
+		positionList,
 		employmentForm,
 		educationalLevelList,
 		personalForm,
@@ -342,9 +351,9 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
 		const {
-			idNo,
 			leavesLeft,
 			department,
+			position,
 			educationalLevel,
 			employmentStatus,
 			hireDate,
@@ -364,8 +373,8 @@ export const actions: Actions = {
 				await tx
 					.update(employee)
 					.set({
-						idNo,
 						departmentId: department,
+						positionId: position,
 						employmentStatus,
 						educationalLevel,
 						leavesLeft,

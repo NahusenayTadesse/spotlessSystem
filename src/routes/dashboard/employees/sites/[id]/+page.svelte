@@ -26,13 +26,14 @@
 	</div>
 {:else}
 	<h2 class="my-4 text-2xl">{data?.siteName} Employees</h2>
-	<h4>{data?.staffList.length} Your</h4>
+	<h4 class="mb-4">{data?.staffList.length} Employees in {data?.siteName}</h4>
 
 	<FilterMenu
 		data={data?.staffList}
 		bind:filteredList
 		filterKeys={[
 			'department',
+			'position',
 			'education',
 			'status',
 			'years',

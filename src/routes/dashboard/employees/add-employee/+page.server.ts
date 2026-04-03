@@ -12,7 +12,14 @@ import {
 	officeWorkerCommission
 } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
-import { departments, empStatus, eduLevel, sites, subcities } from '$lib/server/fastData';
+import {
+	departments,
+	empStatus,
+	eduLevel,
+	sites,
+	subcities,
+	positions
+} from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
 import { and, eq } from 'drizzle-orm';
 
@@ -20,6 +27,7 @@ export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(add));
 
 	const departmentList = await departments();
+	const positionList = await positions();
 	const empStatusList = await empStatus();
 	const eduLevelList = await eduLevel();
 	const siteList = await sites();
@@ -28,6 +36,7 @@ export const load: PageServerLoad = async () => {
 	return {
 		form,
 		departmentList,
+		positionList,
 		empStatusList,
 		eduLevelList,
 		siteList,
@@ -60,7 +69,7 @@ export const actions: Actions = {
 			nationality,
 			phone,
 			bloodType,
-			departmentId,
+			department,
 			educationalLevel,
 			salary,
 			positionAllowance,
@@ -83,7 +92,8 @@ export const actions: Actions = {
 			existingPensionCard,
 			officeCommission,
 			otherSubcity,
-			percentage
+			percentage,
+			position
 		} = form.data;
 
 		// 1. Duplicate Check
@@ -131,7 +141,8 @@ export const actions: Actions = {
 					gender,
 					nationality,
 					birthDate: new Date(birthDate).toLocaleDateString('en-CA'),
-					departmentId,
+					departmentId: department,
+					positionId: position,
 					photo: photoName,
 					govtId: govIdFile,
 					employmentStatus,

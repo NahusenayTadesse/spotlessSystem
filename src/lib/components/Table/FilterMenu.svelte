@@ -23,14 +23,13 @@
 	interface Props {
 		data: any[];
 		filterKeys: string[];
-		filteredList?: any[];
+		filteredList: any[];
 	}
 
 	let { data, filterKeys, filteredList = $bindable(data) }: Props = $props();
 	import { buttonVariants } from '../ui/button/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
-	// Create a map of filterKey -> selectedValues (array for multi-select)
 	let selectedFilters = $state<Record<string, string[]>>({});
 
 	let open = $state(false);

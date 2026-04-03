@@ -1,16 +1,10 @@
 import { db } from '$lib/server/db';
 import {
 	paymentMethods,
-	salaries,
 	employee,
 	department,
-	staffAccounts,
-	missingDays,
-	overTime,
 	site,
-	deductions,
-	bonuses,
-	commission,
+	position,
 	payrollEntries,
 	payrollReceipts,
 	payrollRuns,
@@ -37,6 +31,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
 			site: site.name,
 			department: department.name,
+			position: position.name,
 			basicSalary: payrollEntries.basicSalary,
 			positionAllowance: payrollEntries.positionAllowance,
 			housingAllowance: payrollEntries.housingAllowance,
@@ -59,6 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(employee, eq(payrollEntries.staffId, employee.id))
 		.leftJoin(site, eq(employee.siteId, site.id))
 		.leftJoin(department, eq(department.id, employee.departmentId))
+		.leftJoin(position, eq(position.id, employee.positionId))
 		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
 		.where(and(eq(payrollEntries.month, month), eq(payrollEntries.year, Number(year))));
 
