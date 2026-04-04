@@ -68,14 +68,6 @@
 			/>
 			<InputComp {form} {errors} name="date" type="date" label="Overtime Date" required />
 
-			<InputComp
-				{form}
-				{errors}
-				name="amountPerHour"
-				type="number"
-				label="Overtime Amount Per Hour"
-				required
-			/>
 			<InputComp {form} {errors} name="hours" type="number" label="Hours Worked" required />
 			<InputComp
 				{form}
@@ -88,10 +80,10 @@
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
-					<LoadingBtn name="Adding Bonus" />
+					<LoadingBtn name="Adding Overtime" />
 				{:else}
 					<Plus class="h-4 w-4" />
-					Add Bonus
+					Add Overtime
 				{/if}
 			</Button>
 		</form>

@@ -108,7 +108,7 @@
 				{ title: 'Transactions', url: '/dashboard/salary/transactions', icon: ScanLine },
 
 				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
-				{ title: 'Over Types', url: '/dashboard/salary/overtime-types', icon: Banknote },
+				{ title: 'Overtime Types', url: '/dashboard/salary/overtime-types', icon: Banknote },
 				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
 			]
 		},

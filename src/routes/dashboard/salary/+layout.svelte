@@ -28,6 +28,12 @@
 	>
 
 	<Button
+		href="/dashboard/salary/add-overtime"
+		variant={page.url.pathname.startsWith('/dashboard/salary/add-overtime') ? 'default' : 'outline'}
+		><Sheet /> All Overtime</Button
+	>
+
+	<Button
 		href="/dashboard/salary/tax-types"
 		variant={page.url.pathname === '/dashboard/salary/tax-types' ? 'default' : 'outline'}
 		><Sheet /> Tax Types</Button
@@ -35,7 +41,7 @@
 	<Button
 		href="/dashboard/salary/overtime-types"
 		variant={page.url.pathname === '/dashboard/salary/overtime-types' ? 'default' : 'outline'}
-		><Sheet /> Over Types</Button
+		><Sheet /> Overtime Types</Button
 	>
 	<Button
 		href="/dashboard/salary/transactions"

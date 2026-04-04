@@ -6,9 +6,6 @@ export const overtimeSchema = z.object({
 
 	reason: z.string().max(255, { message: 'Description cannot exceed 255 characters.' }).optional(),
 
-	amountPerHour: z.coerce
-		.number('Amount is Required')
-		.positive({ message: 'Amount must be a positive number.' }),
 	hours: z.coerce.number('Hours is Required').int().positive()
 });
 
