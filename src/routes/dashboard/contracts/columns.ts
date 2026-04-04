@@ -5,7 +5,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 
 import { formatETB, formatEthiopianDate, formatEthiopianYear } from '$lib/global.svelte';
-import { History, CirclePlus } from '@lucide/svelte';
+import { History, CirclePlus, Printer } from '@lucide/svelte';
 
 export const columns = [
 	{
@@ -66,6 +66,21 @@ export const columns = [
 				name: 'Add Payment Collection',
 				link: '/dashboard/contracts',
 				IconComp: CirclePlus,
+				target: '_blank'
+			});
+		}
+	},
+
+	{
+		accessorKey: 'requestPayment',
+		header: 'Request Payment',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.id + '/payment-request',
+				name: 'Payment Request',
+				IconComp: Printer,
+				link: '/dashboard/contracts',
 				target: '_blank'
 			});
 		}

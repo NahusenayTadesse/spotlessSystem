@@ -45,13 +45,15 @@
 
 	const sectionStyle = `flex flex-col gap-4 my-4`;
 	const rowStyle = `grid grid-cols-3 mt-4  gap-4`;
+
+	$form.requestAmount = Number(data?.siteName.monthlyAmount);
 </script>
 
 <svelte:head>
 	<title>Add New Employee</title>
 </svelte:head>
 
-<FormCard title="Add Payment Collection for {data?.siteName}" className="lg:w-full!">
+<FormCard title="Add Payment Collection for {data?.siteName.name}" className="lg:w-full!">
 	<!-- EmployeeAddForm.svelte -->
 
 	<form
@@ -110,6 +112,7 @@
 					{errors}
 					required
 				/>
+
 				<InputComp
 					label="Before VAT Amount"
 					name="beforeVat"

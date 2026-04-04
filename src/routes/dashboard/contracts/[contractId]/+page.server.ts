@@ -33,12 +33,13 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const siteName = await db
 		.select({
-			name: site.name
+			name: site.name,
+			monthlyAmount: siteContracts.monthlyAmount
 		})
 		.from(siteContracts)
 		.leftJoin(site, eq(siteContracts.siteId, site.id))
 		.where(eq(siteContracts.id, Number(contractId)))
-		.then((result) => result[0]?.name);
+		.then((result) => result[0]);
 
 	const paymentMethodsList = await paymentMethods();
 
