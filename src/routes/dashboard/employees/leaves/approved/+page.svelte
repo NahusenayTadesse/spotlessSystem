@@ -119,7 +119,7 @@
 		<FilterMenu
 			data={data?.salaryHistory}
 			bind:filteredList
-			filterKeys={['department', 'siteName', 'name', 'numberOfDays']}
+			filterKeys={['department', 'siteName', 'name', 'numberOfDays', 'reason']}
 		/>
 		<DataTable
 			data={filteredList}

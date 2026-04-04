@@ -90,7 +90,22 @@
 			required={true}
 			placeholder="Enter Leave End Date"
 		/>
+
 		<InputComp
+			label="Reason"
+			name="reason"
+			type="select"
+			{form}
+			{errors}
+			required={true}
+			placeholder="Enter Reason for Leave"
+			items={[
+				{ value: 'Marriage Leave', name: 'Marriage Leave: leave up to 5 days' },
+				{ value: 'Sadness Leave', name: 'Sadness Leave: leave up to 3 days' },
+				{ value: 'Maternity Leave', name: 'Maternity Leave: leave up to 3 months' }
+			]}
+		/>
+		<!-- <InputComp
 			label="Reason"
 			name="reason"
 			type="textarea"
@@ -98,7 +113,7 @@
 			{errors}
 			required={true}
 			placeholder="Enter Reason for Leave"
-		/>
+		/> -->
 		<InputComp
 			label="Leave Letter File"
 			name="leaveLetter"

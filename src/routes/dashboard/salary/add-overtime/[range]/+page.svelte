@@ -81,7 +81,7 @@
 		<MonthYear bind:value={month} />
 
 		<Button
-			href="/dashboard/employees/attendance/{link}"
+			href="/dashboard/salary/add-overtime/{link}"
 			aria-label="Go to selected month and year"
 			class="flex items-center gap-2"
 		>
@@ -143,10 +143,6 @@
 				</DialogComp>
 			{/if}
 		</div>
-
-		{#each $form.ids as id}
-			{id}
-		{/each}
 
 		<FilterMenu
 			data={data?.staffList}

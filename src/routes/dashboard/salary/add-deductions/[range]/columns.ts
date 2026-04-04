@@ -1,18 +1,39 @@
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import Stasuses from '$lib/components/Table/statuses.svelte';
+import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 const form = await superValidate(zod4(edit));
+const deleteform = await superValidate(zod4(deleteOvertime));
+const addform = await superValidate(zod4(add));
 
-import { minutesToHoursString } from '$lib/global.svelte';
-import Copy from '$lib/Copy.svelte';
-import { edit } from './schema';
+// import { minutesToHoursString } from '$lib/global.svelte';
+// import Copy from '$lib/Copy.svelte';
+import { edit, add, deleteOvertime } from './schema';
 import Edit from './edit.svelte';
-import ReasonsDialog from './reasons-dialog.svelte';
+import Overtime from './overtime.svelte';
 
 export const columns = [
+	{
+		id: 'select',
+		accessorKey: 'id',
+		header: ({ table }) =>
+			renderComponent(Checkbox, {
+				checked: table.getIsAllPageRowsSelected(),
+				indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+				onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
+				'aria-label': 'Select all'
+			}),
+		cell: ({ row }) =>
+			renderComponent(Checkbox, {
+				checked: row.getIsSelected(),
+				onCheckedChange: (value) => row.toggleSelected(!!value),
+				'aria-label': 'Select row'
+			}),
+		enableSorting: false,
+		enableHiding: false
+	},
 	{
 		id: 'index',
 		header: '#',
@@ -50,6 +71,15 @@ export const columns = [
 		sortable: true
 	},
 	{
+		accessorKey: 'position',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Position',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
+	{
 		accessorKey: 'site',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -58,116 +88,37 @@ export const columns = [
 			}),
 		sortable: true
 	},
-
-	{
-		accessorKey: 'reasons',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Absent Details',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return renderComponent(ReasonsDialog, {
-				staff: row.original
-			});
-		}
-	},
-
-	{
-		accessorKey: 'absent',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Missing Days',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(Edit, {
-				data: form,
-				id: row.original.id,
-				name: row.original.name,
-				count: row.original.absent
-			});
-		}
-	},
-
-	{
-		accessorKey: 'deductable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Deductable',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(Edit, {
-				data: form,
-				id: row.original.id,
-				name: row.original.name,
-				count: row.original.deductable,
-				days: row.original.deductableDays
-			});
-		}
-	},
-
-	{
-		accessorKey: 'nonDeductable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Non Deductable',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(Edit, {
-				data: form,
-				id: row.original.id,
-				name: row.original.name,
-				count: row.original.nonDeductable,
-				days: row.original.nonDeductableDays
-			});
-		}
-	},
-
-	{
-		accessorKey: 'nonDeductable',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Missing Days',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(Edit, {
-				data: form,
-				id: row.original.id,
-				name: row.original.name,
-				count: row.original.nonDeductable
-			});
-		}
-	},
-
 	// {
-	// 	accessorKey: 'phone',
-	// 	header: 'Phone',
-	// 	sortable: true,
-	// 	cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
+	// 	accessorKey: 'overtime',
+	// 	header: ({ column }) =>
+	// 		renderComponent(DataTableSort, {
+	// 			name: 'Overtime',
+	// 			onclick: column.getToggleSortingHandler()
+	// 		}),
+	// 	sortable: true
 	// },
 
-	// { accessorKey: 'email', header: 'Email' },
-
 	{
-		accessorKey: 'status',
+		accessorKey: 'overtimeDetails',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Status',
+				name: 'Overtime Details',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(Overtime, {
+				staffId: row.original.id,
+				addForm: addform,
+				data: deleteform,
+				editForm: form,
+				name: row.original.name,
+				department: row.original.department,
+				site: row.original.site,
+				position: row.original.position,
+				overtimeDetails: row.original.overtimeDetails,
+				totalOvertimePay: row.original.totalOvertimePay
+			});
+		}
 	}
 ];

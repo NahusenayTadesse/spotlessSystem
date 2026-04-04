@@ -95,15 +95,21 @@
 					url: '/dashboard/salary/add-payroll',
 					icon: BanknoteArrowUp
 				},
+
+				{
+					title: 'UnPaid Salaries by Site',
+					url: '/dashboard/salary/add-payroll/sites',
+					icon: BanknoteArrowUp
+				},
 				{
 					title: 'All OverTime',
 					url: '/dashboard/salary/add-overtime',
 					icon: BanknoteArrowUp
 				},
 				{
-					title: 'UnPaid Salaries by Site',
-					url: '/dashboard/salary/add-payroll/sites',
-					icon: BanknoteArrowUp
+					title: 'All Deductions',
+					url: '/dashboard/salary/add-deductions',
+					icon: BanknoteArrowDown
 				},
 				{ title: 'Transactions', url: '/dashboard/salary/transactions', icon: ScanLine },
 

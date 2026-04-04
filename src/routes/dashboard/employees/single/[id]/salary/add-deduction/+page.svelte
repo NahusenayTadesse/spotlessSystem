@@ -28,6 +28,8 @@
 		}
 	);
 
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+
 	export const snapshot: Snapshot = { capture, restore };
 
 	import { toast } from 'svelte-sonner';
@@ -97,29 +99,43 @@
 		>
 			<Errors allErrors={$allErrors} />
 
-			{@render date('deductionDate', 'Deduction Date')}
-			{@render fe('Deduction Type', 'type', 'text', 'Enter the type of Deduction', true)}
-			{@render fe(
-				'Amount Deducted',
-				'amount',
-				'number',
-				'Enter the total amount of the deduction',
-				true,
-				'0'
-			)}
+			<InputComp {form} {errors} name="deductionDate" type="date" label="Deduction Date" required />
+			<InputComp
+				{form}
+				{errors}
+				name="type"
+				type="select"
+				label="Deduction Type"
+				items={[
+					{ value: 'Savings', name: 'Savings' },
+					{ value: 'Penality', name: 'Penality' },
+					{ value: 'Loan', name: 'Loan' }
+				]}
+				required
+			/>
 
-			<div class="flex w-full flex-col justify-start gap-2">
-				<Label for="description">Deduction Description (optional)</Label>
-
-				<Textarea
-					name="description"
-					placeholder="Enter added product description"
-					bind:value={$form.description}
-					aria-invalid={$errors.description ? 'true' : undefined}
-				/>
-
-				{#if $errors.description}<span class="text-red-500">{$errors.description}</span>{/if}
-			</div>
+			<InputComp
+				{form}
+				{errors}
+				name="amount"
+				type="number"
+				label="Amount Deducted"
+				items={[
+					{ value: 'Savings', name: 'Savings' },
+					{ value: 'Penality', name: 'Penality' },
+					{ value: 'Loan', name: 'Loan' }
+				]}
+				required
+				placeholder="Enter the total amount of the deduction"
+			/>
+			<InputComp
+				{form}
+				{errors}
+				name="description"
+				type="textarea"
+				label="Deduction Description(Optional)"
+				placeholder="Enter added product description"
+			/>
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
