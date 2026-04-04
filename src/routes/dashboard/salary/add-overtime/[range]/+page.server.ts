@@ -8,8 +8,8 @@ import {
 	position,
 	salaries
 } from '$lib/server/db/schema';
-import { eq, and, sql, gte, lte, count, inArray, between } from 'drizzle-orm';
-import { add, edit, deleteOvertime } from './schema';
+import { eq, sql, between, inArray } from 'drizzle-orm';
+import { add, edit, deleteOvertime, bulkAdd } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
@@ -20,6 +20,7 @@ import { getMonthNumber, ethiopianRange, currentMonthFilter } from '$lib/global.
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
 
+	const form = await superValidate(zod4(bulkAdd));
 	const [m, y] = range.split('_');
 	const monthNumber = getMonthNumber(m);
 	const year = Number(y);
@@ -88,14 +89,93 @@ export const load: PageServerLoad = async ({ params }) => {
 	});
 
 	return {
-		staffList
+		staffList,
+		form,
+		types
 	};
 };
 
 export const actions: Actions = {
+	bulkAdd: async ({ request, cookies, params, locals }) => {
+		const form = await superValidate(request, zod4(bulkAdd));
+		console.log(form);
+
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+
+			return message(
+				form,
+				{ type: 'error', text: 'Please check the form for errors' },
+				{ status: 400 }
+			);
+		}
+
+		const { ids, reason, date, overtimeType, hours } = form.data;
+
+		console.log(ids.length);
+
+		try {
+			await db.transaction(async (tx) => {
+				// 1. Fetch the rate (Shared across all entries)
+				//
+				//
+				const rateRow = await tx
+					.select({ rate: overTimeType.rate })
+					.from(overTimeType)
+					.where(eq(overTimeType.id, overtimeType))
+					.then((rows) => rows[0]);
+
+				if (!rateRow) return message(form, { type: 'error', text: 'Overtime type not found' });
+
+				// 2. Fetch salaries for ALL provided IDs
+				// It's much faster to fetch them all in one query than inside a loop
+				const staffSalaries = await tx
+					.select({
+						salary: salaries.amount,
+						staffId: salaries.staffId
+					})
+					.from(salaries)
+					.where(inArray(salaries.staffId, ids));
+
+				// 3. Map the data into an array of insert objects
+				const insertData = staffSalaries.map((staff) => {
+					const hourlyRate = Number(staff.salary) / 192;
+					const total = hourlyRate * (hours * Number(rateRow.rate));
+
+					return {
+						staffId: staff.staffId,
+						overTimeTypeId: overtimeType,
+						hours,
+						total, // Ensuring decimal precision
+						reason,
+						date,
+						createdBy: locals.user?.id
+					};
+				});
+
+				// 4. Perform the bulk insert
+				if (insertData.length > 0) {
+					await tx.insert(overTime).values(insertData);
+				}
+			});
+
+			return message(form, {
+				type: 'success',
+				text: `Overtime Successuflly for ${ids.length} Employees Added`
+			});
+		} catch (err) {
+			return message(
+				form,
+				{
+					type: 'error',
+					text: 'An Error occured while adding Overtime' + err?.message
+				},
+				{ status: 500 }
+			);
+		}
+	},
 	add: async ({ request, cookies, params, locals }) => {
 		const form = await superValidate(request, zod4(add));
-		console.log(form);
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
