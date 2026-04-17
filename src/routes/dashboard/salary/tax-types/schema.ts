@@ -1,4 +1,3 @@
-import type { Description } from '$lib/components/ui/sheet';
 import { z } from 'zod/v4';
 
 export const add = z.object({

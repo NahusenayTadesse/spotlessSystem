@@ -46,11 +46,12 @@
 
 	const sectionStyle = `flex flex-col gap-4 my-4`;
 	const rowStyle = `grid grid-cols-3 mt-4  gap-4`;
+	$form.vat = data.vats.vat;
 
 	$form.requestAmount = Number(data?.siteName.monthlyAmount);
 	$form.penalityAmount = 0;
 	$form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
-	$form.withholdAmount = $form.beforeVat * 0.03;
+	$form.withholdAmount = ($form.beforeVat * Number(data.vats.withhold)) / 100;
 
 	let vat = $state(false);
 </script>
@@ -128,39 +129,9 @@
 					required
 				/>
 				<div>
-					<div class="relative items-center gap-2 *:flex">
-						<InputComp
-							label="VAT"
-							name="vat"
-							type={vat ? 'number' : 'hidden'}
-							{form}
-							{errors}
-							required
-						/>
-						{#if vat}
-							<Button
-								class="absolute top-6 right-0"
-								type="button"
-								size="icon"
-								onclick={() => (vat = false)}
-								variant="ghost"><X /></Button
-							>
-						{/if}
-					</div>
-					{#if !vat}
-						<div class="relative items-center gap-2 *:flex">
-							<Input disabled bind:value={$form.vat} />
-							{#if !vat}
-								<Button
-									class="absolute top-0 right-0"
-									type="button"
-									size="icon"
-									onclick={() => (vat = true)}
-									variant="ghost"><Pen /></Button
-								>
-							{/if}
-						</div>
-					{/if}
+					<InputComp label="VAT" name="vat" type="hidden" {form} {errors} required />
+
+					<Input disabled bind:value={$form.vat} />
 				</div>
 
 				<InputComp

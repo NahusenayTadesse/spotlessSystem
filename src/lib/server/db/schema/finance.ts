@@ -23,6 +23,11 @@ export const paymentMethods = mysqlTable('payment_methods', {
 	...secureFields
 });
 
+export const vatAndWithHold = mysqlTable('vat_and_withhold', {
+	vat: decimal('vat', { precision: 10, scale: 2 }).notNull(),
+	withHold: decimal('with_hold', { precision: 10, scale: 2 }).notNull()
+});
+
 export const transactions = mysqlTable('transactions', {
 	id: int('id').primaryKey().autoincrement(),
 	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),

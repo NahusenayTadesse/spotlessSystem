@@ -13,7 +13,8 @@ import {
 	siteContacts,
 	siteContracts,
 	services,
-	siteMonthlyPayments
+	siteMonthlyPayments,
+	vatAndWithHold
 } from '$lib/server/db/schema';
 import { eq, desc, sql, count } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
@@ -41,12 +42,17 @@ export const load: PageServerLoad = async ({ params }) => {
 		.where(eq(siteContracts.id, Number(contractId)))
 		.then((result) => result[0]);
 
+	const vats = await db
+		.select()
+		.from(vatAndWithHold)
+		.then((rows) => rows[0]);
 	const paymentMethodsList = await paymentMethods();
 
 	return {
 		form,
 		siteName,
 		editForm,
+		vats,
 		paymentMethods: paymentMethodsList
 	};
 };

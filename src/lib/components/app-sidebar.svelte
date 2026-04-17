@@ -23,6 +23,7 @@
 		Loader,
 		CircleCheckBig,
 		OctagonMinus,
+		Coins,
 		TreePalm
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
@@ -115,7 +116,12 @@
 
 				{ title: 'Tax Types', url: '/dashboard/salary/tax-types', icon: Banknote },
 				{ title: 'Overtime Types', url: '/dashboard/salary/overtime-types', icon: Banknote },
-				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown }
+				{ title: 'Pension', url: '/dashboard/salary/pensions', icon: BanknoteArrowDown },
+				{
+					title: 'Vat and Withhold',
+					url: '/dashboard/salary/vat-withhold',
+					icon: Coins
+				}
 			]
 		},
 		{
