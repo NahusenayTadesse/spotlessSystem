@@ -7,15 +7,8 @@ export const add = z.object({
 	paymentMethod: z.number('Payment Method is required'),
 
 	paymentRequestFile: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.optional(),
 
 	penaltyAmount: z.number('Penalty amount is required').default(0),
 
@@ -34,27 +27,11 @@ export const add = z.object({
 	withholdAmount: z.number('Withhold amount is required'),
 
 	withholdFile: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.optional(),
 
 	withholdInvoiceNumber: z.string('Withhold invoice number is required'),
-	receiptFile: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+	receiptFile: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').optional(),
 
 	month: z.string('Month is required'),
 	date: z.string('Payment Date is required')

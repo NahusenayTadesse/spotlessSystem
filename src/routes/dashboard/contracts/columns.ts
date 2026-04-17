@@ -19,6 +19,20 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'Contract Page',
+		header: 'Contract Page',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.id + '/payment-history',
+				name: row.original.site + ': ' + row.original.service + ': ' + row.original.monthlyAmount,
+
+				link: '/dashboard/contracts'
+			});
+		}
+	},
+
+	{
 		accessorKey: 'site',
 		header: 'Site',
 		sortable: true,
@@ -33,13 +47,38 @@ export const columns = [
 		}
 	},
 	{
-		accessorKey: 'contractYear',
+		accessorKey: 'service',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Contract Year',
+				name: 'Service',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true
+	},
+	{
+		accessorKey: 'totalMonths',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Contract Length',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return row.original.totalMonths === 1 ? '1 month' : row.original.totalMonths + ' months';
+		}
+	},
+
+	{
+		accessorKey: 'daysRemaining',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Days Remaining Until End',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => {
+			return row.original.totalMonths === 1 ? '1 days' : row.original.daysRemaining + ' days';
+		}
 	},
 	{
 		accessorKey: 'paymentHistory',
@@ -84,16 +123,6 @@ export const columns = [
 				target: '_blank'
 			});
 		}
-	},
-
-	{
-		accessorKey: 'service',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Service',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
 	},
 
 	{

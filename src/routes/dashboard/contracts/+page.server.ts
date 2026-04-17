@@ -54,6 +54,9 @@ export const load: PageServerLoad = async () => {
 			serviceId: siteContracts.serviceId,
 			startDate: siteContracts.startDate,
 			endDate: siteContracts.endDate,
+			totalMonths: sql<number>`TIMESTAMPDIFF(MONTH, ${siteContracts.startDate}, ${siteContracts.endDate})`,
+			// 2. Days remaining from today until endDate
+			daysRemaining: sql<number>`DATEDIFF(${siteContracts.endDate}, NOW())`,
 			monthlyAmount: siteContracts.monthlyAmount,
 			contractYear: siteContracts.contractYear,
 			signedDate: siteContracts.contractDate,

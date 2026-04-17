@@ -70,7 +70,21 @@
 					name: 'Contact Detail',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(DataTableLinks, {
+					id: '',
+					name: row.original?.contactDetail,
+					link:
+						row.original?.contactType === 'phone'
+							? `tel:${row.original?.contactDetail}`
+							: row.original?.contactType === 'email'
+								? `mailto:${row.original?.contactDetail}`
+								: row.original?.contactDetail,
+					target: '_blank'
+				});
+			}
 		},
 		{
 			accessorKey: 'status',
