@@ -62,6 +62,9 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			addedBy: user.name,
 			updatedBy: user.name,
 			leavesLeft: employee.leavesLeft,
+			pension: employee.existingPensionCard,
+			signiture: employee.signiture,
+			pensionCard: employee.pensionCard,
 			terminationDate: employee.terminationDate,
 			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`
 		})

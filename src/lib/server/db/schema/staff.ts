@@ -114,6 +114,8 @@ export const employee = mysqlTable(
 		existingPensionCard: boolean().default(false),
 		address: int('address').references(() => address.id),
 		leavesLeft: int('leaves_left').notNull().default(0),
+		signiture: varchar('signiture', { length: 255 }),
+		pensionCard: varchar('pension_card', { length: 255 }),
 
 		...secureFields
 	},

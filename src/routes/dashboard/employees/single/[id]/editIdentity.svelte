@@ -20,13 +20,19 @@
 		image,
 		govtIdPhoto,
 		gender,
-		birthDate
+		birthDate,
+		signature,
+		pension,
+		pensionCard
 	}: {
 		data: SuperValidated<Infer<EditIdentity>>;
 		firstName: string;
 		fatherName: string;
 		grandFatherName: string;
 		image: string;
+		pension: boolean;
+		pensionCard?: string;
+		signature?: string;
 		govtIdPhoto: string;
 		gender: string;
 		birthDate: Date;
@@ -52,6 +58,9 @@
 	$form.grandFatherName = grandFatherName;
 	$form.gender = gender;
 	$form.birthDate = birthDate.toLocaleDateString('en-CA');
+	let image1 = signature ?? '';
+	$form.existingPensionCard = pension;
+	let image2 = pensionCard ?? '';
 </script>
 
 <DialogComp title="Edit" variant="default" IconComp={SquarePen}>
@@ -101,6 +110,41 @@
 			required={false}
 			image={govtIdPhoto ? govtIdPhoto : ''}
 		/>
+
+		<InputComp
+			label="Signature"
+			name="signature"
+			{form}
+			{errors}
+			type="file"
+			image={image1}
+			placeholder="Upload a signature of Employee with good Quality, Max 10MB"
+		/>
+
+		<InputComp
+			label="Existing Pension Card"
+			name="existingPensionCard"
+			placeholder="Enter TIN"
+			{form}
+			{errors}
+			type="select"
+			items={[
+				{ value: false, name: 'No' },
+				{ value: true, name: 'Yes' }
+			]}
+		/>
+
+		{#if $form.existingPensionCard === true}
+			<InputComp
+				label="Pension Card Image or PDF"
+				name="pensionCard"
+				{form}
+				{errors}
+				type="file"
+				image={image2}
+				placeholder="Upload a recent photo of Pension Card"
+			/>
+		{/if}
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">

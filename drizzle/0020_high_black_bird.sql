@@ -1,0 +1,1 @@
+ALTER TABLE `employee` MODIFY COLUMN `signiture` varchar(255);

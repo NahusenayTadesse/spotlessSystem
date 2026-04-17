@@ -32,6 +32,12 @@
 		variant={page.url.pathname.startsWith('/dashboard/salary/add-overtime') ? 'default' : 'outline'}
 		><Sheet /> All Overtime</Button
 	>
+	<Button
+		href="/dashboard/salary/add-deductions"
+		variant={page.url.pathname.startsWith('/dashboard/salary/add-deduction')
+			? 'default'
+			: 'outline'}><Sheet /> All Deductions</Button
+	>
 
 	<Button
 		href="/dashboard/salary/tax-types"

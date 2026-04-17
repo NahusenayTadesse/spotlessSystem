@@ -147,7 +147,7 @@
 		class="w-full!"
 		photo={data.staffMember?.photo}
 	>
-		<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
+		<div class="mt-4 flex w-full flex-row flex-wrap items-start justify-start gap-2 pl-4">
 			{#if data?.staffMember.isActive}
 				<Terminate
 					data={data.terminateForm}
@@ -183,6 +183,9 @@
 						birthDate={data?.staffMember?.birthDate}
 						image={data?.staffMember?.photo}
 						govtIdPhoto={data?.staffMember?.govId}
+						signature={data?.staffMember?.signiture}
+						pension={data?.staffMember?.pension}
+						pensionCard={data?.staffMember?.pensionCard}
 					/>
 				{/snippet}
 				<SingleTable singleTable={identity} />
@@ -196,7 +199,7 @@
 							rel="noopener noreferrer"
 						>
 							<Eye class="mr-2" size={16} />
-							View {data.staffMember.firstName}'s Photo
+							View Photo
 						</Button>
 					{:else}
 						<Button variant="ghost" disabled class="cursor-not-allowed">
@@ -213,12 +216,37 @@
 							rel="noopener noreferrer"
 							aria-label="View {data?.staffMember?.firstName}'s Government Id(FIDA) in a new tab"
 						>
-							<Eye /> View {data?.staffMember?.firstName}'s ID
+							<Eye /> View ID
 						</Button>
 					{:else}
 						<Button variant="ghost" disabled class="cursor-not-allowed">
 							<FileX class="mr-2" size={16} />
 							No Id Added
+						</Button>
+					{/if}
+
+					{#if data?.staffMember?.signiture}
+						<Button
+							title="View {data?.staffMember?.firstName}'s Signature"
+							variant="outline"
+							href="/dashboard/files/{data?.staffMember?.signiture}"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="View {data?.staffMember?.firstName}'s Signature in a new tab"
+						>
+							<Eye /> View Signature
+						</Button>
+					{/if}
+					{#if data?.staffMember?.pensionCard}
+						<Button
+							title="View {data?.staffMember?.firstName}'s Pension Card"
+							variant="outline"
+							href="/dashboard/files/{data?.staffMember?.pensionCard}"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="View {data?.staffMember?.firstName}'s Pension Card in a new tab"
+						>
+							<Eye /> View Pension Card
 						</Button>
 					{/if}
 				</div>

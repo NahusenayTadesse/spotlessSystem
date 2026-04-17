@@ -51,28 +51,11 @@ export const editIdentity = z.object({
 		}
 	),
 	nationality: z.string('Nationality is requried').default('Ethiopia'),
-	photo: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
-		.optional(),
-	govtId: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
-		.optional()
+	photo: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').optional(),
+	govtId: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').optional(),
+	signature: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').optional(),
+	pensionCard: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').optional(),
+	existingPensionCard: z.boolean().default(false)
 });
 export type EditIdentity = z.infer<typeof editIdentity>;
 

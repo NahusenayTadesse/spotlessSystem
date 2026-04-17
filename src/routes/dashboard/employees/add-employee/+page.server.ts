@@ -93,7 +93,9 @@ export const actions: Actions = {
 			officeCommission,
 			otherSubcity,
 			percentage,
-			position
+			position,
+			signature,
+			pensionCard
 		} = form.data;
 
 		// 1. Duplicate Check
@@ -181,6 +183,21 @@ export const actions: Actions = {
 				.update(employee)
 				.set({ idNo: generatedIdNo, address: addressId.id })
 				.where(eq(employee.id, staffMember.id));
+
+			if (signature) {
+				const signatureName = await saveUploadedFile(signature);
+				await tx
+					.update(employee)
+					.set({ signiture: signatureName })
+					.where(eq(employee.id, staffMember.id));
+			}
+			if (pensionCard) {
+				const pensionCardName = await saveUploadedFile(pensionCard);
+				await tx
+					.update(employee)
+					.set({ pensionCard: pensionCardName })
+					.where(eq(employee.id, staffMember.id));
+			}
 
 			// Insert salary
 			await tx.insert(salaries).values({

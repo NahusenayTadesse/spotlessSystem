@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentSchema';
+import { Sigma } from '@lucide/svelte';
 export const add = z.object({
 	name: z.string().min(2, 'Name is too short').max(50),
 	fatherName: z.string().min(2, 'Father name is too short').max(50),
@@ -64,26 +65,16 @@ export const add = z.object({
 	housingAllowance: z.coerce
 		.number('Housing Allowance is required ')
 		.min(0, 'Housing Allowance cannot be negative'),
-	photo: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
-	govtId: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+	photo: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').max(10000000),
+	govtId: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').max(10000000),
+	signature: z
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10000000)
+		.optional(),
+	pensionCard: z
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10000000)
+		.optional(),
 
 	hireDate: z.coerce.string('Hired date is required'),
 

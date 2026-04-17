@@ -294,7 +294,18 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const { firstName, fatherName, grandFatherName, gender, birthDate, photo, govtId } = form.data;
+		const {
+			firstName,
+			fatherName,
+			grandFatherName,
+			gender,
+			birthDate,
+			photo,
+			govtId,
+			signature,
+			existingPensionCard,
+			pensionCard
+		} = form.data;
 
 		try {
 			if (!id) {
@@ -322,6 +333,8 @@ export const actions: Actions = {
 
 				const newPhoto = await resolveFile(photo, existing.photo);
 				const newGovtId = await resolveFile(govtId, existing.govtId);
+				const newSignature = await resolveFile(signature, existing.signiture);
+				const newPensionCard = await resolveFile(pensionCard, existing.pensionCard);
 				await tx
 					.update(employee)
 					.set({
@@ -332,6 +345,9 @@ export const actions: Actions = {
 						photo: newPhoto,
 						govtId: newGovtId,
 						birthDate: new Date(birthDate),
+						existingPensionCard,
+						pensionCard: newPensionCard,
+						signiture: newSignature,
 						updatedBy: locals?.user?.id
 					})
 					.where(eq(employee.id, Number(id)));

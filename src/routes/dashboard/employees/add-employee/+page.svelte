@@ -251,6 +251,14 @@
 					required
 					placeholder="Upload a recent photo of Employee 4 X 4 with good Quality, Max 10MB"
 				/>
+				<Input
+					label="Signature"
+					name="signature"
+					{form}
+					{errors}
+					type="file"
+					placeholder="Upload a signature of Employee with good Quality, Max 10MB"
+				/>
 
 				<Input
 					label="Pension Card"
@@ -264,6 +272,17 @@
 						{ value: true, name: 'Yes' }
 					]}
 				/>
+
+				{#if $form.existingPensionCard === true}
+					<Input
+						label="Pension Card Image or PDF"
+						name="pensionCard"
+						{form}
+						{errors}
+						type="file"
+						placeholder="Upload a recent photo of Pension Card"
+					/>
+				{/if}
 			</div>
 		</section>
 
