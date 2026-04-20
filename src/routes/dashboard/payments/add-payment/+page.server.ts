@@ -13,6 +13,7 @@ import {
 	siteContacts,
 	siteContracts,
 	services,
+	vatAndWithHold,
 	siteMonthlyPayments
 } from '$lib/server/db/schema';
 import { eq, desc, sql, count } from 'drizzle-orm';
@@ -33,7 +34,8 @@ export const load: PageServerLoad = async () => {
 	const contractList = await db
 		.select({
 			value: siteContracts.id,
-			name: sql<string>`TRIM(CONCAT(COALESCE(${site.name}, ''), ' (Service: ', ${services.name}, ', ', ${siteContracts.monthlyAmount}, ')'))`
+			name: sql<string>`TRIM(CONCAT(COALESCE(${site.name}, ''), ' (Service: ', ${services.name}, ', ', ${siteContracts.monthlyAmount}, ')'))`,
+			monthlyAmount: siteContracts.monthlyAmount
 		})
 		.from(siteContracts)
 		.leftJoin(services, eq(siteContracts.serviceId, services.id))
@@ -42,9 +44,15 @@ export const load: PageServerLoad = async () => {
 
 	const paymentMethodsList = await paymentMethods();
 
+	const vats = await db
+		.select()
+		.from(vatAndWithHold)
+		.then((rows) => rows[0]);
+
 	return {
 		form,
 		editForm,
+		vats,
 		contractList,
 		paymentMethods: paymentMethodsList
 	};
@@ -77,6 +85,7 @@ export const actions: Actions = {
 				paymentMethod,
 				beforeVat,
 				vat,
+				requestChangeReason,
 				withholdAmount,
 				withholdFile,
 				withholdInvoiceNumber,
@@ -107,6 +116,7 @@ export const actions: Actions = {
 					paymentRequestFile: paymentRequestFileUrl,
 					penaltyAmount,
 					fsNumber,
+					requestChangeReason,
 					invoiceNumber,
 					requestAmount,
 					paymentAmount,

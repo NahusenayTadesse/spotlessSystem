@@ -50,13 +50,16 @@ export const load: PageServerLoad = async ({ params }) => {
 	const form = await superValidate(
 		{
 			vat: Number(vats.vat),
-			withholdAmount: Number(vats.withHold),
+			withholdAmount: Number(siteName.monthlyAmount) * (Number(vats.withHold) / 100),
 			requestAmount: Number(siteName.monthlyAmount),
 			beforeVat:
 				Number(siteName.monthlyAmount) -
 				(Number(vats.withHold) / 100) * Number(siteName.monthlyAmount),
 			penaltyAmount: 0,
-			paymentAmount: Number(siteName.monthlyAmount) - Number(vats.vat)
+			paymentAmount:
+				Number(siteName.monthlyAmount) -
+				Number(siteName.monthlyAmount) * (Number(vats.vat) / 100) -
+				Number(siteName.monthlyAmount) * (Number(vats.withHold) / 100)
 		}, // Added missing closing brace here
 		zod4(add),
 		{ errors: false }

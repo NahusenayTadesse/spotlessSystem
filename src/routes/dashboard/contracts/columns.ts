@@ -31,7 +31,20 @@ export const columns = [
 			});
 		}
 	},
-
+	{
+		accessorKey: 'addPayment',
+		header: 'Add Payment Collection',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.status ? row.original.id : '',
+				name: 'Add Payment Collection',
+				link: '/dashboard/contracts',
+				IconComp: CirclePlus,
+				target: '_blank'
+			});
+		}
+	},
 	{
 		accessorKey: 'site',
 		header: 'Site',
@@ -90,21 +103,6 @@ export const columns = [
 				name: 'Payment History',
 				IconComp: History,
 				link: '/dashboard/contracts',
-				target: '_blank'
-			});
-		}
-	},
-
-	{
-		accessorKey: 'addPayment',
-		header: 'Add Payment Collection',
-		sortable: true,
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
-				id: row.original.status ? row.original.id : '',
-				name: 'Add Payment Collection',
-				link: '/dashboard/contracts',
-				IconComp: CirclePlus,
 				target: '_blank'
 			});
 		}

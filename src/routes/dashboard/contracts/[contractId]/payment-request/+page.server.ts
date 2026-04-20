@@ -9,9 +9,13 @@ import {
 	site,
 	customers,
 	siteContracts,
-	paymentMethods
+	employee,
+	vatAndWithHold,
+	employmentStatuses,
+	paymentMethods,
+	employeeTermination
 } from '$lib/server/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, and, isNull, sql, desc } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from '../$types';
 
 import { superValidate } from 'sveltekit-superforms';
@@ -40,6 +44,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			commissionConsidered: siteContracts.commissionConsidered,
 			status: siteContracts.isActive,
 			signingOfficer: siteContracts.signingOfficer,
+
 			addedBy: user.name,
 			addedById: user.id
 		})
@@ -63,6 +68,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			month: siteMonthlyPayments.month,
 			year: siteMonthlyPayments.year,
 			date: siteMonthlyPayments.date,
+
 			requestAmount: siteMonthlyPayments.requestAmount,
 			paymentAmount: siteMonthlyPayments.paymentAmount,
 			penaltyAmount: siteMonthlyPayments.penaltyAmount,
@@ -83,15 +89,41 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		})
 		.from(siteMonthlyPayments)
 		.innerJoin(siteContracts, eq(siteMonthlyPayments.contractId, siteContracts.id))
+
 		.innerJoin(transactions, eq(siteMonthlyPayments.transactionId, transactions.id))
 		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
 		.leftJoin(user, eq(siteMonthlyPayments.createdBy, user.id))
 		.where(eq(siteMonthlyPayments.contractId, Number(contractId)))
 		.orderBy(desc(siteMonthlyPayments.date));
 
+	const employees = await db
+		.select({
+			value: employee.id,
+			name: sql<string>`CONCAT(${employee.name}, ' ', ${employee.fatherName})`,
+			signiture: employee.signiture
+		})
+		.from(employee)
+		.leftJoin(employmentStatuses, eq(employmentStatuses.id, employee.employmentStatus))
+		.leftJoin(employeeTermination, eq(employeeTermination.staffId, employee.id))
+		.where(
+			and(
+				eq(employee.isActive, true),
+				eq(employmentStatuses.removeFromLists, false),
+				isNull(employeeTermination.staffId),
+				eq(employee.departmentId, 8)
+			)
+		);
+
+	const vats = await db
+		.select()
+		.from(vatAndWithHold)
+		.then((rows) => rows[0]);
+
 	return {
 		payments,
+		employees,
 		serviceList,
-		contracts
+		contracts,
+		vats
 	};
 };

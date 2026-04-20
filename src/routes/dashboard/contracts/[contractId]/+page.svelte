@@ -24,8 +24,12 @@
 			validators: zod4Client(add),
 			onChange(event) {
 				if (event.target) {
+					$form.paymentAmount =
+						$form.beforeVat -
+						$form.penaltyAmount -
+						($form.requestAmount * $form.withholdAmount) / 100;
+
 					$form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
-					$form.paymentAmount = $form.requestAmount - $form.penaltyAmount - $form.withholdAmount;
 				}
 			}
 		}
@@ -151,6 +155,7 @@
 					{form}
 					{errors}
 					required
+					disabled
 				/>
 				<div>
 					<InputComp label="VAT" name="vat" type="hidden" {form} {errors} required />
@@ -162,13 +167,14 @@
 					<InputComp
 						label="Withhold Amount"
 						name="withholdAmount"
-						type="hidden"
+						type="number"
 						{form}
 						{errors}
 						required
+						disabled
 					/>
 
-					<Input disabled bind:value={$form.withholdAmount} />
+					<!-- <Input disabled bind:value={$form.withholdAmount} /> -->
 
 					<Button onclick={toggleWithhold} variant={withHold ? 'destructive' : 'default'}>
 						<FileIcon />
@@ -176,14 +182,6 @@
 					</Button>
 				</div>
 
-				<!-- <InputComp
-					label="Withhold Amount"
-					name="withholdAmount"
-					type="number"
-					{form}
-					{errors}
-					required
-				/> -->
 				<InputComp
 					label="Penalty Amount"
 					name="penaltyAmount"
@@ -192,18 +190,16 @@
 					{errors}
 					required
 				/>
-				<div>
-					<InputComp
-						label="Payment Amount"
-						name="paymentAmount"
-						type="hidden"
-						{form}
-						{errors}
-						required
-					/>
 
-					<Input disabled bind:value={$form.paymentAmount} />
-				</div>
+				<InputComp
+					label="Payment Amount"
+					name="paymentAmount"
+					type="number"
+					{form}
+					{errors}
+					disabled
+					required
+				/>
 
 				<InputComp
 					label="Bank Name"

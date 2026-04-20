@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snapshot } from '@sveltejs/kit';
-	import { Plus } from '@lucide/svelte';
+	import { Plus, FilePlus, FileMinus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { add } from './schema';
@@ -12,6 +12,7 @@
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 
 	let { data } = $props();
+
 	const { form, errors, enhance, message, delayed, capture, restore, allErrors } = superForm(
 		data.form,
 		{
@@ -20,17 +21,54 @@
 					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 				});
 			},
-
+			onUpdated({ form }) {
+				if (form.valid) {
+					// Successful post! Do some more client-side stuff,
+					// like showing a toast notification.
+					toast.success(form.message.text);
+				} else {
+					toast.error(form.message.text);
+				}
+			},
 			validators: zod4Client(add),
 			onChange(event) {
-				if (event.target) {
+				if (event.paths.includes('contract')) {
+					$form.requestAmount = Number(
+						data?.contractList.find((c) => c.value === $form.contract)?.monthlyAmount
+					);
+					$form.withholdAmount = ($form.requestAmount * Number(data.vats.withHold)) / 100;
 					$form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
-					$form.withholdAmount = $form.beforeVat * 0.03;
+				}
+				if (event.paths) {
+					$form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
+					$form.paymentAmount =
+						$form.requestAmount -
+						$form.penaltyAmount -
+						($form.requestAmount * $form.withholdAmount) / 100;
 				}
 			}
 		}
 	);
 
+	$form.vat = Number(data.vats.vat);
+
+	// $form.requestAmount = Number(data?.siteName.monthlyAmount);
+
+	// $form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
+
+	let withHold = $state(true);
+	let FileIcon = $derived(withHold ? FileMinus : FilePlus);
+
+	$form.paymentAmount = $form.requestAmount - $form.penaltyAmount - $form.withholdAmount;
+
+	function toggleWithhold() {
+		withHold = !withHold;
+		if (withHold) $form.withholdAmount = ($form.requestAmount * Number(data.vats.withHold)) / 100;
+		else {
+			$form.withholdAmount = 0;
+		}
+	}
+	$form.withholdAmount = ($form.beforeVat * Number(data.vats.withHold)) / 100;
 	export const snapshot: Snapshot = { capture, restore };
 	import { toast } from 'svelte-sonner';
 	$effect(() => {
@@ -111,35 +149,59 @@
 			<h4>Financial Breakdown</h4>
 
 			<div class="{rowStyle} grid-cols-2!">
-				<InputComp
-					label="Requested Amount"
-					name="requestAmount"
-					type="number"
-					{form}
-					{errors}
-					required
-				/>
+				<div>
+					<InputComp
+						label="Requested Amount"
+						name="requestAmount"
+						type="number"
+						{form}
+						{errors}
+						required
+					/>
+
+					{#if $form.requestAmount !== Number(data?.contractList?.find((c) => c.value === $form.contract)?.monthlyAmount)}
+						<InputComp
+							label="Requested Change Amount"
+							name="requestChangeReason"
+							type="textarea"
+							{form}
+							{errors}
+							required
+						/>
+					{/if}
+				</div>
 				<InputComp
 					label="Before VAT Amount"
 					name="beforeVat"
 					type="number"
 					{form}
 					{errors}
+					disabled
 					required
 				/>
-				<InputComp label="VAT" name="vat" type="number" {form} {errors} required />
+				<InputComp label="VAT" disabled name="vat" type="number" {form} {errors} required />
 
-				<InputComp
-					label="Withhold Amount"
-					name="withholdAmount"
-					type="number"
-					{form}
-					{errors}
-					required
-				/>
+				<div>
+					<InputComp
+						label="Withhold Amount"
+						name="withholdAmount"
+						type="number"
+						{form}
+						{errors}
+						required
+						disabled
+					/>
+
+					<!-- <Input disabled bind:value={$form.withholdAmount} /> -->
+
+					<Button onclick={toggleWithhold} variant={withHold ? 'destructive' : 'default'}>
+						<FileIcon />
+						{withHold ? 'No Withholding' : 'Withholding Applied'}
+					</Button>
+				</div>
 				<InputComp
 					label="Penalty Amount"
-					name="penalityAmount"
+					name="penaltyAmount"
 					type="number"
 					{form}
 					{errors}
@@ -149,6 +211,7 @@
 					label="Payment Amount"
 					name="paymentAmount"
 					type="number"
+					disabled
 					{form}
 					{errors}
 					required

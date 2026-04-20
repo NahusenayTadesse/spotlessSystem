@@ -8,15 +8,8 @@ export const add = z.object({
 	paymentMethod: z.number('Payment Method is required'),
 
 	paymentRequestFile: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.optional(),
 
 	penaltyAmount: z.number('Penalty amount is required').default(0),
 
@@ -25,37 +18,22 @@ export const add = z.object({
 	invoiceNumber: z.string('Invoice number is required').min(1, 'Invoice number cannot be empty'),
 
 	requestAmount: z.number('Request amount is required'),
+	requestChangeReason: z.string().optional(),
 
 	paymentAmount: z.number('Payment amount is required'),
 
 	beforeVat: z.number('Amount before VAT is required'),
 
-	vat: z.number('VAT amount is required').default(15),
+	vat: z.number('VAT amount is required'),
 
 	withholdAmount: z.number('Withhold amount is required'),
 
 	withholdFile: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.optional(),
 
-	withholdInvoiceNumber: z.string('Withhold invoice number is required'),
-	receiptFile: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+	withholdInvoiceNumber: z.string('Withhold invoice number is required').optional(),
+	receiptFile: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').optional(),
 
 	month: z.string('Month is required'),
 	date: z.string('Payment Date is required')
