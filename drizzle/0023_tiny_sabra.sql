@@ -1,0 +1,1 @@
+ALTER TABLE `site_monthly_payments` ADD `request_change_amount` varchar(255);

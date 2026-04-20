@@ -4,6 +4,7 @@ import Statuses from '$lib/components/Table/statuses.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { formatEthiopianDate, formatETB } from '$lib/global.svelte';
+import BigText from '$lib/components/Table/bigText.svelte';
 
 export const columns = [
 	{
@@ -132,6 +133,12 @@ export const columns = [
 				name: 'Bank or Payment Method',
 				onclick: column.getToggleSortingHandler()
 			})
+	},
+
+	{
+		accessorKey: 'requestChangeReason',
+		header: 'Request Change Reason',
+		cell: ({ row }) => renderComponent(BigText, { text: row.original.requestChangeReason ?? '' })
 	},
 
 	{

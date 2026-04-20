@@ -43,7 +43,6 @@ export const load: PageServerLoad = async () => {
 
 	const subcityList = await subcities();
 	const serviceList = await service();
-	const customerListing = await customerList();
 
 	let contracts = await db
 		.select({
@@ -67,23 +66,31 @@ export const load: PageServerLoad = async () => {
 			addedBy: user.name,
 			addedById: user.id,
 			expectedPayments: sql<number>`
-               GREATEST(0, TIMESTAMPDIFF(MONTH, ${siteContracts.startDate}, CURRENT_DATE()) + 1)
-           `.as('expected'),
+        GREATEST(0,
+          (PERIOD_DIFF(
+            EXTRACT(YEAR_MONTH FROM ${siteContracts.endDate}),
+            EXTRACT(YEAR_MONTH FROM ${siteContracts.startDate})
+          ) + 1) - COUNT(${siteMonthlyPayments.id})
+        )`,
 
-			// 2. Count Actual Payments made for the active contract
+			// 2. Actual: Count of payments in the payment table
 			actualPayments: sql<number>`
-               (SELECT COUNT(*)
-                FROM ${siteMonthlyPayments}
-                WHERE ${siteMonthlyPayments.contractId} = ${siteContracts.id})
-           `.as('actual'),
+            (SELECT COUNT(*)
+             FROM ${siteMonthlyPayments}
+             WHERE ${siteMonthlyPayments.contractId} = ${siteContracts.id})
+        `.as('actual'),
 
-			// 3. The final "Missing" count
+			// 3. Missing: Expected minus Actual
+			// We wrap this in GREATEST(0, ...) to avoid negative numbers if someone overpays
 			missingPayments: sql<number>`
-               GREATEST(0,
-                   (TIMESTAMPDIFF(MONTH, ${siteContracts.startDate}, CURRENT_DATE()) + 1) -
-                   (SELECT COUNT(*) FROM ${siteMonthlyPayments} WHERE ${siteMonthlyPayments.contractId} = ${siteContracts.id})
-               )
-           `
+  (SELECT GREATEST(0,
+    (PERIOD_DIFF(
+      EXTRACT(YEAR_MONTH FROM LEAST(${siteContracts.endDate}, CURDATE())),
+      EXTRACT(YEAR_MONTH FROM ${siteContracts.startDate})
+    ) + 1) - COUNT(*)
+  ) FROM ${siteMonthlyPayments}
+    WHERE ${siteMonthlyPayments.contractId} = ${siteContracts.id})
+`.as('missing')
 		})
 		.from(siteContracts)
 		.leftJoin(services, eq(siteContracts.serviceId, services.id))
@@ -91,6 +98,14 @@ export const load: PageServerLoad = async () => {
 		.leftJoin(user, eq(siteContracts.createdBy, user.id))
 		.leftJoin(siteMonthlyPayments, eq(siteContracts.id, siteMonthlyPayments.contractId))
 		.where(eq(siteContracts.isActive, true))
+		.groupBy(
+			siteContracts.id,
+			services.name,
+			site.name,
+			user.name,
+			user.id
+			// Note: In many SQL modes, you must list every non-aggregated column here
+		)
 		.orderBy(desc(siteContracts.contractDate));
 
 	return {

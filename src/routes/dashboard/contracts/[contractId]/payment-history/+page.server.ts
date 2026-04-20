@@ -48,6 +48,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			commissionConsidered: siteContracts.commissionConsidered,
 			status: siteContracts.isActive,
 			signingOfficer: siteContracts.signingOfficer,
+
 			addedBy: user.name,
 			addedById: user.id
 		})
@@ -74,6 +75,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			penaltyAmount: siteMonthlyPayments.penaltyAmount,
 			vat: siteMonthlyPayments.vat,
 			withholdAmount: siteMonthlyPayments.withholdAmount,
+			requestChangeReason: siteMonthlyPayments.requestChangeReason,
 			invoiceNumber: siteMonthlyPayments.invoiceNumber,
 			fsNumber: siteMonthlyPayments.fsNumber,
 			withholdInvoiceNumber: siteMonthlyPayments.withholdInvoiceNumber,

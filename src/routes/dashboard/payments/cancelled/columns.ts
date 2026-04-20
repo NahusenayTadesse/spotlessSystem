@@ -9,6 +9,7 @@ import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import type { EditContract } from './schema';
 import Edit from './editContract.svelte';
 import { Eye } from '@lucide/svelte';
+import BigText from '$lib/components/Table/bigText.svelte';
 
 export const columns = [
 	{
@@ -186,6 +187,12 @@ export const columns = [
 				name: 'Bank or Payment Method',
 				onclick: column.getToggleSortingHandler()
 			})
+	},
+
+	{
+		accessorKey: 'requestChangeReason',
+		header: 'Request Change Reason',
+		cell: ({ row }) => renderComponent(BigText, { text: row.original.requestChangeReason ?? '' })
 	},
 
 	{

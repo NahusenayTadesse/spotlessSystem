@@ -97,7 +97,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			approvedBy: approver.name,
 			approvedById: approver.id,
 			addedBy: creator.name,
-			addedById: creator.id
+			addedById: creator.id,
+			requestChangeReason: siteMonthlyPayments.requestChangeReason
 		})
 		.from(siteMonthlyPayments)
 		.innerJoin(siteContracts, eq(siteMonthlyPayments.contractId, siteContracts.id))

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snapshot } from '@sveltejs/kit';
-	import { Pen, Plus, X } from '@lucide/svelte';
+	import { Pen, Plus, X, FileMinus, FilePlus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { add } from './schema';
@@ -25,7 +25,7 @@
 			onChange(event) {
 				if (event.target) {
 					$form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
-					$form.withholdAmount = $form.beforeVat * 0.03;
+					$form.paymentAmount = $form.requestAmount - $form.penaltyAmount - $form.withholdAmount;
 				}
 			}
 		}
@@ -46,18 +46,29 @@
 
 	const sectionStyle = `flex flex-col gap-4 my-4`;
 	const rowStyle = `grid grid-cols-3 mt-4  gap-4`;
-	$form.vat = data.vats.vat;
+	// $form.vat = Number(data.vats.vat);
 
-	$form.requestAmount = Number(data?.siteName.monthlyAmount);
-	$form.penalityAmount = 0;
-	$form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
-	$form.withholdAmount = ($form.beforeVat * Number(data.vats.withhold)) / 100;
+	// $form.requestAmount = Number(data?.siteName.monthlyAmount);
 
-	let vat = $state(false);
+	// $form.beforeVat = $form.requestAmount - $form.requestAmount * ($form.vat / 100);
+
+	let withHold = $state(true);
+	let FileIcon = $derived(withHold ? FileMinus : FilePlus);
+	// $form.withholdAmount = ($form.beforeVat * Number(data.vats.withHold)) / 100;
+
+	// $form.paymentAmount = $form.requestAmount - $form.penaltyAmount - $form.withholdAmount;
+
+	function toggleWithhold() {
+		withHold = !withHold;
+		if (withHold) $form.withholdAmount = ($form.beforeVat * Number(data.vats.withHold)) / 100;
+		else {
+			$form.withholdAmount = 0;
+		}
+	}
 </script>
 
 <svelte:head>
-	<title>Add New Employee</title>
+	<title>Add New Payment Collection</title>
 </svelte:head>
 
 <FormCard title="Add Payment Collection for {data?.siteName.name}" className="lg:w-full!">
@@ -111,14 +122,27 @@
 			<h4>Financial Breakdown</h4>
 
 			<div class="{rowStyle} grid-cols-2!">
-				<InputComp
-					label="Requested Amount"
-					name="requestAmount"
-					type="number"
-					{form}
-					{errors}
-					required
-				/>
+				<div>
+					<InputComp
+						label="Requested Amount"
+						name="requestAmount"
+						type="number"
+						{form}
+						{errors}
+						required
+					/>
+
+					{#if $form.requestAmount !== Number(data?.siteName.monthlyAmount)}
+						<InputComp
+							label="Requested Change Amount"
+							name="requestChangeReason"
+							type="textarea"
+							{form}
+							{errors}
+							required
+						/>
+					{/if}
+				</div>
 
 				<InputComp
 					label="Before VAT Amount"
@@ -134,31 +158,53 @@
 					<Input disabled bind:value={$form.vat} />
 				</div>
 
-				<InputComp
+				<div>
+					<InputComp
+						label="Withhold Amount"
+						name="withholdAmount"
+						type="hidden"
+						{form}
+						{errors}
+						required
+					/>
+
+					<Input disabled bind:value={$form.withholdAmount} />
+
+					<Button onclick={toggleWithhold} variant={withHold ? 'destructive' : 'default'}>
+						<FileIcon />
+						{withHold ? 'No Withholding' : 'Withholding Applied'}
+					</Button>
+				</div>
+
+				<!-- <InputComp
 					label="Withhold Amount"
 					name="withholdAmount"
 					type="number"
 					{form}
 					{errors}
 					required
-				/>
+				/> -->
 				<InputComp
 					label="Penalty Amount"
-					name="penalityAmount"
+					name="penaltyAmount"
 					type="number"
 					{form}
 					{errors}
 					required
 				/>
+				<div>
+					<InputComp
+						label="Payment Amount"
+						name="paymentAmount"
+						type="hidden"
+						{form}
+						{errors}
+						required
+					/>
 
-				<InputComp
-					label="Payment Amount"
-					name="paymentAmount"
-					type="number"
-					{form}
-					{errors}
-					required
-				/>
+					<Input disabled bind:value={$form.paymentAmount} />
+				</div>
+
 				<InputComp
 					label="Bank Name"
 					name="paymentMethod"

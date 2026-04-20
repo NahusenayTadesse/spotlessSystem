@@ -28,7 +28,6 @@ import { add, edit } from './schema';
 import { saveUploadedFile } from '$lib/server/upload';
 
 export const load: PageServerLoad = async ({ params }) => {
-	const form = await superValidate(zod4(add));
 	const editForm = await superValidate(zod4(edit));
 	const { contractId } = params;
 
@@ -47,6 +46,21 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(vatAndWithHold)
 		.then((rows) => rows[0]);
 	const paymentMethodsList = await paymentMethods();
+
+	const form = await superValidate(
+		{
+			vat: Number(vats.vat),
+			withholdAmount: Number(vats.withHold),
+			requestAmount: Number(siteName.monthlyAmount),
+			beforeVat:
+				Number(siteName.monthlyAmount) -
+				(Number(vats.withHold) / 100) * Number(siteName.monthlyAmount),
+			penaltyAmount: 0,
+			paymentAmount: Number(siteName.monthlyAmount) - Number(vats.vat)
+		}, // Added missing closing brace here
+		zod4(add),
+		{ errors: false }
+	);
 
 	return {
 		form,
@@ -80,6 +94,7 @@ export const actions: Actions = {
 				fsNumber,
 				invoiceNumber,
 				requestAmount,
+				requestChangeReason,
 				paymentAmount,
 				paymentMethod,
 				beforeVat,
@@ -117,6 +132,7 @@ export const actions: Actions = {
 					invoiceNumber,
 					requestAmount,
 					paymentAmount,
+					requestChangeReason,
 					beforeVat,
 					vat,
 					withholdAmount,

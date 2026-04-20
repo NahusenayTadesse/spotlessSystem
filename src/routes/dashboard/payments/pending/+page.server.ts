@@ -15,7 +15,6 @@ import { eq, inArray, desc } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from '../$types';
 
 import { superValidate } from 'sveltekit-superforms';
-import { error } from '@sveltejs/kit';
 import { fail, message } from 'sveltekit-superforms';
 import { approveContract, editContract } from './schema';
 import {
@@ -97,7 +96,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			approvedBy: approver.name,
 			approvedById: approver.id,
 			addedBy: creator.name,
-			addedById: creator.id
+			addedById: creator.id,
+			requestChangeReason: siteMonthlyPayments.requestChangeReason
 		})
 		.from(siteMonthlyPayments)
 		.innerJoin(siteContracts, eq(siteMonthlyPayments.contractId, siteContracts.id))

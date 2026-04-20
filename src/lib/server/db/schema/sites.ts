@@ -61,6 +61,7 @@ export const siteMonthlyPayments = mysqlTable('site_monthly_payments', {
 	fsNumber: varchar('fs_number', { length: 255 }).notNull(),
 	invoiceNumber: varchar('invoice_number', { length: 255 }).notNull(),
 	requestAmount: decimal('request_amount', { precision: 10, scale: 2 }).notNull(),
+	requestChangeReason: varchar('request_change_amount', { length: 255 }),
 	paymentAmount: decimal('payment_amount', { precision: 10, scale: 2 }).notNull(),
 	beforeVat: decimal('before_Vat', { precision: 10, scale: 2 }).notNull(),
 	vat: decimal('vat', { precision: 10, scale: 2 }).notNull(),

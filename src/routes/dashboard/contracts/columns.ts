@@ -143,7 +143,7 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) =>
 			renderComponent(Copy, {
-				data: row.original.expectedPayments ? row.original.expectedPayments : '0'
+				data: row.original.expectedPayments ?? '0'
 			})
 	},
 	{
@@ -152,7 +152,7 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) =>
 			renderComponent(Copy, {
-				data: row.original.actualPayments ? row.original.actualPayments : '0'
+				data: row.original.actualPayments ?? '0'
 			})
 	},
 	{
@@ -161,7 +161,7 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) =>
 			renderComponent(Copy, {
-				data: row.original.missingPayments ? row.original.missingPayments : '0'
+				data: row.original.missingPayments ?? '0'
 			})
 	},
 	{
