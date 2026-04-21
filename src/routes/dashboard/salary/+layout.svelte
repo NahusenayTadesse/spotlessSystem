@@ -22,7 +22,7 @@
 	<Button
 		href="/dashboard/salary/add-payroll"
 		variant={page.url.pathname.includes('/dashboard/salary/add-payroll') &&
-		!page.url.pathname.endsWith('sites')
+		!page.url.pathname.includes('sites')
 			? 'default'
 			: 'outline'}><Sheet /> Unpaid Salaries</Button
 	>

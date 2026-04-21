@@ -17,10 +17,9 @@
 	interface OvertimeEntry {
 		id: number;
 		date: string;
-		overtimeType: string;
-		hours: number;
 		total: number;
 		reason: string;
+		descriptin?: string;
 	}
 	import type { Add, Delete, Edit } from './schema';
 	import { fade } from 'svelte/transition';
@@ -34,8 +33,7 @@
 		department,
 		position,
 		site,
-		totalOvertimePay,
-		overtimeTypes
+		totalOvertimePay
 	}: {
 		data: SuperValidated<Infer<Delete>>;
 		editForm: SuperValidated<Infer<Edit>>;
@@ -47,21 +45,20 @@
 		position: string;
 		site: string;
 		totalOvertimePay: number;
-		overtimeTypes: Item[];
 	} = $props();
 
 	const getDistinctTypes = $derived(() => {
-		return [...new Set(overtimeDetails.map((item) => item.overtimeType))];
+		return [...new Set(overtimeDetails.map((item) => item.reason))];
 	});
 
 	const getTotalByType = (type: string) => {
 		return overtimeDetails
-			.filter((entry) => entry.overtimeType === type)
-			.reduce((sum, entry) => sum + Number(entry.total), 0);
+			.filter((entry) => entry.reason === type)
+			.reduce((sum, entry) => sum + entry.total, 0);
 	};
 
 	const filterByType = (type: string) => {
-		return overtimeDetails.filter((entry) => entry.overtimeType === type);
+		return overtimeDetails.filter((entry) => entry.reason === type);
 	};
 
 	// const grandTotal = $derived(overtimeDetails.reduce((sum, entry) => sum + entry.total, 0));
@@ -89,7 +86,7 @@
 			</div>
 			<div class="min-w-0 flex-1 space-y-2">
 				<p class="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-					Overtime Request
+					Deduction History
 				</p>
 				<Dialog.Title class="text-xl leading-tight font-semibold tracking-tight"
 					>{name}</Dialog.Title
@@ -106,7 +103,7 @@
 					</div>
 				</Dialog.Description>
 				<div class="justify-self-end">
-					<AddForm {overtimeTypes} data={addForm} {staffId} />
+					<AddForm data={addForm} {staffId} />
 				</div>
 			</div>
 		</div>
@@ -164,26 +161,29 @@
 												variant="secondary"
 												class="rounded-sm px-1.5 py-0 text-[10px] tracking-wider uppercase"
 											>
-												{entry.overtimeType}
+												{entry.reason}
 											</Badge>
 										</div>
 									</div>
 									<div class="text-right">
 										<p class="text-sm font-bold tabular-nums">{formatETB(entry.total, true)}</p>
-										<p class="mt-0.5 text-xs text-muted-foreground">{entry.hours} hrs</p>
 									</div>
+									{#if entry?.description}
+										<div
+											class="flex items-start gap-2 rounded-b-xl border-t bg-muted/30 px-4 py-2.5"
+										>
+											<MessageSquare class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+											<p class="text-xs leading-relaxed text-muted-foreground">
+												<span class="font-medium text-foreground"
+													>Reason:
+												</span>{entry?.description}
+											</p>
+										</div>
+									{/if}
 								</div>
 
-								{#if entry.reason}
-									<div class="flex items-start gap-2 rounded-b-xl border-t bg-muted/30 px-4 py-2.5">
-										<MessageSquare class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-										<p class="text-xs leading-relaxed text-muted-foreground">
-											<span class="font-medium text-foreground">Reason: </span>{entry.reason}
-										</p>
-									</div>
-								{/if}
 								<div class="flex flex-row flex-wrap gap-2 pb-4 pl-2">
-									<EditForm {overtimeTypes} data={editForm} {staffId} overTimeDetails={entry} />
+									<EditForm data={editForm} {staffId} overTimeDetails={entry} />
 									<DeleteForm {data} id={entry.id} />
 								</div>
 							</div>
@@ -227,28 +227,29 @@
 													variant="secondary"
 													class="rounded-sm px-1.5 py-0 text-[10px] tracking-wider uppercase"
 												>
-													{entry.overtimeType}
+													{entry.reason}
 												</Badge>
 											</div>
 										</div>
 										<div class="text-right">
 											<p class="text-sm font-bold tabular-nums">{formatETB(entry.total, true)}</p>
-											<p class="mt-0.5 text-xs text-muted-foreground">{entry.hours} hrs</p>
 										</div>
+										{#if entry?.description}
+											<div
+												class="flex items-start gap-2 rounded-b-xl border-t bg-muted/30 px-4 py-2.5"
+											>
+												<MessageSquare class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+												<p class="text-xs leading-relaxed text-muted-foreground">
+													<span class="font-medium text-foreground"
+														>Reason:
+													</span>{entry?.description}
+												</p>
+											</div>
+										{/if}
 									</div>
 
-									{#if entry.reason}
-										<div
-											class="flex items-start gap-2 rounded-b-xl border-t bg-muted/30 px-4 py-2.5"
-										>
-											<MessageSquare class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-											<p class="text-xs leading-relaxed text-muted-foreground">
-												<span class="font-medium text-foreground">Reason: </span>{entry.reason}
-											</p>
-										</div>
-									{/if}
 									<div class="flex flex-row flex-wrap gap-2 pb-4 pl-2">
-										<EditForm {overtimeTypes} {staffId} data={editForm} overTimeDetails={entry} />
+										<EditForm {staffId} data={editForm} overTimeDetails={entry} />
 										<DeleteForm {data} id={entry.id} />
 									</div>
 								</div>
