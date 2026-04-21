@@ -31,6 +31,20 @@ export const columns = [
 			});
 		}
 	},
+
+	{
+		accessorKey: 'requestPayment',
+		header: 'Request Payment',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.id + '/payment-request',
+				name: 'Payment Request',
+				IconComp: Printer,
+				link: '/dashboard/contracts'
+			});
+		}
+	},
 	{
 		accessorKey: 'addPayment',
 		header: 'Add Payment Collection',
@@ -40,8 +54,21 @@ export const columns = [
 				id: row.original.status ? row.original.id : '',
 				name: 'Add Payment Collection',
 				link: '/dashboard/contracts',
-				IconComp: CirclePlus,
-				target: '_blank'
+				IconComp: CirclePlus
+			});
+		}
+	},
+
+	{
+		accessorKey: 'paymentHistory',
+		header: 'Payment History',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.id + '/payment-history',
+				name: 'Payment History',
+				IconComp: History,
+				link: '/dashboard/contracts'
 			});
 		}
 	},
@@ -91,35 +118,6 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) => {
 			return row.original.totalMonths === 1 ? '1 days' : row.original.daysRemaining + ' days';
-		}
-	},
-	{
-		accessorKey: 'paymentHistory',
-		header: 'Payment History',
-		sortable: true,
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
-				id: row.original.id + '/payment-history',
-				name: 'Payment History',
-				IconComp: History,
-				link: '/dashboard/contracts',
-				target: '_blank'
-			});
-		}
-	},
-
-	{
-		accessorKey: 'requestPayment',
-		header: 'Request Payment',
-		sortable: true,
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
-				id: row.original.id + '/payment-request',
-				name: 'Payment Request',
-				IconComp: Printer,
-				link: '/dashboard/contracts',
-				target: '_blank'
-			});
 		}
 	},
 

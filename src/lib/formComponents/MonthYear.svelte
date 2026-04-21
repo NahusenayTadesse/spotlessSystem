@@ -25,8 +25,7 @@
 		'ግንቦት', // 9
 		'ሰኔ', // 10
 		'ሐምሌ', // 11
-		'ነሐሴ', // 12
-		'ጳጉሜ' // 13
+		'ነሐሴ' // 12
 	];
 
 	function getEthiopianMonthAmharic(num: number): string {
