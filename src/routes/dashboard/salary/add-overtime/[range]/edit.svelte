@@ -3,7 +3,7 @@
 	import { Pen, PencilRuler, Save, SquarePen } from '@lucide/svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import type { Edit } from './schema';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
@@ -29,11 +29,6 @@
 	} = $props();
 	let open = $state(false);
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
-		onUpdate({ result }) {
-			if (result.type === 'success') {
-				open = false; // This will now trigger correctly
-			}
-		},
 		resetForm: false
 	});
 
@@ -58,57 +53,39 @@
 	$form.overtimeType = overTimeDetails?.overtimeTypeId;
 </script>
 
-<Dialog.Root bind:open>
-	<Dialog.Trigger class=" flex w-auto flex-row items-center justify-center gap-2 border-0">
-		{#snippet child({ props })}
-			<Button variant="default" {...props}>
-				<SquarePen /> Edit
-			</Button>
-		{/snippet}
-	</Dialog.Trigger>
-	<Dialog.Content class="w-full bg-white">
-		<Dialog.Header>
-			<Dialog.Title class="text-center text-4xl">Edit Overtime</Dialog.Title>
-		</Dialog.Header>
-		<form
-			action="?/edit"
-			use:enhance
-			method="post"
-			id="edit"
-			class="flex w-full flex-col gap-4 p-4"
-		>
-			<Errors allErrors={$allErrors} />
-			<InputComp {form} {errors} label="" name="id" type="hidden" />
-			<InputComp {form} {errors} label="" name="staffId" type="hidden" />
-			<InputComp
-				{form}
-				{errors}
-				name="overtimeType"
-				type="combo"
-				label="Overtime Type"
-				required
-				items={overtimeTypes}
-			/>
-			<InputComp {form} {errors} name="date" type="date" label="Overtime Date" required />
+<DialogComp title="Edit" IconComp={SquarePen} variant="default">
+	<form action="?/edit" use:enhance method="post" id="edit" class="flex w-full flex-col gap-4 p-4">
+		<Errors allErrors={$allErrors} />
+		<InputComp {form} {errors} label="" name="id" type="hidden" />
+		<InputComp {form} {errors} label="" name="staffId" type="hidden" />
+		<InputComp
+			{form}
+			{errors}
+			name="overtimeType"
+			type="combo"
+			label="Overtime Type"
+			required
+			items={overtimeTypes}
+		/>
+		<InputComp {form} {errors} name="date" type="date" label="Overtime Date" required />
 
-			<InputComp {form} {errors} name="hours" type="number" label="Hours Worked" required />
-			<InputComp
-				{form}
-				{errors}
-				name="reason"
-				type="textarea"
-				label="Overtime Reason"
-				placeholder="Enter overtime reason"
-			/>
-			<Button type="submit" class="mt-4" form="edit">
-				{#if $delayed}
-					<LoadingBtn name="Saving Changes" />
-				{:else}
-					<Save class="h-4 w-4" />
+		<InputComp {form} {errors} name="hours" type="number" label="Hours Worked" required />
+		<InputComp
+			{form}
+			{errors}
+			name="reason"
+			type="textarea"
+			label="Overtime Reason"
+			placeholder="Enter overtime reason"
+		/>
+		<Button type="submit" class="mt-4" form="edit">
+			{#if $delayed}
+				<LoadingBtn name="Saving Changes" />
+			{:else}
+				<Save class="h-4 w-4" />
 
-					Save Changes
-				{/if}
-			</Button>
-		</form>
-	</Dialog.Content>
-</Dialog.Root>
+				Save Changes
+			{/if}
+		</Button>
+	</form>
+</DialogComp>

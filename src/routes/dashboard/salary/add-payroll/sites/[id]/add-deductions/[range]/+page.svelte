@@ -73,7 +73,7 @@
 	</div>
 {:else}
 	<h3 class="my-4 text-2xl">
-		All Active Employees Deductions for {month?.replace('_', ' ')}
+		{data?.siteName} Employees Deductions for {month?.replace('_', ' ')}
 	</h3>
 	<h4 class="mb-4">{data?.staffList.length} Employees</h4>
 	<div class="mb-4 flex w-32 flex-row items-start gap-2">

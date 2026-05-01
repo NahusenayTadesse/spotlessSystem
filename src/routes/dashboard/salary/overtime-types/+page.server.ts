@@ -17,6 +17,7 @@ export const load: PageServerLoad = async () => {
 			id: taxType.id,
 			name: taxType.name,
 			rate: taxType.rate,
+			maxhours: taxType.maxhours,
 			status: taxType.isActive
 		})
 		.from(taxType);
@@ -36,14 +37,14 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: 'Please check the form for Errors' });
 		}
 
-		const { name, rate, status } = form.data;
+		const { name, rate, status, maxhours } = form.data;
 
 		try {
 			await db.insert(taxType).values({
 				name,
 
 				rate,
-
+				maxhours,
 				isActive: status,
 				createdBy: locals?.user?.id
 			});
@@ -66,12 +67,18 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const { id, name, rate, status } = form.data;
+		const { id, name, rate, status, maxhours } = form.data;
 
 		try {
 			await db
 				.update(taxType)
-				.set({ name, rate: String(rate), isActive: status, updatedBy: locals?.user?.id })
+				.set({
+					name,
+					rate: String(rate),
+					maxhours,
+					isActive: status,
+					updatedBy: locals?.user?.id
+				})
 				.where(eq(taxType.id, id));
 			return message(form, { type: 'success', text: 'Tax type Successfully Updated' });
 		} catch (err: any) {

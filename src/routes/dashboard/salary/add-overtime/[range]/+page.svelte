@@ -20,43 +20,35 @@
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data.form, {
-		dataType: 'json'
-	});
+	// const { form, errors, enhance, delayed, message, allErrors } = superForm(data.form, {
+	// 	dataType: 'json'
+	// });
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	// $effect(() => {
+	// 	if ($message) {
+	// 		if ($message.type === 'error') {
+	// 			toast.error($message.text);
+	// 		} else {
+	// 			toast.success($message.text);
+	// 		}
+	// 	}
+	// });
 
 	import { onMount } from 'svelte';
+	import BulkAdd from './bulkAdd.svelte';
 
 	const channel = new BroadcastChannel('db_updates');
 
-	onMount(() => {
-		channel.onmessage = async (event) => {
-			if (event.data.type === 'REFRESH_LIST') {
-				await invalidateAll(); // Your function to re-fetch from DB
-			}
-		};
-		return () => channel.close();
-	});
-
 	let selected = $state([]);
 
-	$effect(() => {
-		if (selected.length > 0) {
-			$form.ids = selected.map((id) => id.id);
-		}
-	});
+	// $effect(() => {
+	// 	if (selected.length > 0) {
+	// 		$form.ids = selected.map((id) => id.id);
+	// 	}
+	// });
 </script>
 
 <svelte:head>
@@ -93,7 +85,10 @@
 	<div class="flex flex-col gap-4">
 		<div class="max-w-sm">
 			{#if selected.length}
-				<DialogComp
+				{#key data?.staffList}
+					<BulkAdd bind:selected overtimeTypes={data?.types} data={data?.form} />
+				{/key}
+				<!-- <DialogComp
 					IconComp={Plus}
 					variant="default"
 					title="Bulk Add Overtime for {selected.length} Employees"
@@ -119,6 +114,7 @@
 							required
 							items={data?.types}
 						/>
+
 						<InputComp {form} {errors} name="date" type="date" label="Overtime Date" required />
 
 						<InputComp {form} {errors} name="hours" type="number" label="Hours Worked" required />
@@ -130,6 +126,7 @@
 							label="Overtime Reason"
 							placeholder="Enter overtime reason"
 						/>
+
 						<Button type="submit" class="mt-4" form="bulkAdd">
 							{#if $delayed}
 								<LoadingBtn name="Adding Overtime for {selected.length} Employees" />
@@ -140,7 +137,7 @@
 							{/if}
 						</Button>
 					</form>
-				</DialogComp>
+				</DialogComp> -->
 			{/if}
 		</div>
 

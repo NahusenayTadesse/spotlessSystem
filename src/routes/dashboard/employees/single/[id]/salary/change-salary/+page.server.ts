@@ -39,6 +39,9 @@ export const actions: Actions = {
 
 		try {
 			await db.transaction(async (tx) => {
+				const today = new Date();
+				const tommorow = new Date(today);
+				tommorow.setDate(today.getDate() + 1);
 				await tx
 					.update(salaries)
 					.set({
@@ -54,7 +57,7 @@ export const actions: Actions = {
 					nonTaxAllowance,
 					positionAllowance,
 					housingAllowance,
-					startDate: new Date(),
+					startDate: tommorow,
 					createdBy: locals.user?.id
 				});
 			});

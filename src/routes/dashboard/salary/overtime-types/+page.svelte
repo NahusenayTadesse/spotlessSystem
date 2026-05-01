@@ -30,6 +30,7 @@
 					id: row.original.id,
 					name: row.original.name,
 					rate: row.original.rate,
+					maxhours: row.original.maxhours,
 					action: '?/edit',
 					data: data?.editForm,
 					icon: false,
@@ -49,6 +50,25 @@
 			cell: ({ row }) => {
 				const value = Number(row.original.rate);
 				return value.toLocaleString();
+			}
+		},
+
+		{
+			accessorKey: 'maxhours',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Max Hours',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				if (row.original.maxhours) {
+					return row.original.maxhours === 1
+						? row.original.maxhours + ' hour'
+						: row.original.maxhours + ' hours';
+				} else {
+					return 'N/A';
+				}
 			}
 		},
 
@@ -73,6 +93,7 @@
 					id: row.original.id,
 					name: row.original.name,
 					rate: row.original.rate,
+					maxhours: row.original.maxhours,
 					action: '?/edit',
 					data: data?.editForm,
 					icon: true,
@@ -105,49 +126,58 @@
 <svelte:head>
 	<title>Overtime Types</title>
 </svelte:head>
-
-<DialogComp title="+ Add New Overtime Types" variant="default">
-	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
-		<InputComp
-			{form}
-			{errors}
-			label="name"
-			type="text"
-			name="name"
-			placeholder="Enter overtime type name"
-			required={true}
-		/>
-		<InputComp
-			{form}
-			{errors}
-			label="Rate"
-			type="number"
-			name="rate"
-			placeholder="Enter overtime type rate"
-			required={true}
-		/>
-
-		<InputComp
-			label="Status"
-			name="status"
-			type="select"
-			{form}
-			{errors}
-			items={[
-				{ value: true, name: 'Active' },
-				{ value: false, name: 'Inactive' }
-			]}
-		/>
-
-		<Button type="submit" form="main">
-			{#if $delayed}
-				<LoadingBtn name="Adding Overtime Type" />
-			{:else}
-				<Plus /> Add Overtime Type
-			{/if}
-		</Button>
-	</form>
-</DialogComp>
 {#key data.allData}
+	<DialogComp title="+ Add New Overtime Types" variant="default">
+		<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
+			<InputComp
+				{form}
+				{errors}
+				label="name"
+				type="text"
+				name="name"
+				placeholder="Enter overtime type name"
+				required={true}
+			/>
+			<InputComp
+				{form}
+				{errors}
+				label="Rate"
+				type="number"
+				name="rate"
+				placeholder="Enter overtime type rate"
+				required={true}
+			/>
+
+			<InputComp
+				{form}
+				{errors}
+				label="Max Hours"
+				type="number"
+				name="maxhours"
+				placeholder="Enter max hours"
+			/>
+
+			<InputComp
+				label="Status"
+				name="status"
+				type="select"
+				{form}
+				{errors}
+				items={[
+					{ value: true, name: 'Active' },
+					{ value: false, name: 'Inactive' }
+				]}
+			/>
+
+			<Button type="submit" form="main">
+				{#if $delayed}
+					<LoadingBtn name="Adding Overtime Type" />
+				{:else}
+					<Plus /> Add Overtime Type
+				{/if}
+			</Button>
+		</form>
+	</DialogComp>
+
 	<DataTable {columns} data={data?.allData} search={true} fileName="Tax Types" />
 {/key}

@@ -17,6 +17,7 @@
 		id,
 		name,
 		rate,
+		maxhours,
 
 		icon = false,
 		status = true
@@ -25,6 +26,7 @@
 		action: string;
 		id: number;
 		name: string;
+		maxhours?: number | null;
 		icon: boolean;
 		rate: string;
 
@@ -41,6 +43,7 @@
 	$form.name = name;
 	$form.rate = Number(rate);
 	$form.status = status;
+	$form.maxhours = maxhours ?? undefined;
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -91,6 +94,15 @@
 							name="rate"
 							placeholder="Enter tax type rate"
 							required={true}
+						/>
+
+						<InputComp
+							{form}
+							{errors}
+							label="Max Hours"
+							type="number"
+							name="maxhours"
+							placeholder="Enter max hours"
 						/>
 
 						<InputComp

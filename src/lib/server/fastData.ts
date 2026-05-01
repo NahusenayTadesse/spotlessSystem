@@ -197,7 +197,8 @@ export async function overtimeTypes() {
 		.select({
 			value: overTimeType.id,
 			name: overTimeType.name,
-			rate: overTimeType.rate
+			rate: overTimeType.rate,
+			maxhours: overTimeType.maxhours
 		})
 		.from(overTimeType)
 		.where(eq(overTimeType.isActive, true));

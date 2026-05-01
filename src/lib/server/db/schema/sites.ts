@@ -7,6 +7,7 @@ import {
 	boolean,
 	date,
 	decimal,
+	uniqueIndex,
 	year,
 	mysqlEnum
 } from 'drizzle-orm/mysql-core';
@@ -140,3 +141,42 @@ export const siteContacts = mysqlTable('site_contacts', {
 	contactDetail: varchar('contact_detail', { length: 255 }).notNull(),
 	...secureFields
 });
+
+export const paymentRequest = mysqlTable(
+	'payment_request',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		siteId: int('site_id')
+			.notNull()
+			.references(() => site.id, { onDelete: 'cascade' }),
+		contractId: int('contract_id')
+			.notNull()
+			.references(() => siteContracts.id, { onDelete: 'cascade' }),
+		invoiceNumber: varchar('invoice_number', { length: 255 }).notNull(),
+		requestDate: date('request_date').notNull(),
+		vat: decimal('vat', { precision: 10, scale: 2 }).notNull().default('15'),
+		withholding: decimal('withholding', { precision: 10, scale: 2 }).notNull().default('3'),
+		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+		month: mysqlEnum('month', [
+			'መስከረም', // Meskerem
+			'ጥቅምት', // Tikimt
+			'ህዳር', // Hidar
+			'ታህሳስ', // Tahsas
+			'ጥር', // Tir
+			'የካቲት', // Yekatit
+			'መጋቢት', // Megabit
+			'ሚያዝያ', // Miyazya
+			'ግንቦት', // Ginbot
+			'ሰኔ', // Sene
+			'ሐምሌ', // Hamle
+			'ነሐሴ' // Nehasse
+		]).notNull(),
+		year: year('year').notNull(),
+		penality: decimal('penality', { precision: 10, scale: 2 }).notNull().default('0'),
+		requestedBy: int('requested_by').references(() => employee.id, { onDelete: 'set null' }),
+		approvedBy: int('approved_by').references(() => employee.id, { onDelete: 'set null' }),
+
+		...secureFields
+	},
+	(table) => [uniqueIndex('unique_payment_per_month').on(table.contractId, table.month, table.year)]
+);

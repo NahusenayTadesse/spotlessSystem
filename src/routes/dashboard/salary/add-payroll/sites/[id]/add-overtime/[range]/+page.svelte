@@ -20,43 +20,18 @@
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data.form, {
-		dataType: 'json'
-	});
-
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
-
-	import { onMount } from 'svelte';
-
-	const channel = new BroadcastChannel('db_updates');
-
-	onMount(() => {
-		channel.onmessage = async (event) => {
-			if (event.data.type === 'REFRESH_LIST') {
-				await invalidateAll(); // Your function to re-fetch from DB
-			}
-		};
-		return () => channel.close();
-	});
+	import BulkAdd from './bulkAdd.svelte';
 
 	let selected = $state([]);
 
-	$effect(() => {
-		if (selected.length > 0) {
-			$form.ids = selected.map((id) => id.id);
-		}
-	});
+	// $effect(() => {
+	// 	if (selected.length > 0) {
+	// 		$form.ids = selected.map((id) => id.id);
+	// 	}
+	// });
 </script>
 
 <svelte:head>
@@ -73,7 +48,7 @@
 	</div>
 {:else}
 	<h3 class="my-4 text-2xl">
-		All Active Employees Overtime for {month?.replace('_', ' ')}
+		{data?.siteName} Employees Overtime for {month?.replace('_', ' ')}
 	</h3>
 	<h4 class="mb-4">{data?.staffList.length} Employees</h4>
 	<div class="mb-4 flex w-32 flex-row items-start gap-2">
@@ -93,54 +68,9 @@
 	<div class="flex flex-col gap-4">
 		<div class="max-w-sm">
 			{#if selected.length}
-				<DialogComp
-					IconComp={Plus}
-					variant="default"
-					title="Bulk Add Overtime for {selected.length} Employees"
-					description="{selected.length} Employees Selected"
-				>
-					<form
-						action="?/bulkAdd"
-						use:enhance
-						method="post"
-						id="bulkAdd"
-						class="flex w-full flex-col gap-4 p-4"
-					>
-						<Errors allErrors={$allErrors} />
-
-						<InputComp {form} {errors} label="" name="ids" type="hidden" />
-
-						<InputComp
-							{form}
-							{errors}
-							name="overtimeType"
-							type="combo"
-							label="Overtime Type"
-							required
-							items={data?.types}
-						/>
-						<InputComp {form} {errors} name="date" type="date" label="Overtime Date" required />
-
-						<InputComp {form} {errors} name="hours" type="number" label="Hours Worked" required />
-						<InputComp
-							{form}
-							{errors}
-							name="reason"
-							type="textarea"
-							label="Overtime Reason"
-							placeholder="Enter overtime reason"
-						/>
-						<Button type="submit" class="mt-4" form="bulkAdd">
-							{#if $delayed}
-								<LoadingBtn name="Adding Overtime for {selected.length} Employees" />
-							{:else}
-								<Plus class="h-4 w-4" />
-
-								Add Overtime for {selected.length} Employees
-							{/if}
-						</Button>
-					</form>
-				</DialogComp>
+				{#key data?.staffList}
+					<BulkAdd bind:selected overtimeTypes={data?.types} data={data?.form} />
+				{/key}
 			{/if}
 		</div>
 

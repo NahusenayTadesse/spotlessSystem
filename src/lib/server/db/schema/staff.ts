@@ -384,6 +384,7 @@ export const overTimeType = mysqlTable('over_time_type', {
 	id: int('id').primaryKey().autoincrement(),
 	name: varchar('name', { length: 255 }).notNull(),
 	rate: decimal('rate', { precision: 10, scale: 2 }).notNull(),
+	maxhours: int('max_hours'),
 	...secureFields
 });
 
@@ -465,9 +466,7 @@ export const staffSchedule = mysqlTable(
 		endTime: time('end_time').notNull(),
 		...secureFields
 	},
-	(table) => ({
-		realDaysOnly: check('real_days_only', sql`${table.weekDay} >= 0 AND ${table.weekDay} <= 6`)
-	})
+	(table) => [check('real_days_only', sql`${table.weekDay} >= 0 AND ${table.weekDay} <= 6`)]
 );
 
 export const staffScheduleRelations = relations(staffSchedule, ({ one }) => ({

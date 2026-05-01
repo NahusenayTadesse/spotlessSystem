@@ -73,8 +73,6 @@
 	<title>Add New Overtime</title>
 </svelte:head>
 
-}
-
 <FormCard title="Change Salary for {data.salaryDetail.name}">
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-row gap-2">

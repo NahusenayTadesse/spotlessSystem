@@ -8,10 +8,10 @@ import {
 	position,
 	salaries
 } from '$lib/server/db/schema';
-import { eq, sql, between, inArray } from 'drizzle-orm';
+import { eq, sql, between, inArray, max } from 'drizzle-orm';
 import { add, edit, deleteOvertime, bulkAdd } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate, message, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { overtimeTypes } from '$lib/server/fastData';
 
@@ -32,10 +32,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	// Construct the strings manually to avoid JS Date string conversion
 	const start = `${startDate.year}-${pad(startDate.month)}-${pad(startDate.day)}`;
 	const end = `${endDate.year}-${pad(endDate.month)}-${pad(endDate.day)}`;
-
-	console.log('Start:', start, typeof start); // Should be: 2026-03-10 string
-	console.log('End:', end, typeof end); // Should be: 2026-04-08 string
-	console.log('endDate object:', endDate); // Check if this is a JS Date
 
 	// Now use these in your Drizzle query
 
@@ -72,7 +68,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(overTime)
 		.leftJoin(overTimeType, eq(overTimeType.id, overTime.overTimeTypeId))
-		.where(between(overTime.date, start, end));
+		.where(between(overTime.date, new Date(start), new Date(end)));
 
 	const types = await overtimeTypes();
 
@@ -112,20 +108,35 @@ export const actions: Actions = {
 
 		const { ids, reason, date, overtimeType, hours } = form.data;
 
+		const rateRow = await db
+			.select({
+				rate: overTimeType.rate,
+				name: overTimeType.name,
+				maxHours: overTimeType.maxhours
+			})
+			.from(overTimeType)
+			.where(eq(overTimeType.id, overtimeType))
+			.then((rows) => rows[0]);
+
+		console.log(hours > Number(rateRow?.maxHours) && rateRow?.maxHours !== null);
+
+		if (hours > Number(rateRow?.maxHours) && rateRow?.maxHours !== null) {
+			setError(form, 'hours', `Hours exceed maximum allowed (${rateRow.maxHours})`);
+			return message(form, {
+				type: 'error',
+				text: `Hours exceed maximum allowed (${rateRow.maxHours})`
+			});
+		}
+
+		if (!rateRow) return message(form, { type: 'error', text: 'Overtime type not found' });
+
 		console.log(ids.length);
 
 		try {
+			let errorResponse;
 			await db.transaction(async (tx) => {
 				// 1. Fetch the rate (Shared across all entries)
 				//
-				//
-				const rateRow = await tx
-					.select({ rate: overTimeType.rate })
-					.from(overTimeType)
-					.where(eq(overTimeType.id, overtimeType))
-					.then((rows) => rows[0]);
-
-				if (!rateRow) return message(form, { type: 'error', text: 'Overtime type not found' });
 
 				// 2. Fetch salaries for ALL provided IDs
 				// It's much faster to fetch them all in one query than inside a loop
@@ -159,6 +170,8 @@ export const actions: Actions = {
 				}
 			});
 
+			if (errorResponse) return errorResponse;
+
 			return message(form, {
 				type: 'success',
 				text: `Overtime Successuflly for ${ids.length} Employees Added`
@@ -190,14 +203,30 @@ export const actions: Actions = {
 		const { staffId, reason, date, overtimeType, hours } = form.data;
 
 		try {
+			let errorResponse;
 			await db.transaction(async (tx) => {
 				const rate = await tx
 					.select({
-						rate: overTimeType.rate
+						rate: overTimeType.rate,
+						name: overTimeType.name,
+						maxHours: overTimeType.maxhours
 					})
 					.from(overTimeType)
 					.where(eq(overTimeType.id, overtimeType))
 					.then((rows) => rows[0]);
+
+				console.log(hours > Number(rate?.maxHours) && rate?.maxHours !== null);
+
+				if (!rate)
+					errorResponse = message(form, { type: 'error', text: 'Overtime type not found' });
+
+				if (hours > Number(rate?.maxHours) && rate?.maxHours !== null) {
+					setError(form, 'hours', `Hours exceed maximum allowed (${rate.maxHours})`);
+					errorResponse = message(form, {
+						type: 'error',
+						text: `Hours exceed maximum allowed (${rate.maxHours})`
+					});
+				}
 				const basicSalary = await tx
 					.select({
 						salary: salaries.amount
@@ -218,7 +247,7 @@ export const actions: Actions = {
 					createdBy: locals.user?.id
 				});
 			});
-
+			if (errorResponse) return errorResponse;
 			return message(form, { type: 'success', text: 'Overtime Successuflly Added' });
 		} catch (err) {
 			return message(
@@ -247,14 +276,30 @@ export const actions: Actions = {
 		const { id, staffId, reason, date, overtimeType, hours } = form.data;
 
 		try {
+			let errorResponse;
 			await db.transaction(async (tx) => {
 				const rate = await tx
 					.select({
-						rate: overTimeType.rate
+						rate: overTimeType.rate,
+						name: overTimeType.name,
+						maxHours: overTimeType.maxhours
 					})
 					.from(overTimeType)
 					.where(eq(overTimeType.id, overtimeType))
 					.then((rows) => rows[0]);
+
+				console.log(hours > Number(rate?.maxHours) && rate?.maxHours !== null);
+
+				if (!rate)
+					errorResponse = message(form, { type: 'error', text: 'Overtime type not found' });
+
+				if (hours > Number(rate?.maxHours) && rate?.maxHours !== null) {
+					setError(form, 'hours', `Hours exceed maximum allowed (${rate.maxHours})`);
+					errorResponse = message(form, {
+						type: 'error',
+						text: `Hours exceed maximum allowed (${rate.maxHours})`
+					});
+				}
 				const basicSalary = await tx
 					.select({
 						salary: salaries.amount
@@ -276,6 +321,7 @@ export const actions: Actions = {
 					})
 					.where(eq(overTime.id, Number(id)));
 			});
+			if (errorResponse) return errorResponse;
 			return message(form, { type: 'success', text: 'Overtime Successuflly Updated' });
 		} catch (err) {
 			return message(

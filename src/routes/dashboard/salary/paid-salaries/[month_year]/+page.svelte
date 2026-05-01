@@ -110,27 +110,45 @@
 </svelte:head>
 
 {#if data?.payrollData.length === 0}
-	<div class="flex h-96 w-5xl flex-col items-center justify-center">
-		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl"></p>
-		<div class="flex items-center gap-2">
-			<label class="sr-only" for="month-select">Month</label>
-			<MonthYear bind:value={month} />
+	<div
+		class="flex min-h-[400px] w-full max-w-5xl flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted p-12 text-center"
+	>
+		<!-- Icon / Illustration -->
+		<div class="relative mb-6">
+			<div class="absolute -inset-1 rounded-full bg-primary/10 blur-xl"></div>
+			<Frown class="relative h-16 w-16 animate-bounce text-muted-foreground" />
 		</div>
 
-		<Button
-			onclick={() => goto(`/dashboard/salary/${link}`)}
-			aria-label="Go to selected month and year"
-			class="flex items-center gap-2"
-		>
-			Go
-			<ArrowRight class="h-4 w-4" />
+		<!-- Main Text -->
+		<h2 class="text-2xl font-semibold tracking-tight">No salaries found</h2>
+		<p class="mt-2 mb-8 text-muted-foreground">
+			There are no recorded salaries for <span class="font-medium text-foreground"
+				>{data.month} {data.year}</span
+			>.
+		</p>
+
+		<!-- Control Group -->
+		<div class="flex flex-col items-center gap-4 sm:flex-row">
+			<div class="flex items-center">
+				<label class="sr-only" for="month-select">Select Month and Year</label>
+				<MonthYear bind:value={month} />
+			</div>
+
+			<Button
+				onclick={() => goto(`/dashboard/salary/paid-salaries/${link}`)}
+				aria-label="Go to selected month and year"
+				class="group px-8"
+			>
+				View Month
+				<ArrowRight class="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+			</Button>
+		</div>
+
+		<!-- Secondary Action (Optional) -->
+		<Button variant="ghost" href="/dashboard/salary/add" class="mt-8 text-sm">
+			+ Add New Salary Record
 		</Button>
 	</div>
-	<Frown class="h-12 w-16  animate-bounce" />
-	No salaries added yet for {data.month}
-	{data.year}
-
-	<!-- <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button> -->
 {:else}
 	<div
 		class="mx-auto max-w-4xl gap-4 rounded-lg bg-white/80 p-4 shadow-sm backdrop-blur-sm lg:flex lg:items-center lg:justify-between dark:bg-gray-800/80"
@@ -154,7 +172,7 @@
 			</div>
 
 			<Button
-				onclick={() => goto(`/dashboard/salary/${link}`)}
+				onclick={() => goto(`/dashboard/salary/paid-salaries/${link}`)}
 				aria-label="Go to selected month and year"
 				class="flex items-center gap-2"
 			>
@@ -182,7 +200,6 @@
 		filterKeys={[
 			'site',
 			'bank',
-
 			'department',
 			'position',
 			'taxAmount',

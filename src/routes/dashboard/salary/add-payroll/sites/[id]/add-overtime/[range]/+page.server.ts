@@ -11,7 +11,7 @@ import {
 import { eq, sql, between, inArray, and } from 'drizzle-orm';
 import { add, edit, deleteOvertime, bulkAdd } from './schema';
 import type { PageServerLoad, Actions } from './$types';
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { overtimeTypes } from '$lib/server/fastData';
 
@@ -114,20 +114,35 @@ export const actions: Actions = {
 
 		const { ids, reason, date, overtimeType, hours } = form.data;
 
+		const rateRow = await db
+			.select({
+				rate: overTimeType.rate,
+				name: overTimeType.name,
+				maxHours: overTimeType.maxhours
+			})
+			.from(overTimeType)
+			.where(eq(overTimeType.id, overtimeType))
+			.then((rows) => rows[0]);
+
+		console.log(hours > Number(rateRow?.maxHours) && rateRow?.maxHours !== null);
+
+		if (hours > Number(rateRow?.maxHours) && rateRow?.maxHours !== null) {
+			setError(form, 'hours', `Hours exceed maximum allowed (${rateRow.maxHours})`);
+			return message(form, {
+				type: 'error',
+				text: `Hours exceed maximum allowed (${rateRow.maxHours})`
+			});
+		}
+
+		if (!rateRow) return message(form, { type: 'error', text: 'Overtime type not found' });
+
 		console.log(ids.length);
 
 		try {
+			let errorResponse;
 			await db.transaction(async (tx) => {
 				// 1. Fetch the rate (Shared across all entries)
 				//
-				//
-				const rateRow = await tx
-					.select({ rate: overTimeType.rate })
-					.from(overTimeType)
-					.where(eq(overTimeType.id, overtimeType))
-					.then((rows) => rows[0]);
-
-				if (!rateRow) return message(form, { type: 'error', text: 'Overtime type not found' });
 
 				// 2. Fetch salaries for ALL provided IDs
 				// It's much faster to fetch them all in one query than inside a loop
@@ -161,6 +176,8 @@ export const actions: Actions = {
 				}
 			});
 
+			if (errorResponse) return errorResponse;
+
 			return message(form, {
 				type: 'success',
 				text: `Overtime Successuflly for ${ids.length} Employees Added`
@@ -192,14 +209,30 @@ export const actions: Actions = {
 		const { staffId, reason, date, overtimeType, hours } = form.data;
 
 		try {
+			let errorResponse;
 			await db.transaction(async (tx) => {
 				const rate = await tx
 					.select({
-						rate: overTimeType.rate
+						rate: overTimeType.rate,
+						name: overTimeType.name,
+						maxHours: overTimeType.maxhours
 					})
 					.from(overTimeType)
 					.where(eq(overTimeType.id, overtimeType))
 					.then((rows) => rows[0]);
+
+				console.log(hours > Number(rate?.maxHours) && rate?.maxHours !== null);
+
+				if (!rate)
+					errorResponse = message(form, { type: 'error', text: 'Overtime type not found' });
+
+				if (hours > Number(rate?.maxHours) && rate?.maxHours !== null) {
+					setError(form, 'hours', `Hours exceed maximum allowed (${rate.maxHours})`);
+					errorResponse = message(form, {
+						type: 'error',
+						text: `Hours exceed maximum allowed (${rate.maxHours})`
+					});
+				}
 				const basicSalary = await tx
 					.select({
 						salary: salaries.amount
@@ -220,7 +253,7 @@ export const actions: Actions = {
 					createdBy: locals.user?.id
 				});
 			});
-
+			if (errorResponse) return errorResponse;
 			return message(form, { type: 'success', text: 'Overtime Successuflly Added' });
 		} catch (err) {
 			return message(
@@ -249,14 +282,30 @@ export const actions: Actions = {
 		const { id, staffId, reason, date, overtimeType, hours } = form.data;
 
 		try {
+			let errorResponse;
 			await db.transaction(async (tx) => {
 				const rate = await tx
 					.select({
-						rate: overTimeType.rate
+						rate: overTimeType.rate,
+						name: overTimeType.name,
+						maxHours: overTimeType.maxhours
 					})
 					.from(overTimeType)
 					.where(eq(overTimeType.id, overtimeType))
 					.then((rows) => rows[0]);
+
+				console.log(hours > Number(rate?.maxHours) && rate?.maxHours !== null);
+
+				if (!rate)
+					errorResponse = message(form, { type: 'error', text: 'Overtime type not found' });
+
+				if (hours > Number(rate?.maxHours) && rate?.maxHours !== null) {
+					setError(form, 'hours', `Hours exceed maximum allowed (${rate.maxHours})`);
+					errorResponse = message(form, {
+						type: 'error',
+						text: `Hours exceed maximum allowed (${rate.maxHours})`
+					});
+				}
 				const basicSalary = await tx
 					.select({
 						salary: salaries.amount
@@ -278,6 +327,7 @@ export const actions: Actions = {
 					})
 					.where(eq(overTime.id, Number(id)));
 			});
+			if (errorResponse) return errorResponse;
 			return message(form, { type: 'success', text: 'Overtime Successuflly Updated' });
 		} catch (err) {
 			return message(
