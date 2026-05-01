@@ -5,6 +5,7 @@ import {
 	paymentMethods,
 	salaries,
 	employee,
+	site,
 	department,
 	staffAccounts,
 	missingDays,
@@ -14,7 +15,6 @@ import {
 	commission,
 	employmentStatuses,
 	taxType,
-	site,
 	penality,
 	payrollRuns,
 	payrollReceipts,
@@ -23,7 +23,7 @@ import {
 	siteContracts,
 	position
 } from '$lib/server/db/schema';
-import { and, count, desc, asc, eq, isNull, sql } from 'drizzle-orm';
+import { and, count, desc, or, lte, gte, asc, eq, isNull, sql } from 'drizzle-orm';
 
 import { payrollSchema, type EmployeeFormType } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
@@ -35,12 +35,11 @@ import { getMonthNumber, ethiopianRange } from '$lib/global.svelte';
 export const load: PageServerLoad = async ({ params }) => {
 	const form = await superValidate(zod4(payrollSchema));
 
-	const { id, range } = params as { id: string; range: string };
+	const { range, id } = params as { range: string; id: string };
 
 	const [m, y] = range.split('_');
 
 	await addOfficeWorkerCommission(m, Number(y));
-
 	const monthNumber = getMonthNumber(m);
 	const year = Number(y);
 
@@ -59,8 +58,8 @@ export const load: PageServerLoad = async ({ params }) => {
 	const penEmRate = penEm ? Number(penEm.rate) : 0;
 	const penOrgRate = penOrg ? Number(penOrg.rate) : 0;
 
-	const penEmExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penEmRate}`;
-	const penOrgExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penOrgRate}`;
+	// const penEmExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penEmRate}`;
+	// const penOrgExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penOrgRate}`;
 
 	const otSub = db
 		.select({
@@ -117,22 +116,56 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(taxType)
 		.where(eq(taxType.status, true))
 		.orderBy(asc(taxType.threshold));
+	const salarySub = db
+		.select({
+			staffId: salaries.staffId,
+			proRatedAmount:
+				sql<number>`SUM((${salaries.amount} / 30) * (DATEDIFF(LEAST(COALESCE(${salaries.endDate}, ${end}), ${end}), GREATEST(${salaries.startDate}, ${start})) + 1))`.as(
+					'prorated_amount'
+				),
+			proRatedHousing:
+				sql<number>`SUM((${salaries.housingAllowance} / 30) * (DATEDIFF(LEAST(COALESCE(${salaries.endDate}, ${end}), ${end}), GREATEST(${salaries.startDate}, ${start})) + 1))`.as(
+					'prorated_housing'
+				),
+			proRatedTransport:
+				sql<number>`SUM((${salaries.transportationAllowance} / 30) * (DATEDIFF(LEAST(COALESCE(${salaries.endDate}, ${end}), ${end}), GREATEST(${salaries.startDate}, ${start})) + 1))`.as(
+					'prorated_transport'
+				),
+			proRatedPosition:
+				sql<number>`SUM((${salaries.positionAllowance} / 30) * (DATEDIFF(LEAST(COALESCE(${salaries.endDate}, ${end}), ${end}), GREATEST(${salaries.startDate}, ${start})) + 1))`.as(
+					'prorated_position'
+				),
+			proRatedNonTax:
+				sql<number>`SUM((${salaries.nonTaxAllowance} / 30) * (DATEDIFF(LEAST(COALESCE(${salaries.endDate}, ${end}), ${end}), GREATEST(${salaries.startDate}, ${start})) + 1))`.as(
+					'prorated_nontax'
+				)
+		})
+		.from(salaries)
+		.where(
+			and(lte(salaries.startDate, end), or(isNull(salaries.endDate), gte(salaries.endDate, start)))
+		)
+		.groupBy(salaries.staffId)
+		.as('salary_sub');
 
 	// Expressions for cleaner SQL
+	// Penalties based on the pro-rated amount for the month
+	const penEmExpression = sql<number>`COALESCE(${salarySub.proRatedAmount}, 0) * ${penEmRate}`;
+	const penOrgExpression = sql<number>`COALESCE(${salarySub.proRatedAmount}, 0) * ${penOrgRate}`;
+
 	const grossExpression = sql<number>`
-        COALESCE(${salaries.amount}, 0) +
-        COALESCE(${otSub.total}, 0) +
-        COALESCE(${bonusSub.total}, 0) +
-        COALESCE(${commissionSub.total}, 0) +
-        COALESCE(${salaries.housingAllowance}, 0) +
-        COALESCE(${salaries.transportationAllowance}, 0) +
-        COALESCE(${salaries.positionAllowance}, 0)
-    `;
+    COALESCE(${salarySub.proRatedAmount}, 0) +
+    COALESCE(${otSub.total}, 0) +
+    COALESCE(${bonusSub.total}, 0) +
+    COALESCE(${commissionSub.total}, 0) +
+    COALESCE(${salarySub.proRatedHousing}, 0) +
+    COALESCE(${salarySub.proRatedTransport}, 0) +
+    COALESCE(${salarySub.proRatedPosition}, 0)
+`;
 
 	const taxableIncomeExpression = sql<number>`
-  (${grossExpression})
-  - (COALESCE(${salaries.nonTaxAllowance}, 0)
-  + (COALESCE(${missingSub.missedCount}, 0) * (${salaries.amount} / 30)))
+    (${grossExpression})
+    - (COALESCE(${salarySub.proRatedNonTax}, 0)
+    + (COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)))
 `;
 	let taxSql = sql`0`;
 	if (taxBrackets.length > 0) {
@@ -146,13 +179,15 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 
 	const netPayExpression = sql<number>`
-      (${grossExpression}) - (
-          ${taxSql} +
-          (COALESCE(${missingSub.missedCount}, 0) * (${salaries.amount} / 30)) +
-          COALESCE(${deductionSub.total}, 0) +
-          (${penEmExpression})
-      )
-  `;
+  (${grossExpression}) - (
+      ${taxSql} +
+      (COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)) +
+      COALESCE(${deductionSub.total}, 0) +
+      (${penEmExpression})
+  )
+`;
+
+	// Add this before your main payrollData query
 
 	const payrollData = await db
 		.select({
@@ -160,11 +195,12 @@ export const load: PageServerLoad = async ({ params }) => {
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
 			department: department.name,
 			position: position.name,
-			basicSalary: salaries.amount,
-			positionAllowance: salaries.positionAllowance,
-			housingAllowance: salaries.housingAllowance,
-			transportAllowance: salaries.transportationAllowance,
-			nonTaxable: salaries.nonTaxAllowance,
+			basicSalary: salarySub.proRatedAmount,
+			positionAllowance: salarySub.proRatedPosition,
+			housingAllowance: salarySub.proRatedHousing,
+			transportAllowance: salarySub.proRatedTransport,
+			nonTaxable: salarySub.proRatedNonTax,
+			attendancePenality: sql<number>`COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)`,
 			account: staffAccounts.accountDetail,
 			bank: paymentMethods.name,
 			paymentMethodId: paymentMethods.id,
@@ -172,9 +208,9 @@ export const load: PageServerLoad = async ({ params }) => {
 			overtime: otSub.total,
 			bonus: bonusSub.total,
 			absent: missingSub.missedCount,
-			attendancePenality: sql<number>`COALESCE(${missingSub.missedCount}, 0) * (${salaries.amount} / 30)`,
 			commission: commissionSub.total,
 			deductions: deductionSub.total,
+			site: site.name,
 			gross: grossExpression,
 			taxable: taxableIncomeExpression,
 			taxAmount: taxSql,
@@ -185,7 +221,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(employee)
 		.leftJoin(department, eq(department.id, employee.departmentId))
 		.leftJoin(position, eq(position.id, employee.positionId))
-		.leftJoin(salaries, and(eq(salaries.staffId, employee.id), isNull(salaries.endDate)))
+		.leftJoin(site, eq(site.id, employee.siteId))
+		.leftJoin(salarySub, eq(salarySub.staffId, employee.id))
 		.leftJoin(
 			staffAccounts,
 			and(eq(staffAccounts.staffId, employee.id), eq(staffAccounts.isActive, true))
@@ -214,7 +251,11 @@ export const load: PageServerLoad = async ({ params }) => {
 			employee.fatherName,
 			employee.grandFatherName,
 			department.name,
-			salaries.id, // Grouping by Salary ID ensures uniqueness
+			salarySub.proRatedAmount, // ADDED these to GroupBy
+			salarySub.proRatedHousing,
+			salarySub.proRatedTransport,
+			salarySub.proRatedPosition,
+			salarySub.proRatedNonTax,
 			staffAccounts.id,
 			paymentMethods.id,
 			employmentStatuses.id,
@@ -225,18 +266,9 @@ export const load: PageServerLoad = async ({ params }) => {
 			missingSub.missedCount
 		);
 
-	const siteName = await db
-		.select({
-			name: site.name
-		})
-		.from(site)
-		.where(eq(site.id, Number(id)))
-		.then((result) => result[0]?.name);
-
-	return { payrollData, start, end, form, siteName };
+	return { payrollData, start, end, form };
 };
 
-import { fail } from '@sveltejs/kit';
 import { saveUploadedFile } from '$lib/server/upload';
 export const actions: Actions = {
 	runPayroll: async ({ request, locals }) => {
