@@ -1,4 +1,4 @@
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate, message, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salaryChangeSchema as schema } from './schema';
 
@@ -34,18 +34,42 @@ export const actions: Actions = {
 			transportationAllowance,
 			nonTaxAllowance,
 			positionAllowance,
-			housingAllowance
+			housingAllowance,
+			date
 		} = form.data;
 
 		try {
+			let errorMessage;
 			await db.transaction(async (tx) => {
-				const today = new Date();
-				const tommorow = new Date(today);
-				tommorow.setDate(today.getDate() + 1);
+				const today = new Date(date);
+				const yesterday = new Date(today);
+				yesterday.setDate(today.getDate() - 1);
+
+				function isThirtyDaysOlder(date) {
+					const targetDate = new Date(date);
+					const today = new Date();
+
+					// Create a cutoff date by subtracting 30 days from today
+					const thirtyDaysAgo = new Date();
+					thirtyDaysAgo.setDate(today.getDate() - 30);
+
+					// Compare the target date to the cutoff
+					// If targetDate is <= thirtyDaysAgo, it's at least 30 days old
+					return targetDate <= thirtyDaysAgo;
+				}
+
+				if (isThirtyDaysOlder(date)) {
+					setError(form, 'date', 'Date must be 30 days old or sooner');
+					errorMessage = message(form, {
+						type: 'error',
+						text: 'Date must be 30 days old or sooner'
+					});
+				}
+
 				await tx
 					.update(salaries)
 					.set({
-						endDate: new Date(),
+						endDate: yesterday,
 						updatedBy: locals.user?.id
 					})
 					.where(and(eq(salaries.id, isNull(salaries.endDate)), eq(salaries.staffId, Number(id))));
@@ -57,11 +81,11 @@ export const actions: Actions = {
 					nonTaxAllowance,
 					positionAllowance,
 					housingAllowance,
-					startDate: tommorow,
+					startDate: today,
 					createdBy: locals.user?.id
 				});
 			});
-			// Stay on the same page and set a flash message
+			if (errorMessage) return errorMessage;
 			setFlash({ type: 'success', message: 'New Salary Successuflly Changed' }, cookies);
 			return message(form, { type: 'success', text: 'New Salary Successfully Changed' });
 		} catch (err) {
@@ -69,6 +93,8 @@ export const actions: Actions = {
 				{ type: 'error', message: 'An Error occured while changing Salary' + err.message },
 				cookies
 			);
+
+			console.error(err);
 
 			return message(
 				form,

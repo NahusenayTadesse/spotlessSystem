@@ -11,27 +11,16 @@
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 
 	let filteredList = $derived(data?.staffList);
-	import { invalidateAll } from '$app/navigation';
+
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import { page } from '$app/state';
 	let month = $state(page.params.range);
 	let link = $derived(month);
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
-	import Errors from '$lib/formComponents/Errors.svelte';
 
-	import { toast } from 'svelte-sonner';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import BulkAdd from './bulkAdd.svelte';
 
 	let selected = $state([]);
-
-	// $effect(() => {
-	// 	if (selected.length > 0) {
-	// 		$form.ids = selected.map((id) => id.id);
-	// 	}
-	// });
 </script>
 
 <svelte:head>

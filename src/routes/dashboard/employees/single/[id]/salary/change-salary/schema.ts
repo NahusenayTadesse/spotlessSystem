@@ -16,7 +16,8 @@ export const salaryChangeSchema = z.object({
 
 	amount: z.coerce
 		.number('New Amount is Required')
-		.positive({ message: 'Amount must be a positive number.' })
+		.positive({ message: 'Amount must be a positive number.' }),
+	date: z.string().min(1, { message: 'Start date of new salary is required.' })
 });
 
 // To use this schema for a form, you might extract the type:

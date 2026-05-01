@@ -160,6 +160,15 @@
 				required
 			/>
 
+			<InputComp
+				{form}
+				{errors}
+				name="date"
+				label="Start Date of New Salary:"
+				type="date"
+				required
+			/>
+
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
 					<LoadingBtn name="Updating Salary" />
