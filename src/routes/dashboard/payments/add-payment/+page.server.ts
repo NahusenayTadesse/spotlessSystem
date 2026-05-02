@@ -95,9 +95,11 @@ export const actions: Actions = {
 			} = form.data;
 
 			const result = await db.transaction(async (tx) => {
-				const paymentRequestFileUrl = await saveUploadedFile(paymentRequestFile);
-				const withholdFileUrl = await saveUploadedFile(withholdFile);
-				const receiptFileUrl = await saveUploadedFile(receiptFile);
+				const paymentRequestFileUrl = paymentRequestFile
+					? await saveUploadedFile(paymentRequestFile)
+					: null;
+				const withholdFileUrl = withholdFile ? await saveUploadedFile(withholdFile) : null;
+				const receiptFileUrl = receiptFile ? await saveUploadedFile(receiptFile) : null;
 
 				const [monthName, year] = month.split('_');
 

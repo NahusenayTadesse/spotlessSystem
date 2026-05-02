@@ -47,6 +47,10 @@ export const siteContracts = mysqlTable('site_contracts', {
 	endDate: date('end_date').notNull(),
 	contractFile: varchar('contract_file', { length: 255 }).notNull(),
 	commissionConsidered: boolean('commission_considered').notNull().default(true),
+	terminated: boolean('terminated').notNull().default(false),
+	terminationDate: date('termination_date'),
+	terminationReason: varchar('termination_reason', { length: 255 }),
+	inActiveReason: varchar('inactive_reason', { length: 255 }),
 	signingOfficer: int('signing_officer').references(() => employee.id, { onDelete: 'set null' }),
 	...secureFields
 });
@@ -57,7 +61,7 @@ export const siteMonthlyPayments = mysqlTable('site_monthly_payments', {
 	contractId: int('contract_id')
 		.notNull()
 		.references(() => siteContracts.id, { onDelete: 'cascade' }),
-	paymentRequestFile: varchar('payment_request_file', { length: 255 }).notNull(),
+	paymentRequestFile: varchar('payment_request_file', { length: 255 }),
 	penaltyAmount: decimal('penalty_amount', { precision: 10, scale: 2 }).notNull().default('0'),
 	fsNumber: varchar('fs_number', { length: 255 }).notNull(),
 	invoiceNumber: varchar('invoice_number', { length: 255 }).notNull(),
@@ -65,10 +69,10 @@ export const siteMonthlyPayments = mysqlTable('site_monthly_payments', {
 	requestChangeReason: varchar('request_change_amount', { length: 255 }),
 	paymentAmount: decimal('payment_amount', { precision: 10, scale: 2 }).notNull(),
 	beforeVat: decimal('before_Vat', { precision: 10, scale: 2 }).notNull(),
-	vat: decimal('vat', { precision: 10, scale: 2 }).notNull(),
-	withholdAmount: decimal('withhold_amount', { precision: 10, scale: 2 }).notNull(),
-	withholdFile: varchar('withhold_file', { length: 255 }).notNull(),
-	withholdInvoiceNumber: varchar('withhold_invoice_number', { length: 255 }).notNull(),
+	vat: decimal('vat', { precision: 10, scale: 2 }).notNull().default('15'),
+	withholdAmount: decimal('withhold_amount', { precision: 10, scale: 2 }),
+	withholdFile: varchar('withhold_file', { length: 255 }),
+	withholdInvoiceNumber: varchar('withhold_invoice_number', { length: 255 }),
 	month: mysqlEnum('month', [
 		'መስከረም', // Meskerem
 		'ጥቅምት', // Tikimt

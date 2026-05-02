@@ -25,7 +25,11 @@ export const editContract = z.object({
 		)
 		.optional(),
 	commissionConsidered: z.boolean().default(true),
-	signingOfficer: z.number().int().nullable().optional()
+	signingOfficer: z.number().int().nullable().optional(),
+	terminated: z.boolean().default(false),
+	terminationReason: z.string().optional(),
+	inActiveReason: z.string().optional(),
+	terminationDate: z.string().optional()
 });
 
 export type EditContract = z.infer<typeof editContract>;

@@ -54,6 +54,32 @@
 	<title>{data?.contracts?.contractYear} Payment History</title>
 </svelte:head>
 
+{#if contract.terminated}
+	<div class="overflow-hidden rounded-xl border border-destructive/40 bg-destructive/5 shadow-sm">
+		<div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+			<!-- Left Side: Reason -->
+			<div class="space-y-1">
+				<span
+					class="inline-flex items-center rounded-md bg-destructive px-2 py-0.5 text-xs font-bold tracking-wider text-white uppercase"
+				>
+					Contract Terminated
+				</span>
+				<h3 class="text-2xl font-bold tracking-tight text-foreground">
+					{contract.terminationReason}
+				</h3>
+			</div>
+
+			<!-- Right Side: Date -->
+			<div class="flex flex-col sm:items-end">
+				<p class="text-xs font-semibold text-muted-foreground uppercase">Effective Date</p>
+				<p class="font-mono text-xl font-bold text-destructive">
+					{formatEthiopianDate(contract.terminationDate)}
+				</p>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <div class="min-h-dvh bg-background text-foreground transition-colors">
 	<!-- Header -->
 	<div class="sticky top-12 z-40 border-b bg-background/95 backdrop-blur-sm">
@@ -65,6 +91,9 @@
 				</div>
 				<div class="flex items-center gap-2">
 					<Statuses status={contract.status ? 'Active' : 'Inactive'} />
+					{#if contract.inActiveReason}
+						<p class="text-sm text-muted-foreground">{contract.inActiveReason}</p>
+					{/if}
 				</div>
 			</div>
 		</div>

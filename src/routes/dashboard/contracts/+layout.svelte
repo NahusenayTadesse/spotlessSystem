@@ -23,6 +23,12 @@
 		class={page.url.pathname === '/dashboard/contracts/inactive' ? '' : 'text-destructive'}
 		><Sheet /> Inactive Contracts</Button
 	>
+	<Button
+		href="/dashboard/contracts/terminated"
+		variant={page.url.pathname === '/dashboard/contracts/terminated' ? 'destructive' : 'outline'}
+		class={page.url.pathname === '/dashboard/contracts/terminated' ? '' : 'text-destructive'}
+		><Sheet /> Terminated Contracts</Button
+	>
 </div>
 
 {@render children()}

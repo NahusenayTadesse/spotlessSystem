@@ -5,6 +5,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 
 import { formatETB, formatEthiopianDate, formatEthiopianYear } from '$lib/global.svelte';
+import BigText from '$lib/components/Table/bigText.svelte';
 
 export const columns = [
 	{
@@ -15,6 +16,19 @@ export const columns = [
 			return rowIndex + 1;
 		},
 		enableSorting: false
+	},
+	{
+		accessorKey: 'Contract Page',
+		header: 'Contract Page',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.id + '/payment-history',
+				name: row.original.site + ': ' + row.original.service + ': ' + row.original.monthlyAmount,
+
+				link: '/dashboard/contracts'
+			});
+		}
 	},
 
 	{
@@ -137,6 +151,16 @@ export const columns = [
 				link: '/dashboard/admin-panel/users',
 
 				target: '_blank'
+			});
+		}
+	},
+	{
+		accessorKey: 'inActiveReason',
+		header: 'InActive Reason',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(BigText, {
+				text: row.original.inActiveReason ? row.original.inActiveReason : 'No Reason Provided'
 			});
 		}
 	},

@@ -9,7 +9,7 @@
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button
 		variant={page.url.pathname === '/dashboard/payments/add-payment' ? 'default' : 'outline'}
-		href="/dashboard/payments/add-payment"><Plus /> Add New Payment</Button
+		href="/dashboard/payments/add-payment"><Plus /> Add New Payment Collection</Button
 	>
 	<Button
 		variant={page.url.pathname === '/dashboard/payments/pending' ? 'default' : 'outline'}

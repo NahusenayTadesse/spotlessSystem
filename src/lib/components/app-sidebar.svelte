@@ -68,7 +68,7 @@
 			url: '/dashboard/requests',
 			icon: Form,
 			items: [
-				{ title: 'Add New Payment', url: '/dashboard/requests/add-payment', icon: Plus },
+				{ title: 'Add New Request', url: '/dashboard/requests/add-request', icon: Plus },
 				{ title: 'Pending Approval', url: '/dashboard/requests/pending', icon: Loader },
 				{ title: 'Approved Payments', url: '/dashboard/requests/approved', icon: CircleCheckBig },
 				{ title: 'Cancelled Payments', url: '/dashboard/requests/cancelled', icon: OctagonMinus }
@@ -79,7 +79,7 @@
 			url: '/dashboard/payments',
 			icon: Banknote,
 			items: [
-				{ title: 'Add New Payment', url: '/dashboard/payments/add-payment', icon: Plus },
+				{ title: 'Add Collection', url: '/dashboard/payments/add-payment', icon: Plus },
 				{ title: 'Pending Approval', url: '/dashboard/payments/pending', icon: Loader },
 				{ title: 'Approved Payments', url: '/dashboard/payments/approved', icon: CircleCheckBig },
 				{ title: 'Cancelled Payments', url: '/dashboard/payments/cancelled', icon: OctagonMinus }

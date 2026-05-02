@@ -12,7 +12,7 @@ import {
 import { eq, desc } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from '../$types';
 
-import { superValidate } from 'sveltekit-superforms';
+import { setError, superValidate } from 'sveltekit-superforms';
 import { error } from '@sveltejs/kit';
 import { fail, message } from 'sveltekit-superforms';
 import { editContract } from './schema';
@@ -48,6 +48,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			commissionConsidered: siteContracts.commissionConsidered,
 			status: siteContracts.isActive,
 			signingOfficer: siteContracts.signingOfficer,
+			terminated: siteContracts.terminated,
+			terminationReason: siteContracts.terminationReason,
+			inActiveReason: siteContracts.inActiveReason,
+			terminationDate: siteContracts.terminationDate,
 
 			addedBy: user.name,
 			addedById: user.id
@@ -126,8 +130,51 @@ export const actions: Actions = {
 			monthlyAmount,
 			status,
 			commissionConsidered,
-			signingOfficer
+			signingOfficer,
+			terminated,
+			terminationReason,
+			terminationDate,
+			inActiveReason
 		} = form.data;
+
+		if (status === false && inActiveReason === undefined) {
+			setError(form, 'inActiveReason', 'Inactive reason is required when status is false');
+			return message(form, {
+				type: 'error',
+				text: `Error: Inactive reason is required when contract is not active`
+			});
+		}
+
+		if (
+			inActiveReason?.trim() === 'Automatic Expiration of Contract By System' &&
+			status === false
+		) {
+			setError(
+				form,
+				'inActiveReason',
+				'InActive Reason can not be the same as Automatic Expiration of Contract By System'
+			);
+			return message(form, {
+				type: 'error',
+				text: `Error: InActive Reason can not be the same as Automatic Expiration of Contract By System`
+			});
+		}
+
+		if (terminated === true && terminationReason === undefined) {
+			setError(form, 'terminationReason', 'Termination reason is required when terminated is true');
+			return message(form, {
+				type: 'error',
+				text: `Error: Termination Reason is required when contract is terminated`
+			});
+		}
+
+		if (terminated === true && terminationDate === undefined) {
+			setError(form, 'terminationDate', 'Termination date is required when terminated is true');
+			return message(form, {
+				type: 'error',
+				text: `Error: Termination Date is required when contract is terminated`
+			});
+		}
 
 		try {
 			await db.transaction(async (tx) => {
@@ -147,6 +194,10 @@ export const actions: Actions = {
 							isActive: status,
 							commissionConsidered,
 							signingOfficer,
+							terminated,
+							terminationReason,
+							inActiveReason,
+							terminationDate: terminationDate ? new Date(terminationDate) : null,
 							updatedBy: locals?.user?.id
 						})
 						.where(eq(siteContracts.id, id));
@@ -163,6 +214,10 @@ export const actions: Actions = {
 							isActive: status,
 							commissionConsidered,
 							signingOfficer,
+							terminated,
+							terminationReason,
+							inActiveReason,
+							terminationDate: terminationDate ? new Date(terminationDate) : null,
 							updatedBy: locals?.user?.id
 						})
 						.where(eq(siteContracts.id, id));

@@ -5,7 +5,7 @@ import { redirect } from 'sveltekit-flash-message/server';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { reports, supplies, siteContracts, services, site } from '$lib/server/db/schema';
-import { eq, lte, sql, and } from 'drizzle-orm';
+import { eq, lte, sql, and, inArray } from 'drizzle-orm';
 export const load: PageServerLoad = async ({ locals }) => {
 	const reorderSupplies = await db
 		.select({
@@ -45,15 +45,19 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.leftJoin(services, eq(siteContracts.serviceId, services.id))
 		.leftJoin(site, eq(siteContracts.siteId, site.id))
 		.where(
-			and(
-				eq(siteContracts.isActive, true),
-				// 1. Filter: End date is within the next 30 days
-				sql`DATEDIFF(${siteContracts.endDate}, NOW()) < 30`
-				// 2. Optional: Ensure we aren't showing contracts that expired a long time ago
-				// This keeps the "Urgent" list relevant (e.g., expired within last 7 days or not yet expired)
-			)
+			and(eq(siteContracts.isActive, true), sql`DATEDIFF(${siteContracts.endDate}, NOW()) < 30`)
 		)
 		.orderBy(sql`DATEDIFF(${siteContracts.endDate}, NOW()) ASC`);
+
+	await db
+		.update(siteContracts)
+		.set({ isActive: false, inActiveReason: 'Automatic Expiration of Contract By System' })
+		.where(
+			inArray(
+				siteContracts.id,
+				expiringContracts.filter((c) => c.daysRemaining <= 0).map((c) => c.id)
+			)
+		);
 
 	return {
 		reorderSupplies,

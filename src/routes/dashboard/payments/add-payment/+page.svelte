@@ -89,7 +89,7 @@
 	<title>Add New Employee</title>
 </svelte:head>
 
-<FormCard title="Add Payment Collection" className="lg:w-full!">
+<FormCard title="Add  Collection" className="lg:w-full!">
 	<!-- EmployeeAddForm.svelte -->
 
 	<form
@@ -141,7 +141,6 @@
 					{form}
 					{errors}
 					year={true}
-					required
 					placeholder="Enter Withhold Invoice"
 				/>
 			</div>

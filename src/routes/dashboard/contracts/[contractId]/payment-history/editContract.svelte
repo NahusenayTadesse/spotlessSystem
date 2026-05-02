@@ -26,10 +26,14 @@
 		endDate,
 		contractFile,
 		monthlyAmount,
+		terminated,
+		terminationReason,
+		terminationDate,
 		status,
 		commissionConsidered,
 		signingOfficer,
-		serviceList
+		serviceList,
+		inActiveReason
 	}: {
 		data: SuperValidated<Infer<EditContract>>;
 		id: number;
@@ -44,6 +48,10 @@
 		signingOfficer?: number;
 		serviceList: Item[];
 		status: boolean;
+		terminated?: boolean;
+		terminationReason?: string;
+		inActiveReason?: string;
+		terminationDate?: Date | null;
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -72,6 +80,10 @@
 	$form.commissionConsidered = commissionConsidered;
 	$form.signingOfficer = signingOfficer ?? null;
 	$form.status = status;
+	$form.terminated = terminated ?? false;
+	$form.inActiveReason = inActiveReason ?? null;
+	$form.terminationReason = terminationReason ?? null;
+	$form.terminationDate = terminationDate?.toLocaleDateString('en-CA') ?? null;
 </script>
 
 <Dialog.Root>
@@ -191,6 +203,45 @@
 					required
 					items={isActives}
 				/>
+
+				{#if $form.status === false}
+					<InputComp
+						label="Reason for Inactive Status"
+						name="inActiveReason"
+						type="textarea"
+						{form}
+						{errors}
+						placeholder="Explain why this contract is Inactive"
+					/>
+				{/if}
+
+				<InputComp
+					label="Terminate Contract"
+					name="terminated"
+					type="checkboxSingle"
+					{form}
+					{errors}
+					placeholder="Terminate Contract"
+				/>
+
+				{#if $form.terminated}
+					<InputComp
+						label="Termination Reason"
+						name="terminationReason"
+						type="textarea"
+						{form}
+						{errors}
+						placeholder="Enter termination reason"
+					/>
+					<InputComp
+						label="Termination Date"
+						name="terminationDate"
+						type="date"
+						{form}
+						{errors}
+						placeholder="Enter termination date"
+					/>
+				{/if}
 
 				<Errors allErrors={$allErrors} />
 				<Button type="submit" class="w-full" form="main" variant="default">

@@ -25,6 +25,7 @@
 		/* pending */
 		pending: { icon: Loader, colour: 'bg-yellow-500' },
 		rejected: { icon: OctagonMinus, colour: 'bg-red-500' },
+		terminated: { icon: OctagonMinus, colour: 'bg-red-500' },
 		approved: { icon: BadgeCheck, colour: 'bg-green-400' },
 
 		/* active */

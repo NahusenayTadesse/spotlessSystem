@@ -10,7 +10,7 @@ import {
 	site,
 	siteContracts
 } from '$lib/server/db/schema';
-import { eq, desc, sql, and } from 'drizzle-orm';
+import { eq, desc, sql, count } from 'drizzle-orm';
 import type { PageServerLoad } from '../$types';
 import { superValidate } from 'sveltekit-superforms';
 import { error, type Actions } from '@sveltejs/kit';
@@ -61,6 +61,8 @@ export const load: PageServerLoad = async () => {
 			officeCommission: siteContracts.commissionConsidered,
 			status: siteContracts.isActive,
 			signingOfficer: siteContracts.signingOfficer,
+			terminationDate: siteContracts.terminationDate,
+			terminationReason: siteContracts.terminationReason,
 			inActiveReason: siteContracts.inActiveReason,
 			addedBy: user.name,
 			addedById: user.id,
@@ -88,7 +90,7 @@ export const load: PageServerLoad = async () => {
 		.leftJoin(site, eq(siteContracts.siteId, site.id))
 		.leftJoin(user, eq(siteContracts.createdBy, user.id))
 		.leftJoin(siteMonthlyPayments, eq(siteContracts.id, siteMonthlyPayments.contractId))
-		.where(and(eq(siteContracts.isActive, false), eq(siteContracts.terminated, false)))
+		.where(eq(siteContracts.terminated, true))
 		.groupBy(siteContracts.id)
 		.orderBy(desc(siteContracts.contractDate));
 

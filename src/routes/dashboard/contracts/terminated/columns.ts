@@ -5,7 +5,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 
 import { formatETB, formatEthiopianDate, formatEthiopianYear } from '$lib/global.svelte';
-import { History, CirclePlus, Printer } from '@lucide/svelte';
+import BigText from '$lib/components/Table/bigText.svelte';
 
 export const columns = [
 	{
@@ -17,7 +17,6 @@ export const columns = [
 		},
 		enableSorting: false
 	},
-
 	{
 		accessorKey: 'Contract Page',
 		header: 'Contract Page',
@@ -27,47 +26,6 @@ export const columns = [
 				id: row.original.id + '/payment-history',
 				name: row.original.site + ': ' + row.original.service + ': ' + row.original.monthlyAmount,
 
-				link: '/dashboard/contracts'
-			});
-		}
-	},
-
-	// {
-	// 	accessorKey: 'requestPayment',
-	// 	header: 'Request Payment',
-	// 	sortable: true,
-	// 	cell: ({ row }) => {
-	// 		return renderComponent(DataTableLinks, {
-	// 			id: row.original.id + '/payment-request',
-	// 			name: 'Payment Request',
-	// 			IconComp: Printer,
-	// 			link: '/dashboard/contracts'
-	// 		});
-	// 	}
-	// },
-	{
-		accessorKey: 'addPayment',
-		header: 'Add Payment Collection',
-		sortable: true,
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
-				id: row.original.status ? row.original.id : '',
-				name: 'Add Payment Collection',
-				link: '/dashboard/contracts',
-				IconComp: CirclePlus
-			});
-		}
-	},
-
-	{
-		accessorKey: 'paymentHistory',
-		header: 'Payment History',
-		sortable: true,
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
-				id: row.original.id + '/payment-history',
-				name: 'Payment History',
-				IconComp: History,
 				link: '/dashboard/contracts'
 			});
 		}
@@ -87,6 +45,16 @@ export const columns = [
 		}
 	},
 	{
+		accessorKey: 'contractYear',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Contract Year',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
+
+	{
 		accessorKey: 'service',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -94,31 +62,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true
-	},
-	{
-		accessorKey: 'totalMonths',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Contract Length',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return row.original.totalMonths === 1 ? '1 month' : row.original.totalMonths + ' months';
-		}
-	},
-
-	{
-		accessorKey: 'daysRemaining',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Days Remaining Until End',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return row.original.totalMonths === 1 ? '1 days' : row.original.daysRemaining + ' days';
-		}
 	},
 
 	{
@@ -139,7 +82,7 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) =>
 			renderComponent(Copy, {
-				data: row.original.expectedPayments ?? '0'
+				data: row.original.expectedPayments ? row.original.expectedPayments : '0'
 			})
 	},
 	{
@@ -148,7 +91,7 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) =>
 			renderComponent(Copy, {
-				data: row.original.actualPayments ?? '0'
+				data: row.original.actualPayments ? row.original.actualPayments : '0'
 			})
 	},
 	{
@@ -157,7 +100,7 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) =>
 			renderComponent(Copy, {
-				data: row.original.missingPayments ?? '0'
+				data: row.original.missingPayments ? row.original.missingPayments : '0'
 			})
 	},
 	{
@@ -185,6 +128,18 @@ export const columns = [
 		}
 	},
 	{
+		accessorKey: 'terminationDate',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Contract Termination Date',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: (info) => {
+			return formatEthiopianDate(info.getValue());
+		}
+	},
+	{
 		accessorKey: 'signedDate',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -202,11 +157,18 @@ export const columns = [
 		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(Statuses, {
-				status: row.original.status ? 'Active' : 'InActive',
-				name: row.original.addedBy,
-				link: '/dashboard/admin-panel/users',
+				status: 'Terminated'
+			});
+		}
+	},
 
-				target: '_blank'
+	{
+		accessorKey: 'terminationReason',
+		header: 'Termination Reason',
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(BigText, {
+				text: row.original.terminationReason ? row.original.terminationReason : 'No Reason Provided'
 			});
 		}
 	},
