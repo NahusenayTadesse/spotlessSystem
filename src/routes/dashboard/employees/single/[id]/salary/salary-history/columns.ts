@@ -2,9 +2,8 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
-// NOTE: You must ensure your backend query includes 'name' and 'position'
-// from the staff table to display them here!
-// e.g., staffName: staff.name, staffPosition: staff.category
+import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+import { User } from '@lucide/svelte';
 
 export const columns = [
 	// 1. Row Index
@@ -101,5 +100,23 @@ export const columns = [
 		// Show 'N/A' if the payroll entry is null
 		cell: (info) => formatEthiopianDate(info.getValue()) || 'Current Salary',
 		sortable: false // Usually not sortable
+	},
+
+	{
+		accessorKey: 'changedBy',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Changed By',
+				onclick: column.getToggleSortingHandler()
+			}),
+		// Show 'N/A' if the payroll entry is null
+		cell: ({ row }) =>
+			renderComponent(DataTableLinks, {
+				id: row.original.changedById,
+				name: row.original.changedBy,
+				link: `/dashboard/admin-panel/users`,
+				target: '_blank',
+				IconComp: User
+			})
 	}
 ];

@@ -52,7 +52,7 @@
 	<DataTable
 		data={data.salaryHistory}
 		{columns}
-		class="max-w-7xl!"
+		class="max-w-6xl!"
 		fileName="{data?.salaryDetail?.name} Salary History"
 		search={true}
 	/>

@@ -106,9 +106,7 @@ export const sitePaymentAdjustment = mysqlTable('site_payment_adjustment', {
 
 export const sitePenalties = mysqlTable('site_penalties', {
 	id: int('id').primaryKey().autoincrement(),
-	contractId: int('contract_id')
-		.notNull()
-		.references(() => siteContracts.id, { onDelete: 'cascade' }),
+	contractId: int('contract_id').references(() => siteContracts.id, { onDelete: 'cascade' }),
 	penaltyReason: varchar('penalty_type', { length: 255 }).notNull(),
 	penaltyLetter: varchar('penalty_letter', { length: 255 }),
 	penaltyAmount: decimal('penalty_amount', { precision: 10, scale: 2 }).notNull(),
@@ -149,9 +147,7 @@ export const paymentRequest = mysqlTable(
 		siteId: int('site_id')
 			.notNull()
 			.references(() => site.id, { onDelete: 'cascade' }),
-		contractId: int('contract_id')
-			.notNull()
-			.references(() => siteContracts.id, { onDelete: 'cascade' }),
+		contractId: int('contract_id').references(() => siteContracts.id, { onDelete: 'cascade' }),
 		invoiceNumber: varchar('invoice_number', { length: 255 }).notNull(),
 		requestDate: date('request_date').notNull(),
 		vat: decimal('vat', { precision: 10, scale: 2 }).notNull().default('15'),
@@ -174,7 +170,9 @@ export const paymentRequest = mysqlTable(
 		year: year('year').notNull(),
 		penality: decimal('penality', { precision: 10, scale: 2 }).notNull().default('0'),
 		requestedBy: int('requested_by').references(() => employee.id, { onDelete: 'set null' }),
+		rejectedReason: varchar('rejected_reason', { length: 255 }),
 		approvedBy: int('approved_by').references(() => employee.id, { onDelete: 'set null' }),
+		status: mysqlEnum('status', ['pending', 'approved', 'rejected']).notNull().default('pending'),
 
 		...secureFields
 	},

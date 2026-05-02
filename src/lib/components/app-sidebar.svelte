@@ -24,7 +24,8 @@
 		CircleCheckBig,
 		OctagonMinus,
 		Coins,
-		TreePalm
+		TreePalm,
+		Form
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
@@ -60,6 +61,17 @@
 			items: [
 				{ title: 'Active Contracts', url: '/dashboard/contracts', icon: FileCheck },
 				{ title: 'Inactive Contract', url: '/dashboard/contracts/inactive', icon: FileX }
+			]
+		},
+		{
+			title: 'Requests',
+			url: '/dashboard/requests',
+			icon: Form,
+			items: [
+				{ title: 'Add New Payment', url: '/dashboard/requests/add-payment', icon: Plus },
+				{ title: 'Pending Approval', url: '/dashboard/requests/pending', icon: Loader },
+				{ title: 'Approved Payments', url: '/dashboard/requests/approved', icon: CircleCheckBig },
+				{ title: 'Cancelled Payments', url: '/dashboard/requests/cancelled', icon: OctagonMinus }
 			]
 		},
 		{

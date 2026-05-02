@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { salaries } from '$lib/server/db/schema';
+import { salaries, user } from '$lib/server/db/schema';
 
 import { eq, sql, desc } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
@@ -17,9 +17,12 @@ export const load: PageServerLoad = async ({ params }) => {
 			nonTaxAllowance: salaries.nonTaxAllowance,
 			positionAllowance: salaries.positionAllowance,
 			startDate: salaries.startDate,
-			endDate: salaries.endDate
+			endDate: salaries.endDate,
+			changedBy: user.name,
+			changedById: user.id
 		})
 		.from(salaries)
+		.leftJoin(user, eq(salaries.createdBy, user.id))
 		.where(eq(salaries.staffId, Number(id)))
 		.orderBy(desc(salaries.amount));
 

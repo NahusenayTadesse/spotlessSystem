@@ -1,0 +1,1 @@
+ALTER TABLE `payment_request` ADD `status` enum('pending','approved','rejected') DEFAULT 'pending' NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE `payment_request` ADD `rejected_reason` varchar(255);
